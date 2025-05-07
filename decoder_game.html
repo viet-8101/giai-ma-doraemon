@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giải mã Doraemon</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url("https://cdna.artstation.com/p/assets/images/images/076/960/172/large/oki-lela-lich-chieu-phim-doraemon-nobita-va-ban-giao-huong-dia-cau-240507020844.jpg?1718218021");
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      text-align: center;
+    }
+    .container {
+      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.5);
+      padding: 20px;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      background-color: #29b6f6;
+      color: white;
+      cursor: pointer;
+    }
+    .output {
+      background: #222;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Giải mã Doraemon</h1>
+    <textarea id="inputText" placeholder="Nhập văn bản tại đây..."></textarea>
+    <div>
+      <button onclick="giaiMaDoraemon()">🧠 Giải mã Doraemon</button>
+      <button onclick="copyOutput()">📋 Copy kết quả</button>
+    </div>
+    <div class="output" id="outputText"></div>
+  </div>
+
+  <!-- Nhạc nền: Bản giao hưởng Địa Cầu -->
+  <audio autoplay muted loop oncanplay="this.muted=false;">
+    <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
+    Trình duyệt của bạn không hỗ trợ audio.
+  </audio>
+
+  <script>
+    const tuDienDoraemon = {
+      "con cáo": "Suneo",
+      "cáo": "Suneo",
+      "khỉ đội": "Jaian",
+      "tinh tinh": "Jaian",
+      "bạch tuộc": "Noise",
+      "quần dài": "2 con cá trắm đen đc làm ở Pháp rất là mắc tiền (của Suneo)",
+      "tên ngốc hậu đậu": "Nobita",
+      "mụ phù thủy": "mẹ của Nobita",
+      "hình tròn": "bánh rán dorayaki",
+      "điểm đen": "điểm 0"
+    };
+
+    function giaiMaDoraemon() {
+      let input = document.getElementById("inputText").value.toLowerCase();
+      let output = input;
+      const sortedEntries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
+      for (const [k, v] of sortedEntries) {
+        const regex = new RegExp(k, 'gi');
+        output = output.replace(regex, `${v} (giải mã từ: ${k})`);
+      }
+      document.getElementById("outputText").innerText = output;
+    }
+
+    function copyOutput() {
+      const text = document.getElementById("outputText").innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Đã copy kết quả!");
+      });
+    }
+
+    window.addEventListener('load', () => {
+      const audio = document.querySelector("audio");
+      audio.muted = false;
+      audio.play().catch(() => {});
+    });
+  </script>
+</body>
+</html>
