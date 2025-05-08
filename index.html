@@ -62,7 +62,7 @@
   </div>
 
   <!-- Nhạc nền: Bản giao hưởng Địa Cầu -->
-  <audio autoplay muted loop oncanplay="this.muted=false;">
+  <audio id="bg-music" autoplay muted loop>
     <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
     Trình duyệt của bạn không hỗ trợ audio.
   </audio>
@@ -101,11 +101,12 @@
       });
     }
 
-    window.addEventListener('load', () => {
-      const audio = document.querySelector("audio");
+    // Bật nhạc khi người dùng tương tác (tránh bị chặn autoplay)
+    window.addEventListener('click', () => {
+      const audio = document.getElementById('bg-music');
       audio.muted = false;
       audio.play().catch(() => {});
-    });
+    }, { once: true });
   </script>
 </body>
 </html>
