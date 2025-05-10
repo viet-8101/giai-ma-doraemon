@@ -1,88 +1,88 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Giải mã Doraemon</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Quicksand', sans-serif;
-      background-image: url("https://cdna.artstation.com/p/assets/images/images/076/960/172/large/oki-lela-lich-chieu-phim-doraemon-nobita-va-ban-giao-huong-dia-cau-240507020844.jpg?1718218021");
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://image.tmdb.org/t/p/original/Z3mSxuPRNiFYxf1LBoGz3YrJzC.jpg') no-repeat center center fixed;
       background-size: cover;
-      background-position: center;
-      color: #fff;
-      text-align: center;
-      scroll-behavior: smooth;
-    }
-    .container {
-      backdrop-filter: blur(10px);
-      background: rgba(0, 0, 0, 0.55);
-      padding: 30px;
-      margin: 50px auto;
-      width: 90%;
-      max-width: 700px;
-      border-radius: 25px;
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
-      transition: all 0.3s ease;
-    }
-    textarea {
-      width: 100%;
-      height: 120px;
-      margin-top: 10px;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: none;
-      resize: none;
-    }
-    button {
-      margin: 12px 8px;
-      padding: 12px 24px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: none;
-      background-color: #29b6f6;
       color: white;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    button:hover {
-      background-color: #0288d1;
-    }
-    .output {
-      background: #111;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 12px;
-      font-size: 18px;
-      white-space: pre-line;
-      min-height: 40px;
-      animation: typing 0.7s ease-out;
     }
 
-    @keyframes typing {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .overlay {
+      background: rgba(0, 0, 0, 0.3); /* Tăng độ mờ lên 0.8 */
+      max-width: 800px;
+      margin: 10vh auto;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 90%;
+      height: 100px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1em;
+      resize: none;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 180px;
+      padding: 12px 25px;
+      font-size: 1em;
+      background-color: #00bfff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+
+    button:hover {
+      box-shadow: 0 0 20px 5px #00bfff;
+    }
+
+    #output {
+      margin-top: 20px;
+      font-size: 1.2em;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="overlay">
     <h1>🔍 Giải mã Doraemon</h1>
-    <textarea id="inputText" placeholder="Nhập văn bản tại đây..."></textarea>
-    <div>
-      <button onclick="giaiMaDoraemon()">🧠 Giải mã Doraemon</button>
-      <button onclick="copyOutput()">📋 Copy kết quả</button>
+    <textarea id="input" placeholder="Nhập mã troll ở đây..."></textarea><br>
+    <div class="button-group">
+      <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
+      <button onclick="saoChep()">📋 Copy kết quả</button>
     </div>
-    <div class="output" id="outputText"></div>
+    <div id="output"></div>
   </div>
 
-  <audio id="bg-music" autoplay muted loop>
+  <audio id="myAudio" muted>
     <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
-    Trình duyệt của bạn không hỗ trợ audio.
+    Trình duyệt của bạn không hỗ trợ phát nhạc.
   </audio>
 
   <script>
@@ -112,31 +112,44 @@
       "điểm đen": "điểm 0"
     };
 
-    function giaiMaDoraemon() {
-      let input = document.getElementById("inputText").value.toLowerCase();
-      let output = input;
-      const sortedEntries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
-      for (const [k, v] of sortedEntries) {
-        const regex = new RegExp(k, 'gi');
-        output = output.replace(regex, `${v} (giải mã từ: ${k})`);
+    function giaiMa() {
+      let text = document.getElementById("input").value.toLowerCase();
+      for (const [khoa, giaTri] of Object.entries(tuDienDoraemon)) {
+        const re = new RegExp(khoa, "gi");
+        text = text.replace(re, giaTri);
       }
-      const outputDiv = document.getElementById("outputText");
-      outputDiv.innerText = output;
-      outputDiv.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("output").textContent = "➡️ Kết quả: " + text;
     }
 
-    function copyOutput() {
-      const text = document.getElementById("outputText").innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Đã copy kết quả!");
-      });
+    function saoChep() {
+      const output = document.getElementById("output").textContent;
+      if (output) {
+        navigator.clipboard.writeText(output).then(() => {
+          alert("✅ Đã sao chép kết quả!");
+        }).catch(err => {
+          alert("❌ Không thể sao chép: " + err);
+        });
+      } else {
+        alert("⚠️ Chưa có nội dung để sao chép.");
+      }
     }
 
-    window.addEventListener('click', () => {
-      const audio = document.getElementById('bg-music');
-      audio.muted = false;
-      audio.play().catch(() => {});
-    }, { once: true });
+    // Phát nhạc khi có bất kỳ tương tác đầu tiên nào
+    let nhacDaPhat = false;
+    function batNhacKhiTuongTac() {
+      if (!nhacDaPhat) {
+        const audio = document.getElementById("myAudio");
+        audio.muted = false;
+        audio.play().catch(err => {
+          console.warn("Không thể phát nhạc:", err);
+        });
+        nhacDaPhat = true;
+        document.removeEventListener("click", batNhacKhiTuongTac);
+        document.removeEventListener("keydown", batNhacKhiTuongTac);
+      }
+    }
+    document.addEventListener("click", batNhacKhiTuongTac);
+    document.addEventListener("keydown", batNhacKhiTuongTac);
   </script>
 </body>
 </html>
