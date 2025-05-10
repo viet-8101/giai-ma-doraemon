@@ -45,17 +45,17 @@
       flex-wrap: wrap;
     }
 
-    button {
-      flex: 1;
-      min-width: 180px;
-      padding: 12px 25px;
-      font-size: 1em;
-      background-color: #00bfff;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: box-shadow 0.3s ease;
+  button {
+   flex: 0;                /* Không ép giãn ra */
+   min-width: 120px;       /* Chiều rộng tối thiểu nhỏ hơn */
+   padding: 8px 16px;      /* Ít khoảng đệm hơn */
+   font-size: 0.9em;       /* Cỡ chữ nhỏ hơn */
+   background-color: #00bfff;
+   color: white;
+   border: none;
+   border-radius: 10px;
+   cursor: pointer;
+   transition: box-shadow 0.3s ease;
     }
 
     button:hover {
