@@ -4,49 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Giải mã Doraemon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       background-image: url("https://cdna.artstation.com/p/assets/images/images/076/960/172/large/oki-lela-lich-chieu-phim-doraemon-nobita-va-ban-giao-huong-dia-cau-240507020844.jpg?1718218021");
       background-size: cover;
       background-position: center;
       color: #fff;
       text-align: center;
+      scroll-behavior: smooth;
     }
     .container {
-      backdrop-filter: blur(8px);
-      background: rgba(0,0,0,0.5);
-      padding: 20px;
-      margin: 40px auto;
+      backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.55);
+      padding: 30px;
+      margin: 50px auto;
       width: 90%;
-      max-width: 600px;
-      border-radius: 20px;
+      max-width: 700px;
+      border-radius: 25px;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
     }
     textarea {
       width: 100%;
-      height: 100px;
+      height: 120px;
       margin-top: 10px;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      border-radius: 10px;
+      border-radius: 12px;
+      border: none;
+      resize: none;
     }
     button {
-      margin: 10px 5px;
-      padding: 10px 20px;
+      margin: 12px 8px;
+      padding: 12px 24px;
       font-size: 16px;
-      border-radius: 10px;
+      border-radius: 12px;
       border: none;
       background-color: #29b6f6;
       color: white;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #0288d1;
     }
     .output {
-      background: #222;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 10px;
+      background: #111;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 12px;
+      font-size: 18px;
+      white-space: pre-line;
+      min-height: 40px;
+      animation: typing 0.7s ease-out;
+    }
+
+    @keyframes typing {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -61,7 +80,6 @@
     <div class="output" id="outputText"></div>
   </div>
 
-  <!-- Nhạc nền: Bản giao hưởng Địa Cầu -->
   <audio id="bg-music" autoplay muted loop>
     <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
     Trình duyệt của bạn không hỗ trợ audio.
@@ -91,7 +109,6 @@
       "diễn viên suất sắc": "Nobita",
       "bậc thầy năn nỉ": "Nobita",
       "thiên tài thắt dây": "Nobita",
-      "xe buýt": "Nobita",
       "điểm đen": "điểm 0"
     };
 
@@ -103,7 +120,9 @@
         const regex = new RegExp(k, 'gi');
         output = output.replace(regex, `${v} (giải mã từ: ${k})`);
       }
-      document.getElementById("outputText").innerText = output;
+      const outputDiv = document.getElementById("outputText");
+      outputDiv.innerText = output;
+      outputDiv.scrollIntoView({ behavior: "smooth" });
     }
 
     function copyOutput() {
@@ -113,7 +132,6 @@
       });
     }
 
-    // Bật nhạc khi người dùng tương tác (tránh bị chặn autoplay)
     window.addEventListener('click', () => {
       const audio = document.getElementById('bg-music');
       audio.muted = false;
