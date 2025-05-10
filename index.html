@@ -44,19 +44,20 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+button {
+  padding: 6px 14px;         /* Nhỏ gọn hơn, vẫn thoải mái bấm */
+  font-size: 0.95em;         /* Nhỏ hơn một chút */
+  min-width: unset;          /* Bỏ ép chiều rộng tối thiểu */
+  flex: 0;                   /* Không ép giãn nút */
+  background-color: #00bfff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  white-space: nowrap;       /* Tránh xuống dòng chữ */
+}
 
-  button {
-   flex: 0;                
-   min-width: 120px;       
-   padding: 8px 24px;      
-   font-size: 0.9em;       /* Cỡ chữ nhỏ hơn */
-   background-color: #00bfff;
-   color: white;
-   border: none;
-   border-radius: 10px;
-   cursor: pointer;
-   transition: box-shadow 0.3s ease;
-    }
 
     button:hover {
       box-shadow: 0 0 20px 5px #00bfff;
