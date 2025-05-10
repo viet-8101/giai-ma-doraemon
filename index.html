@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <title>Giải mã Doraemon</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: url('https://image.tmdb.org/t/p/original/Z3mSxuPRNiFYxf1LBoGz3YrJzC.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-    }
-
+   body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: url('https://image.tmdb.org/t/p/original/Z3mSxuPRNiFYxf1LBoGz3YrJzC.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+  display: flex; /* Thêm dòng này */
+  justify-content: center; /* Căn giữa ngang */
+  align-items: center; /* Căn giữa dọc */
+  height: 100vh; /* Đảm bảo chiều cao của body bao phủ toàn màn hình */
+}
     .overlay {
       background: rgba(0, 0, 0, 0.15);
       max-width: 800px;
