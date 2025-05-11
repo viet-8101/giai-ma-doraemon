@@ -49,7 +49,7 @@
       flex-wrap: wrap;
     }
 
-      button {
+  button {
     padding: 10px 18px;
     font-size: 1em;
     background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
@@ -75,7 +75,7 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
-
+  
 
     #output {
       margin-top: 20px;
@@ -274,21 +274,25 @@
     }
 
     function goChuTungKyTu(text, elementId, speed) {
-      const outputElement = document.getElementById(elementId);
-      let index = 0;
-      const dynamicSpeed = text.length > 150 ? 10 : speed;
+  const outputElement = document.getElementById(elementId);
+  let index = 0;
 
-      function type() {
-        if (index < text.length) {
-          outputElement.textContent += text.charAt(index);
-          index++;
-          setTimeout(type, dynamicSpeed);
-        }
-      }
+  // Nếu đã có timer trước đó thì clear
+  if (outputElement.typingTimer) clearTimeout(outputElement.typingTimer);
 
-      outputElement.textContent = "";
-      type();
+  outputElement.textContent = "";
+
+  function type() {
+    if (index < text.length) {
+      outputElement.textContent += text.charAt(index);
+      index++;
+      outputElement.typingTimer = setTimeout(type, speed);
     }
+  }
+
+  type();
+}
+
 
     function saoChep() {
       const outputElement = document.getElementById("output");
