@@ -4,62 +4,62 @@
   <meta charset="UTF-8">
   <title>Giải mã Doraemon</title>
   <style>
-   body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: url('https://image.tmdb.org/t/p/original/Z3mSxuPRNiFYxf1LBoGz3YrJzC.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: white;
-  display: flex; /* Thêm dòng này */
-  justify-content: center; /* Căn giữa ngang */
-  align-items: center; /* Căn giữa dọc */
-  height: 100vh; /* Đảm bảo chiều cao của body bao phủ toàn màn hình */
-}
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://image.tmdb.org/t/p/original/Z3mSxuPRNiFYxf1LBoGz3YrJzC.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
     .overlay {
-  background: rgba(0, 0, 0, 0.15);
-  max-width: 900px; /* Tăng chiều rộng tối đa */
-  margin: 10vh auto;
-  padding: 50px; /* Tăng padding để nội dung thoáng hơn */
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-}
+      background: rgba(0, 0, 0, 0.2);
+      max-width: 800px;
+      margin: 10vh auto;
+      padding: 35px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+    }
+
     h1 {
-      font-size: 2.5em;
+      font-size: 2.4em;
       margin-bottom: 20px;
     }
-textarea {
-  width: 50%;
-  height: 50px; /* Giảm chiều cao xuống một nửa */
-  margin-bottom: 20px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  font-size: 1em;
-  resize: none;
-}
+
+    textarea {
+      width: 85%;
+      height: 70px;
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1em;
+      resize: none;
     }
 
     .button-group {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
-button {
-  padding: 6px 14px;         /* Nhỏ gọn hơn, vẫn thoải mái bấm */
-  font-size: 0.95em;         /* Nhỏ hơn một chút */
-  min-width: unset;          /* Bỏ ép chiều rộng tối thiểu */
-  flex: 0;                   /* Không ép giãn nút */
-  background-color: #00bfff;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
-  white-space: nowrap;       /* Tránh xuống dòng chữ */
-}
 
+    button {
+      padding: 6px 14px;
+      font-size: 0.95em;
+      background-color: #00bfff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+      white-space: nowrap;
+    }
 
     button:hover {
       box-shadow: 0 0 20px 5px #00bfff;
@@ -70,6 +70,22 @@ button {
       font-size: 1.2em;
       white-space: pre-wrap;
     }
+
+    /* Ẩn phần stats hoàn toàn */
+    #stats {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      textarea {
+        width: 95%;
+        height: 80px;
+      }
+
+      .overlay {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -77,10 +93,11 @@ button {
     <h1>🔍 Giải mã Doraemon</h1>
     <textarea id="input" placeholder="Nhập mã troll ở đây..."></textarea><br>
     <div class="button-group">
-      <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
-      <button onclick="saoChep()">📋 Copy kết quả</button>
+      <button onclick="giaiMa()">🧠Giải mã Doraemon</button>
+      <button onclick="saoChep()">📋Copy kết quả</button>
     </div>
     <div id="output"></div>
+    <div id="stats"></div> <!-- Phần này sẽ không hiển thị vì đã bị ẩn bằng CSS -->
   </div>
 
   <audio id="myAudio" muted>
@@ -90,38 +107,77 @@ button {
 
   <script>
     const tuDienDoraemon = {
+      "2 con cá trắm đen đc làm ở pháp rất là mắc tiền \\(của suneo\\)": "quần dài",
+      "cái loa biết đi": "Jaian",
+      "thánh chảnh": "Suneo",
+      "cục nợ quốc dân": "Nobita",
+      "trùm chém gió": "Suneo",
+      "boss ăn vặt": "Doraemon",
+      "siêu nhân gục ngã": "Nobita",
+      "máy phát kẹo": "Doraemon",
+      "ổ bom di động": "Jaian",
+      "thánh phá đồ": "Nobita",
+      "chuyên gia gây họa": "Nobita",
+      "nhà tài trợ nước mắt": "mẹ Nobita",
+      "lò luyện điểm 0": "lớp học của Nobita",
+      "trùm thất tình": "Nobita",
+      "máy ATM biết đi": "Doraemon",
+      "trí tuệ nhân tạo có tâm": "Doraemon",
+      "con tinh tinh": "Jaian",
+      "con khỉ đột": "Jaian",
+      "khỉ đột": "Jaian",
+      "tinh tinh": "Jaian",
       "con cáo": "Suneo",
       "cáo": "Suneo",
-      "khỉ đột": "Jaian",
-      "con khỉ đột": "Jaian",
-      "tinh tinh": "Jaian",
-      "con tinh tinh": "Jaian",
       "bạch tuộc": "Noise",
       "quần dài": "2 con cá trắm đen đc làm ở Pháp rất là mắc tiền (của Suneo)",
-      "tên ngốc hậu đậu": "Nobita",
       "mụ phù thủy": "mẹ của Nobita",
-      "hình tròn": "bánh rán dorayaki",
-      "xe buýt": "Nobita",
-      "xe bus": "Nobita",
-      "mèo máy": "Doraemon",
+      "tên ngốc hậu đậu": "Nobita",
       "tên robinson phiền phức": "Nobita",
-      "mỏ nhọn": "Suneo",
-      "yên ắng": "nhà Shizuka",
       "thiên tài ngủ": "Nobita",
-      "tay vua súng": "Nobita",
       "diễn viên suất sắc": "Nobita",
       "bậc thầy năn nỉ": "Nobita",
       "thiên tài thắt dây": "Nobita",
-      "điểm đen": "điểm 0"
+      "tay vua súng": "Nobita",
+      "xe buýt": "Nobita",
+      "xe bus": "Nobita",
+      "mèo máy": "Doraemon",
+      "mỏ nhọn": "Suneo",
+      "lồi rốn": "Jaian",
+      "yên ắng": "nhà Shizuka",
+      "hình tròn": "bánh rán dorayaki",
+      "kẻ tham lam": "Jaian",
+      "hai người nổi tiếng ham ăn": "Jaian và Suneo",
+      "điểm đen": "điểm 0",
+      "bàn tay vàng trong làng ngáo ngơ": "Nobita",
+      "cục tạ quốc dân": "Nobita",
+      "đại ca sân trường": "Jaian",
+      "người mẫu sừng sỏ": "Suneo",
+      "cô gái tắm mỗi tập": "Shizuka",
+      "vua bánh rán": "Doraemon",
+      "thánh cầu cứu": "Nobita",      
+      "người đến từ tương lai": "Doraemon",
+      "cây ATM sống": "Doraemon",
+      "lồng tiếng động đất": "Jaian",
+      "diễn viên chính của bi kịch": "Nobita",
+      "fan cuồng công nghệ": "Suneo",
+      "bình yên trước cơn bão": "nhà Shizuka"
+
     };
 
     function giaiMa() {
-      let text = document.getElementById("input").value.toLowerCase();
-      for (const [khoa, giaTri] of Object.entries(tuDienDoraemon)) {
+      let text = document.getElementById("input").value.toLowerCase().trim();
+      const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
+
+      for (const [khoa, giaTri] of entries) {
         const re = new RegExp(khoa, "gi");
         text = text.replace(re, giaTri);
       }
+
       document.getElementById("output").textContent = "➡️ Kết quả: " + text;
+
+      // Đã xóa dòng thống kê cụm được thay thế
+      // document.getElementById("stats").textContent = `🔁 Đã giải mã ${soThayThe} cụm.`;
     }
 
     function saoChep() {
@@ -137,7 +193,6 @@ button {
       }
     }
 
-    // Phát nhạc khi có bất kỳ tương tác đầu tiên nào
     let nhacDaPhat = false;
     function batNhacKhiTuongTac() {
       if (!nhacDaPhat) {
