@@ -49,22 +49,33 @@
       flex-wrap: wrap;
     }
 
-    button {
-      padding: 10px 18px;
-      font-size: 1em;
-      background-color: #00bfff;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: box-shadow 0.3s ease;
-      white-space: nowrap;
-      min-width: 180px;
-    }
+      button {
+    padding: 10px 18px;
+    font-size: 1em;
+    background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+    background-size: 1000% 1000%;
+    animation: gradientFlow 10s ease infinite;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 180px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+  }
 
-    button:hover {
-      box-shadow: 0 0 20px 5px #00bfff;
-    }
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 8px rgba(30, 144, 255, 0.8);
+  }
+
+  @keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
 
     #output {
       margin-top: 20px;
@@ -115,18 +126,13 @@
     </div>
     <div id="output"></div>
     <div id="stats"></div>
-
-    <!-- Biểu tượng mic -->
     <div id="micIndicator" class="mic-indicator"></div>
   </div>
 
-  <!-- Nhạc nền -->
   <audio id="myAudio" muted>
     <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
-    Trình duyệt của bạn không hỗ trợ phát nhạc.
   </audio>
 
-  <!-- Âm thanh gõ phím -->
   <audio id="typeSound" preload="auto">
     <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
   </audio>
@@ -237,17 +243,20 @@
       "viên đạn của đại bác không khí": "Moto"
     };
 
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
     async function giaiMa() {
       const inputElement = document.getElementById("input");
       let text = inputElement.value.toLowerCase().trim();
+      const originalText = text;
 
       if (text === "") {
-        alert("⚠️ Vui lòng nhập mã troll trước khi giải mã!");
-        inputElement.focus();
+        goChuTungKyTu("⚠️ Bạn chưa nhập gì cả!", "output", 30);
         return;
       }
 
-      // Hiệu ứng Loading
       goChuTungKyTu("➡️ Đang xử lý...", "output", 60);
 
       const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
@@ -256,18 +265,24 @@
         text = text.replace(re, giaTri);
       }
 
+      if (text === originalText) {
+        goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp trong từ điển Doraemon.", "output", 30);
+        return;
+      }
+
       goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
     }
 
     function goChuTungKyTu(text, elementId, speed) {
       const outputElement = document.getElementById(elementId);
       let index = 0;
+      const dynamicSpeed = text.length > 150 ? 10 : speed;
 
       function type() {
         if (index < text.length) {
           outputElement.textContent += text.charAt(index);
           index++;
-          setTimeout(type, speed);
+          setTimeout(type, dynamicSpeed);
         }
       }
 
@@ -277,6 +292,10 @@
 
     function saoChep() {
       const outputElement = document.getElementById("output");
+      if (!outputElement.textContent.trim()) {
+        alert("⚠️ Chưa có nội dung để sao chép!");
+        return;
+      }
       const range = document.createRange();
       range.selectNode(outputElement);
       window.getSelection().removeAllRanges();
@@ -292,21 +311,19 @@
 
       function startDictation() {
         const micIndicator = document.getElementById("micIndicator");
-        micIndicator.style.display = "block"; // Hiện biểu tượng mic khi bắt đầu nhận diện giọng nói
+        micIndicator.style.display = "block";
         recognition.start();
 
         recognition.onresult = function(event) {
           const transcript = event.results[0][0].transcript;
           document.getElementById("input").value = transcript;
-
-          // Ẩn mic khi nhận diện xong
           micIndicator.style.display = "none";
         };
 
         recognition.onerror = function(event) {
           console.error("Lỗi nhận diện giọng nói: " + event.error);
           alert("⚠️ Không thể nhận diện giọng nói, vui lòng thử lại.");
-          micIndicator.style.display = "none"; // Ẩn mic khi có lỗi
+          micIndicator.style.display = "none";
         };
       }
     } else {
@@ -322,6 +339,11 @@
       }
     }
 
+    document.body.addEventListener("click", () => {
+      const audio = document.getElementById("myAudio");
+      audio.muted = false;
+      audio.play().catch(() => {});
+    }, { once: true });
   </script>
 </body>
 </html>
