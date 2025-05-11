@@ -71,7 +71,6 @@
       white-space: pre-wrap;
     }
 
-    /* Ẩn phần stats hoàn toàn */
     #stats {
       display: none;
     }
@@ -91,13 +90,13 @@
 <body>
   <div class="overlay">
     <h1>🔍 Giải mã Doraemon</h1>
-    <textarea id="input" placeholder="Nhập mã troll ở đây..."></textarea><br>
+    <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea><br>
     <div class="button-group">
       <button onclick="giaiMa()">🧠Giải mã Doraemon</button>
       <button onclick="saoChep()">📋Copy kết quả</button>
     </div>
     <div id="output"></div>
-    <div id="stats"></div> <!-- Phần này sẽ không hiển thị vì đã bị ẩn bằng CSS -->
+    <div id="stats"></div>
   </div>
 
   <audio id="myAudio" muted>
@@ -107,7 +106,6 @@
 
   <script>
     const tuDienDoraemon = {
-      "2 con cá trắm đen đc làm ở pháp rất là mắc tiền \\(của suneo\\)": "quần dài",
       "cái loa biết đi": "Jaian",
       "thánh chảnh": "Suneo",
       "cục nợ quốc dân": "Nobita",
@@ -161,12 +159,21 @@
       "lồng tiếng động đất": "Jaian",
       "diễn viên chính của bi kịch": "Nobita",
       "fan cuồng công nghệ": "Suneo",
+      "kẻ lười biếng nhỏ bé": "Nobita",
+      "chồn xanh nhỏ đáng yêu": "Doraemon",
       "bình yên trước cơn bão": "nhà Shizuka"
-
     };
 
     function giaiMa() {
-      let text = document.getElementById("input").value.toLowerCase().trim();
+      const inputElement = document.getElementById("input");
+      let text = inputElement.value.toLowerCase().trim();
+
+      if (text === "") {
+        alert("⚠️ Vui lòng nhập mã troll trước khi giải mã!");
+        inputElement.focus();
+        return;
+      }
+
       const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
 
       for (const [khoa, giaTri] of entries) {
@@ -175,9 +182,6 @@
       }
 
       document.getElementById("output").textContent = "➡️ Kết quả: " + text;
-
-      // Đã xóa dòng thống kê cụm được thay thế
-      // document.getElementById("stats").textContent = `🔁 Đã giải mã ${soThayThe} cụm.`;
     }
 
     function saoChep() {
@@ -190,6 +194,12 @@
         });
       } else {
         alert("⚠️ Chưa có nội dung để sao chép.");
+      }
+    }
+
+    function chanEnter(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
       }
     }
 
