@@ -32,7 +32,7 @@
     }
 
     textarea {
-      width: 85%;
+      width: 70%; /* Giảm chiều rộng của textarea */
       height: 70px;
       margin-bottom: 20px;
       padding: 12px;
@@ -96,6 +96,7 @@
     <div class="button-group">
       <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
       <button onclick="saoChep()">📋 Copy kết quả</button>
+      <button onclick="startDictation()">🎤 Nhận diện giọng nói</button>
     </div>
     <div id="output"></div>
     <div id="stats"></div>
@@ -127,6 +128,7 @@
       "nhà tài trợ nước mắt": "mẹ Nobita",
       "lò luyện điểm 0": "lớp học của Nobita",
       "trùm thất tình": "Nobita",
+      "đứa trẻ cuối cùng của mushika": "Micca",
       "máy ATM biết đi": "Doraemon",
       "trí tuệ nhân tạo có tâm": "Doraemon",
       "con tinh tinh": "Jaian",
@@ -169,28 +171,47 @@
       "fan cuồng công nghệ": "Suneo",
       "kẻ lười biếng nhỏ bé": "Nobita",
       "chồn xanh nhỏ đáng yêu": "Doraemon",
-      "bình yên trước cơn bão": "nhà Shizuka"
+      "bình yên trước cơn bão": "nhà Shizuka",
+      "cậu bé sáo lạc điệu": "Nobita",
+      "loa phóng thanh biết đi": "Jaian",
+      "trùm phá nốt": "Nobita",
+      "người cứu âm nhạc địa cầu": "Doraemon",
+      "quái vật hút âm": "bào tử noise",
+      "người bạn đến từ hành tinh âm nhạc": "Micca",
+      "thánh phá bản nhạc": "Nobita",
+      "cây sáo truyền thuyết": "cây sáo dọc của mushika",
+      "bản nhạc giải cứu trái đất": "bản giao hưởng địa cầu",
+      "phi công nghiệp dư": "Nobita",
+      "vùng đất trong mơ": "Utopia",
+      "cư dân đám mây": "người sống ở Utopia",
+      "nhà trên trời view đẹp": "Utopia",
+      "người bạn Utopia": "Sonya",
+      "trùm điều khiển thời tiết": "quản lý Utopia",
+      "đảo mây bay lạc": "Utopia",
+      "chuyến phiêu lưu trên trời": "hành trình của nhóm Nobita",
+      "lâu đài mây thần bí": "trung tâm điều hành Utopia",
+      "trùm chấn động bầu trời": "Suneo lái máy bay",
+      "cậu bé bay không bằng lái": "Nobita",
+      "thánh nhảy moonwalk ngoài vũ trụ": "Nobita",
+      "chuyên gia té không trọng lực": "Nobita",
+      "trạm vũ trụ di động": "tàu của Doraemon",
+      "người bạn tai dài trên mặt trăng": "Luca",
+      "cư dân mặt trăng bí ẩn": "tộc người Espal",
+      "đội thám hiểm mặt trăng": "nhóm Nobita",
+      "mặt trăng giả tưởng": "thế giới do bảo bối tạo ra",
+      "cuộc chiến không trọng lực": "trận đấu trên mặt trăng",
+      "lũ bạn ngoài hành tinh đáng yêu": "Luca và đồng bọn",
+      "bầu trời đêm đầy ảo mộng": "khung cảnh mặt trăng",
+      "cậu bé lười biếng nhất thành phố": "Nobita",
+      "cậu bé xấu tính nhất thành phố": "Jaian",
+      "nhạc sĩ vũ trụ": "Trupet",
+      "nhà soạn nhạc vĩ đại": "Trupet",
+      "người sáng tác giao hưởng địa cầu": "Trupet",
+      "chủ nhân bản giao hưởng địa cầu": "Trupet"
     };
 
-    function goChuTungKyTu(text, elementId, tocDo = 35) {
-      const element = document.getElementById(elementId);
-      const typeSound = document.getElementById("typeSound");
-      element.textContent = "";
-      let i = 0;
-
-      function goTiep() {
-        if (i < text.length) {
-          element.textContent += text.charAt(i);
-          if (text.charAt(i) !== " ") {
-            typeSound.currentTime = 0;
-            typeSound.play().catch(() => {});
-          }
-          i++;
-          setTimeout(goTiep, tocDo);
-        }
-      }
-
-      goTiep();
+    function escapeRegExp(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
     function giaiMa() {
@@ -205,49 +226,67 @@
 
       const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
       for (const [khoa, giaTri] of entries) {
-        const re = new RegExp(khoa, "gi");
+        const re = new RegExp(escapeRegExp(khoa), "gi");
         text = text.replace(re, giaTri);
       }
 
       goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
     }
 
+    function goChuTungKyTu(text, elementId, speed) {
+      const outputElement = document.getElementById(elementId);
+      let index = 0;
+
+      function type() {
+        if (index < text.length) {
+          outputElement.textContent += text.charAt(index);
+          index++;
+          setTimeout(type, speed);
+        }
+      }
+
+      outputElement.textContent = "";
+      type();
+    }
+
     function saoChep() {
-      const output = document.getElementById("output").textContent;
-      if (output) {
-        navigator.clipboard.writeText(output).then(() => {
-          alert("✅ Đã sao chép kết quả!");
-        }).catch(err => {
-          alert("❌ Không thể sao chép: " + err);
-        });
-      } else {
-        alert("⚠️ Chưa có nội dung để sao chép.");
+      const outputElement = document.getElementById("output");
+      const range = document.createRange();
+      range.selectNode(outputElement);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      alert("📋 Đã sao chép kết quả!");
+    }
+
+    // Speech Recognition
+    let recognition;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'vi-VN';
+
+      function startDictation() {
+        recognition.start();
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById("input").value = transcript;
+        };
+        recognition.onerror = function(event) {
+          console.error("Error occurred in speech recognition: " + event.error);
+        };
+      }
+    } else {
+      function startDictation() {
+        alert("⚠️ Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.Vui lòng chuyển sang trình duyệt chrome hoặc edge");
       }
     }
 
     function chanEnter(event) {
       if (event.key === "Enter") {
         event.preventDefault();
+        giaiMa();
       }
     }
-
-    // Phát nhạc nền khi người dùng tương tác
-    let nhacDaPhat = false;
-    function batNhacKhiTuongTac() {
-      if (!nhacDaPhat) {
-        const audio = document.getElementById("myAudio");
-        audio.muted = false;
-        audio.play().catch(err => {
-          console.warn("Không thể phát nhạc:", err);
-        });
-        nhacDaPhat = true;
-        document.removeEventListener("click", batNhacKhiTuongTac);
-        document.removeEventListener("keydown", batNhacKhiTuongTac);
-      }
-    }
-
-    document.addEventListener("click", batNhacKhiTuongTac);
-    document.addEventListener("keydown", batNhacKhiTuongTac);
   </script>
 </body>
 </html>
