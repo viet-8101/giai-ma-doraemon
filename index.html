@@ -1,229 +1,132 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Giải mã Doraemon</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: url('https://image.tmdb.org/t/p/original/Z3mSxuPRNiFYxf1LBoGz3YrJzC.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<script>
+  const tuDienDoraemon = {
+    "cái loa biết đi": "Jaian",
+    "thánh chảnh": "Suneo",
+    "cục nợ quốc dân": "Nobita",
+    "trùm chém gió": "Suneo",
+    "boss ăn vặt": "Doraemon",
+    "siêu nhân gục ngã": "Nobita",
+    "máy phát kẹo": "Doraemon",
+    "ổ bom di động": "Jaian",
+    "thánh phá đồ": "Nobita",
+    "chuyên gia gây họa": "Nobita",
+    "nhà tài trợ nước mắt": "mẹ Nobita",
+    "lò luyện điểm 0": "lớp học của Nobita",
+    "trùm thất tình": "Nobita",
+    "máy ATM biết đi": "Doraemon",
+    "trí tuệ nhân tạo có tâm": "Doraemon",
+    "con tinh tinh": "Jaian",
+    "con khỉ đột": "Jaian",
+    "khỉ đột": "Jaian",
+    "tinh tinh": "Jaian",
+    "con cáo": "Suneo",
+    "cáo": "Suneo",
+    "bạch tuộc": "Noise",
+    "quần dài": "2 con cá trắm đen đc làm ở Pháp rất là mắc tiền (của Suneo)",
+    "mụ phù thủy": "mẹ của Nobita",
+    "tên ngốc hậu đậu": "Nobita",
+    "tên robinson phiền phức": "Nobita",
+    "thiên tài ngủ": "Nobita",
+    "diễn viên suất sắc": "Nobita",
+    "bậc thầy năn nỉ": "Nobita",
+    "thiên tài thắt dây": "Nobita",
+    "tay vua súng": "Nobita",
+    "xe buýt": "Nobita",
+    "xe bus": "Nobita",
+    "mèo máy": "Doraemon",
+    "mỏ nhọn": "Suneo",
+    "lồi rốn": "Jaian",
+    "yên ắng": "nhà Shizuka",
+    "hình tròn": "bánh rán dorayaki",
+    "kẻ tham lam": "Jaian",
+    "hai người nổi tiếng ham ăn": "Jaian và Suneo",
+    "điểm đen": "điểm 0",
+    "bàn tay vàng trong làng ngáo ngơ": "Nobita",
+    "cục tạ quốc dân": "Nobita",
+    "đại ca sân trường": "Jaian",
+    "người mẫu sừng sỏ": "Suneo",
+    "cô gái tắm mỗi tập": "Shizuka",
+    "vua bánh rán": "Doraemon",
+    "thánh cầu cứu": "Nobita",      
+    "người đến từ tương lai": "Doraemon",
+    "cây ATM sống": "Doraemon",
+    "lồng tiếng động đất": "Jaian",
+    "diễn viên chính của bi kịch": "Nobita",
+    "fan cuồng công nghệ": "Suneo",
+    "kẻ lười biếng nhỏ bé": "Nobita",
+    "chồn xanh nhỏ đáng yêu": "Doraemon",
+    "bình yên trước cơn bão": "nhà Shizuka"
+  };
 
-    .overlay {
-      background: rgba(0, 0, 0, 0.2);
-      max-width: 800px;
-      margin: 10vh auto;
-      padding: 35px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-    }
+  function goChuTungKyTu(text, elementId, tocDo = 30) {
+    const element = document.getElementById(elementId);
+    element.textContent = "";
+    let i = 0;
 
-    h1 {
-      font-size: 2.4em;
-      margin-bottom: 20px;
-    }
-
-    textarea {
-      width: 85%;
-      height: 70px;
-      margin-bottom: 20px;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 1em;
-      resize: none;
-    }
-
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      min-width: 200px;
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: #00bfff;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: box-shadow 0.3s ease;
-      white-space: nowrap;
-    }
-
-    button:hover {
-      box-shadow: 0 0 20px 5px #00bfff;
-    }
-
-    #output {
-      margin-top: 20px;
-      font-size: 1.2em;
-      white-space: pre-wrap;
-    }
-
-    #stats {
-      display: none;
-    }
-
-    @media (max-width: 600px) {
-      textarea {
-        width: 95%;
-        height: 80px;
-      }
-
-      .overlay {
-        padding: 20px;
-      }
-
-      button {
-        min-width: unset;
-        width: 100%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="overlay">
-    <h1>🔍 Giải mã Doraemon</h1>
-    <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea><br>
-    <div class="button-group">
-      <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
-      <button onclick="saoChep()">📋 Copy kết quả</button>
-    </div>
-    <div id="output"></div>
-    <div id="stats"></div>
-  </div>
-
-  <audio id="myAudio" muted>
-    <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
-    Trình duyệt của bạn không hỗ trợ phát nhạc.
-  </audio>
-
-  <script>
-    const tuDienDoraemon = {
-      "cái loa biết đi": "Jaian",
-      "thánh chảnh": "Suneo",
-      "cục nợ quốc dân": "Nobita",
-      "trùm chém gió": "Suneo",
-      "boss ăn vặt": "Doraemon",
-      "siêu nhân gục ngã": "Nobita",
-      "máy phát kẹo": "Doraemon",
-      "ổ bom di động": "Jaian",
-      "thánh phá đồ": "Nobita",
-      "chuyên gia gây họa": "Nobita",
-      "nhà tài trợ nước mắt": "mẹ Nobita",
-      "lò luyện điểm 0": "lớp học của Nobita",
-      "trùm thất tình": "Nobita",
-      "máy ATM biết đi": "Doraemon",
-      "trí tuệ nhân tạo có tâm": "Doraemon",
-      "con tinh tinh": "Jaian",
-      "con khỉ đột": "Jaian",
-      "khỉ đột": "Jaian",
-      "tinh tinh": "Jaian",
-      "con cáo": "Suneo",
-      "cáo": "Suneo",
-      "bạch tuộc": "Noise",
-      "quần dài": "2 con cá trắm đen đc làm ở Pháp rất là mắc tiền (của Suneo)",
-      "mụ phù thủy": "mẹ của Nobita",
-      "tên ngốc hậu đậu": "Nobita",
-      "tên robinson phiền phức": "Nobita",
-      "thiên tài ngủ": "Nobita",
-      "diễn viên suất sắc": "Nobita",
-      "bậc thầy năn nỉ": "Nobita",
-      "thiên tài thắt dây": "Nobita",
-      "tay vua súng": "Nobita",
-      "xe buýt": "Nobita",
-      "xe bus": "Nobita",
-      "mèo máy": "Doraemon",
-      "mỏ nhọn": "Suneo",
-      "lồi rốn": "Jaian",
-      "yên ắng": "nhà Shizuka",
-      "hình tròn": "bánh rán dorayaki",
-      "kẻ tham lam": "Jaian",
-      "hai người nổi tiếng ham ăn": "Jaian và Suneo",
-      "điểm đen": "điểm 0",
-      "bàn tay vàng trong làng ngáo ngơ": "Nobita",
-      "cục tạ quốc dân": "Nobita",
-      "đại ca sân trường": "Jaian",
-      "người mẫu sừng sỏ": "Suneo",
-      "cô gái tắm mỗi tập": "Shizuka",
-      "vua bánh rán": "Doraemon",
-      "thánh cầu cứu": "Nobita",
-      "người đến từ tương lai": "Doraemon",
-      "cây ATM sống": "Doraemon",
-      "lồng tiếng động đất": "Jaian",
-      "diễn viên chính của bi kịch": "Nobita",
-      "fan cuồng công nghệ": "Suneo",
-      "kẻ lười biếng nhỏ bé": "Nobita",
-      "chồn xanh nhỏ đáng yêu": "Doraemon",
-      "bình yên trước cơn bão": "nhà Shizuka"
-    };
-
-    function giaiMa() {
-      const inputElement = document.getElementById("input");
-      let text = inputElement.value.toLowerCase().trim();
-
-      if (text === "") {
-        alert("⚠️ Vui lòng nhập mã troll trước khi giải mã!");
-        inputElement.focus();
-        return;
-      }
-
-      const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
-
-      for (const [khoa, giaTri] of entries) {
-        const re = new RegExp(khoa, "gi");
-        text = text.replace(re, giaTri);
-      }
-
-      document.getElementById("output").textContent = "➡️ Kết quả: " + text;
-    }
-
-    function saoChep() {
-      const output = document.getElementById("output").textContent;
-      if (output) {
-        navigator.clipboard.writeText(output).then(() => {
-          alert("✅ Đã sao chép kết quả!");
-        }).catch(err => {
-          alert("❌ Không thể sao chép: " + err);
-        });
-      } else {
-        alert("⚠️ Chưa có nội dung để sao chép.");
+    function goTiep() {
+      if (i < text.length) {
+        element.textContent += text.charAt(i);
+        i++;
+        setTimeout(goTiep, tocDo);
       }
     }
 
-    function chanEnter(event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-      }
+    goTiep();
+  }
+
+  function giaiMa() {
+    const inputElement = document.getElementById("input");
+    let text = inputElement.value.toLowerCase().trim();
+
+    if (text === "") {
+      alert("⚠️ Vui lòng nhập mã troll trước khi giải mã!");
+      inputElement.focus();
+      return;
     }
 
-    let nhacDaPhat = false;
-    function batNhacKhiTuongTac() {
-      if (!nhacDaPhat) {
-        const audio = document.getElementById("myAudio");
-        audio.muted = false;
-        audio.play().catch(err => {
-          console.warn("Không thể phát nhạc:", err);
-        });
-        nhacDaPhat = true;
-        document.removeEventListener("click", batNhacKhiTuongTac);
-        document.removeEventListener("keydown", batNhacKhiTuongTac);
-      }
+    const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
+
+    for (const [khoa, giaTri] of entries) {
+      const re = new RegExp(khoa, "gi");
+      text = text.replace(re, giaTri);
     }
-    document.addEventListener("click", batNhacKhiTuongTac);
-    document.addEventListener("keydown", batNhacKhiTuongTac);
-  </script>
-</body>
-</html>
+
+    goChuTungKyTu("➡️ Kết quả: " + text, "output", 25);
+  }
+
+  function saoChep() {
+    const output = document.getElementById("output").textContent;
+    if (output) {
+      navigator.clipboard.writeText(output).then(() => {
+        alert("✅ Đã sao chép kết quả!");
+      }).catch(err => {
+        alert("❌ Không thể sao chép: " + err);
+      });
+    } else {
+      alert("⚠️ Chưa có nội dung để sao chép.");
+    }
+  }
+
+  function chanEnter(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+    }
+  }
+
+  let nhacDaPhat = false;
+  function batNhacKhiTuongTac() {
+    if (!nhacDaPhat) {
+      const audio = document.getElementById("myAudio");
+      audio.muted = false;
+      audio.play().catch(err => {
+        console.warn("Không thể phát nhạc:", err);
+      });
+      nhacDaPhat = true;
+      document.removeEventListener("click", batNhacKhiTuongTac);
+      document.removeEventListener("keydown", batNhacKhiTuongTac);
+    }
+  }
+
+  document.addEventListener("click", batNhacKhiTuongTac);
+  document.addEventListener("keydown", batNhacKhiTuongTac);
+</script>
