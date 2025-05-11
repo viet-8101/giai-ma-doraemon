@@ -50,8 +50,9 @@
     }
 
     button {
-      padding: 6px 14px;
-      font-size: 0.95em;
+      min-width: 200px;
+      padding: 10px 20px;
+      font-size: 1em;
       background-color: #00bfff;
       color: white;
       border: none;
@@ -84,6 +85,11 @@
       .overlay {
         padding: 20px;
       }
+
+      button {
+        min-width: unset;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -92,8 +98,8 @@
     <h1>🔍 Giải mã Doraemon</h1>
     <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea><br>
     <div class="button-group">
-      <button onclick="giaiMa()">🧠Giải mã Doraemon</button>
-      <button onclick="saoChep()">📋Copy kết quả</button>
+      <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
+      <button onclick="saoChep()">📋 Copy kết quả</button>
     </div>
     <div id="output"></div>
     <div id="stats"></div>
@@ -153,7 +159,7 @@
       "người mẫu sừng sỏ": "Suneo",
       "cô gái tắm mỗi tập": "Shizuka",
       "vua bánh rán": "Doraemon",
-      "thánh cầu cứu": "Nobita",      
+      "thánh cầu cứu": "Nobita",
       "người đến từ tương lai": "Doraemon",
       "cây ATM sống": "Doraemon",
       "lồng tiếng động đất": "Jaian",
