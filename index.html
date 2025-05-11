@@ -17,7 +17,7 @@
     }
 
     .overlay {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.);
       max-width: 800px;
       margin: 10vh auto;
       padding: 35px;
@@ -32,7 +32,7 @@
     }
 
     textarea {
-      width: 70%; /* Giảm chiều rộng của textarea */
+      width: 70%;
       height: 70px;
       margin-bottom: 20px;
       padding: 12px;
@@ -73,8 +73,23 @@
       min-height: 40px;
     }
 
-    #stats {
+    .mic-indicator {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: transparent;
+      border: 3px solid #00bfff;
+      margin-top: 20px;
+      margin-left: auto;
+      margin-right: auto;
       display: none;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
     }
 
     @media (max-width: 600px) {
@@ -100,6 +115,9 @@
     </div>
     <div id="output"></div>
     <div id="stats"></div>
+
+    <!-- Biểu tượng mic -->
+    <div id="micIndicator" class="mic-indicator"></div>
   </div>
 
   <!-- Nhạc nền -->
@@ -210,11 +228,7 @@
       "chủ nhân bản giao hưởng địa cầu": "Trupet"
     };
 
-    function escapeRegExp(str) {
-      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    function giaiMa() {
+    async function giaiMa() {
       const inputElement = document.getElementById("input");
       let text = inputElement.value.toLowerCase().trim();
 
@@ -223,6 +237,9 @@
         inputElement.focus();
         return;
       }
+
+      // Hiệu ứng Loading
+      goChuTungKyTu("➡️ Đang xử lý...", "output", 60);
 
       const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
       for (const [khoa, giaTri] of entries) {
@@ -259,25 +276,33 @@
       alert("📋 Đã sao chép kết quả!");
     }
 
-    // Speech Recognition
     let recognition;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = 'vi-VN';
 
       function startDictation() {
+        const micIndicator = document.getElementById("micIndicator");
+        micIndicator.style.display = "block"; // Hiện biểu tượng mic khi bắt đầu nhận diện giọng nói
         recognition.start();
+
         recognition.onresult = function(event) {
           const transcript = event.results[0][0].transcript;
           document.getElementById("input").value = transcript;
+
+          // Ẩn mic khi nhận diện xong
+          micIndicator.style.display = "none";
         };
+
         recognition.onerror = function(event) {
-          console.error("Error occurred in speech recognition: " + event.error);
+          console.error("Lỗi nhận diện giọng nói: " + event.error);
+          alert("⚠️ Không thể nhận diện giọng nói, vui lòng thử lại.");
+          micIndicator.style.display = "none"; // Ẩn mic khi có lỗi
         };
       }
     } else {
       function startDictation() {
-        alert("⚠️ Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.Vui lòng chuyển sang trình duyệt chrome hoặc edge");
+        alert("⚠️ Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.");
       }
     }
 
@@ -287,6 +312,7 @@
         giaiMa();
       }
     }
+
   </script>
 </body>
 </html>
