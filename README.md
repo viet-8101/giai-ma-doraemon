@@ -42,7 +42,7 @@ Xem bản demo trực tiếp tại:
 ```bash
 git clone https://github.com/viet-8101/giai-ma-doraemon.git
 cd giai-ma-doraemon
-
+mở file index.html bằng trình duyệt yêu thích (khuyến khích dùng chrome hoặc edge)-
 
 By Nguyễn Đắc Hoàng Việt
 
