@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Giải mã Doraemon</title>
   <style>
     body {
@@ -15,22 +15,19 @@
       align-items: center;
       height: 100vh;
     }
-
     .overlay {
       background: rgba(0, 0, 0, 0.1);
       max-width: 800px;
-      margin: 10vh auto;
       padding: 35px;
       border-radius: 20px;
       text-align: center;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+      position: relative;
     }
-
     h1 {
       font-size: 2.4em;
       margin-bottom: 20px;
     }
-
     textarea {
       width: 70%;
       height: 70px;
@@ -41,100 +38,244 @@
       font-size: 1em;
       resize: none;
     }
-
     .button-group {
       display: flex;
       justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
     }
-
-  button {
-    padding: 10px 18px;
-    font-size: 1em;
-    background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
-    background-size: 1000% 1000%;
-    animation: gradientFlow 10s ease infinite;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    white-space: nowrap;
-    min-width: 180px;
-    transition: transform 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
-  }
-
-  button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px 8px rgba(30, 144, 255, 0.8);
-  }
-
-  @keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  
-
+    button {
+      padding: 10px 18px;
+      font-size: 1em;
+      background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+      background-size: 1000% 1000%;
+      animation: gradientFlow 10s ease infinite;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      min-width: 180px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    @keyframes gradientFlow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
     #output {
       margin-top: 20px;
       font-size: 1.2em;
       white-space: pre-wrap;
       min-height: 40px;
     }
-
     .mic-indicator {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background-color: transparent;
-      border: 3px solid #00bfff;
-      margin-top: 20px;
-      margin-left: auto;
-      margin-right: auto;
+      width: 50px;
+      height: 50px;
+      margin: 20px auto;
       display: none;
-      animation: pulse 1.5s infinite;
     }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.7; }
+    .mic-indicator svg {
+      width: 100%;
+      height: 100%;
+      fill: #00bfff;
+      animation: micWave 1s infinite ease-in-out;
     }
-
-    @media (max-width: 600px) {
-      textarea {
-        width: 95%;
-        height: 80px;
+    @keyframes micWave {
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
       }
-
-      .overlay {
-        padding: 20px;
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
       }
+    }
+    #micText {
+      margin-top: 10px;
+      font-style: italic;
+      display: none;
+    }
+    .settings-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      font-size: 1.3em;
+      color: white;
+      user-select: none;
+      z-index: 110;
+    }
+    .settings-panel {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 12px 18px;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      color: white;
+      z-index: 101;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+      min-width: 190px;
+    }
+    .settings-panel label {
+      cursor: pointer;
+      user-select: none;
+    }
+    .settings-panel button {
+      background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+      background-size: 1000% 1000%;
+      animation: gradientFlow 10s ease infinite;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 1em;
+      box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    .settings-panel button:hover {
+      transform: scale(1.05);
+    }
+    /* Modal chung */
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,  0,  0,  0.9);
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      color: white;
+      z-index: 999;
+      box-sizing: border-box;
+    }
+    .modal .history-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal .close-btn {
+      align-self: flex-end;
+      background: crimson;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+    .modal .history-item button {
+      background: #444;
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    /* Modal xác nhận xóa */
+    #modalXoaLichSu p {
+      font-size: 1.1em;
+      text-align: center;
+      margin: 0;
+    }
+    #modalXoaLichSu button {
+      min-width: 100px;
+      font-weight: bold;
+    }
+    /* Toast nhỏ hiện tạm */
+    #toastMessage {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 191, 255, 0.9);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-size: 1.1em;
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 1100;
+    }
+    #toastMessage.show {
+      opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
   <div class="overlay">
     <h1>🔍 Giải mã Doraemon</h1>
-    <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea><br>
+    <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
     <div class="button-group">
       <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
       <button onclick="saoChep()">📋 Copy kết quả</button>
       <button onclick="startDictation()">🎤 Nhận diện giọng nói</button>
     </div>
     <div id="output"></div>
-    <div id="stats"></div>
-    <div id="micIndicator" class="mic-indicator"></div>
+    <div class="mic-indicator" id="micIndicator">
+      <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z"/></svg>
+    </div>
+    <div id="micText">🎙️ Đang lắng nghe...</div>
+
+    <div class="settings-toggle" onclick="toggleSettings()">⚙️</div>
+    <div class="settings-panel" id="settingsPanel">
+      <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
+      <button onclick="openLichSu()">📜 Xem lịch sử</button>
+      <button onclick="xoaToanBoLichSu()">🗑️ Xóa lịch sử</button>
+    </div>
   </div>
 
-  <audio id="myAudio" muted>
-    <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
-  </audio>
+  <!-- Modal lịch sử -->
+  <div class="modal" id="modalLichSu">
+    <button class="close-btn" onclick="closeLichSu()">Đóng</button>
+    <div id="lichSuNoiDung"></div>
+  </div>
 
+  <!-- Modal xác nhận xóa lịch sử -->
+  <div class="modal" id="modalXoaLichSu">
+    <p>Bạn có chắc muốn xóa toàn bộ lịch sử?</p>
+    <div style="display:flex; justify-content:center; gap: 15px; margin-top: 15px;">
+      <button onclick="huyXoaLichSu()" style="background:#777;">Bỏ qua</button>
+      <button onclick="xacNhanXoaLichSu()" style="background:crimson;">Tiếp tục</button>
+    </div>
+  </div>
+
+  <!-- Toast nhỏ -->
+  <div id="toastMessage"></div>
+
+  <!-- Âm thanh -->
+  <audio id="myAudio" loop>
+    <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg" />
+  </audio>
   <audio id="typeSound" preload="auto">
-    <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg" />
   </audio>
 
   <script>
@@ -243,111 +384,217 @@
       "viên đạn của đại bác không khí": "Moto"
     };
 
-    function escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
+    let lichSu = JSON.parse(localStorage.getItem('lichSuDoraemon')) || [];
+    const audio = document.getElementById('myAudio');
+    const typeSound = document.getElementById('typeSound');
+    const output = document.getElementById('output');
+    const micIndicator = document.getElementById('micIndicator');
+    const micText = document.getElementById('micText');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const toggleSoundCheckbox = document.getElementById('toggleSound');
+    let audioStarted = false;
 
-    async function giaiMa() {
-      const inputElement = document.getElementById("input");
-      let text = inputElement.value.toLowerCase().trim();
-      const originalText = text;
-
-      if (text === "") {
-        goChuTungKyTu("⚠️ Bạn chưa nhập gì cả!", "output", 30);
-        return;
-      }
-
-      goChuTungKyTu("➡️ Đang xử lý...", "output", 60);
-
-      const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
-      for (const [khoa, giaTri] of entries) {
-        const re = new RegExp(escapeRegExp(khoa), "gi");
-        text = text.replace(re, giaTri);
-      }
-
-      if (text === originalText) {
-        goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp trong từ điển Doraemon.", "output", 30);
-        return;
-      }
-
-      goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
-    }
-
-    function goChuTungKyTu(text, elementId, speed) {
-  const outputElement = document.getElementById(elementId);
-  let index = 0;
-
-  // Nếu đã có timer trước đó thì clear
-  if (outputElement.typingTimer) clearTimeout(outputElement.typingTimer);
-
-  outputElement.textContent = "";
-
-  function type() {
-    if (index < text.length) {
-      outputElement.textContent += text.charAt(index);
-      index++;
-      outputElement.typingTimer = setTimeout(type, speed);
-    }
-  }
-
-  type();
-}
-
-
-    function saoChep() {
-      const outputElement = document.getElementById("output");
-      if (!outputElement.textContent.trim()) {
-        alert("⚠️ Chưa có nội dung để sao chép!");
-        return;
-      }
-      const range = document.createRange();
-      range.selectNode(outputElement);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-      document.execCommand('copy');
-      alert("📋 Đã sao chép kết quả!");
-    }
-
-    let recognition;
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'vi-VN';
-
-      function startDictation() {
-        const micIndicator = document.getElementById("micIndicator");
-        micIndicator.style.display = "block";
-        recognition.start();
-
-        recognition.onresult = function(event) {
-          const transcript = event.results[0][0].transcript;
-          document.getElementById("input").value = transcript;
-          micIndicator.style.display = "none";
-        };
-
-        recognition.onerror = function(event) {
-          console.error("Lỗi nhận diện giọng nói: " + event.error);
-          alert("⚠️ Không thể nhận diện giọng nói, vui lòng thử lại.");
-          micIndicator.style.display = "none";
-        };
-      }
-    } else {
-      function startDictation() {
-        alert("⚠️ Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.");
-      }
-    }
-
-    function chanEnter(event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
+    function chanEnter(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
         giaiMa();
       }
     }
 
-    document.body.addEventListener("click", () => {
-      const audio = document.getElementById("myAudio");
-      audio.muted = false;
-      audio.play().catch(() => {});
-    }, { once: true });
+    // Bật nhạc nền khi user tương tác lần đầu nếu không tắt âm
+    function startAudioOnFirstInteraction() {
+      if (!audioStarted && !toggleSoundCheckbox.checked) {
+        audio.play().catch(() => {});
+        audioStarted = true;
+      }
+    }
+    ['click', 'keydown', 'touchstart'].forEach(eventType => {
+      window.addEventListener(eventType, startAudioOnFirstInteraction, { once: true });
+    });
+function giaiMa() {
+  let inputVal = document.getElementById('input').value.trim().toLowerCase();
+  if (!inputVal) {
+    hienThiModal('Vui lòng nhập mã troll!');
+    return;
+  }
+
+  let ketQua = tuDienDoraemon[inputVal];
+  if (!ketQua) {
+    ketQua = '❓ Không tìm thấy từ khóa phù hợp trong từ điển Doraemon.';
+    // Khi không tìm thấy, không thêm dấu ngoặc kép
+    output.textContent = '';  
+    let i = 0;
+    function typingEffect() {
+      if (i < ketQua.length) {
+        output.textContent += ketQua.charAt(i);
+        if (!toggleSoundCheckbox.checked && ketQua.charAt(i) !== ' ') {
+          typeSound.currentTime = 0;
+          typeSound.play();
+        }
+        i++;
+        setTimeout(typingEffect, 30);
+      }
+    }
+    typingEffect();
+    return; // kết thúc hàm vì không cần lưu lịch sử khi không tìm thấy
+  }
+
+  output.textContent = '';  // reset trước
+
+  // Nếu tìm thấy thì hiển thị dạng ➡️ Kết quả: "NỘI DUNG"
+  const prefix = '➡️ Kết quả: "';
+  const suffix = '"';
+
+  let fullText = prefix + ketQua + suffix;
+  let i = 0;
+
+  function typingEffect() {
+    if (i < fullText.length) {
+      output.textContent += fullText.charAt(i);
+      if (!toggleSoundCheckbox.checked && fullText.charAt(i) !== ' ' && fullText.charAt(i) !== '"') {
+        typeSound.currentTime = 0;
+        typeSound.play();
+      }
+      i++;
+      setTimeout(typingEffect, 50);
+    } else {
+      lichSu.unshift({ query: inputVal, result: ketQua });
+      if (lichSu.length > 50) lichSu.pop();
+      localStorage.setItem('lichSuDoraemon', JSON.stringify(lichSu));
+    }
+  }
+  typingEffect();
+}
+
+
+
+    // Copy kết quả
+    function saoChep() {
+      if (!output.textContent) {
+        hienThiModal('Chưa có kết quả để sao chép!');
+        return;
+      }
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        hienThiModal('✅ Đã sao chép kết quả!');
+      }).catch(() => {
+        hienThiModal('❌ Không thể sao chép!');
+      });
+    }
+
+    // Modal nhỏ hiện nội dung (thay alert)
+    function hienThiModal(noiDung) {
+      output.textContent = noiDung;
+      // Hoặc bạn có thể làm thêm modal toast nhỏ (mình có thêm dưới)
+      showToast(noiDung);
+    }
+
+    // Toast nhỏ hiện tạm
+    function showToast(message) {
+      const toast = document.getElementById('toastMessage');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toast.timeout);
+      toast.timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // Mở tắt settings
+    function toggleSettings() {
+      if (settingsPanel.style.display === 'flex') {
+        settingsPanel.style.display = 'none';
+      } else {
+        settingsPanel.style.display = 'flex';
+      }
+    }
+
+    // Bật tắt âm thanh
+    function toggleAudio() {
+      if (toggleSoundCheckbox.checked) {
+        audio.pause();
+      } else {
+        audio.play().catch(() => {});
+      }
+    }
+
+    // Lịch sử
+    function openLichSu() {
+      const modal = document.getElementById('modalLichSu');
+      const lichSuNoiDung = document.getElementById('lichSuNoiDung');
+      lichSuNoiDung.innerHTML = '';
+      if (lichSu.length === 0) {
+        lichSuNoiDung.textContent = 'Chưa có lịch sử nào.';
+      } else {
+        lichSu.forEach((item, index) => {
+          const div = document.createElement('div');
+          div.className = 'history-item';
+          div.innerHTML = `
+            <span><b>${index + 1}.</b> Mã: ${item.query} → Kết quả: ${item.result}</span>
+            <button onclick="xoaMotLichSu(${index})" title="Xóa dòng này">❌</button>
+          `;
+          lichSuNoiDung.appendChild(div);
+        });
+      }
+      modal.style.display = 'flex';
+    }
+    function closeLichSu() {
+      document.getElementById('modalLichSu').style.display = 'none';
+    }
+    function xoaMotLichSu(index) {
+      lichSu.splice(index, 1);
+      localStorage.setItem('lichSuDoraemon', JSON.stringify(lichSu));
+      openLichSu();
+    }
+
+    // Xóa toàn bộ lịch sử - mở modal xác nhận
+    function xoaToanBoLichSu() {
+      document.getElementById('modalXoaLichSu').style.display = 'flex';
+    }
+    // Hủy xóa
+    function huyXoaLichSu() {
+      document.getElementById('modalXoaLichSu').style.display = 'none';
+    }
+    // Xác nhận xóa lịch sử thật sự
+    function xacNhanXoaLichSu() {
+      lichSu = [];
+      localStorage.removeItem('lichSuDoraemon');
+      openLichSu();
+      document.getElementById('modalXoaLichSu').style.display = 'none';
+      showToast("🗑️ Đã xóa toàn bộ lịch sử!");
+    }
+
+    // Giọng nói
+    function startDictation() {
+      if (!('webkitSpeechRecognition' in window)) {
+        hienThiModal('⚠️ Trình duyệt không hỗ trợ nhận diện giọng nói!');
+        return;
+      }
+      let recognition = new webkitSpeechRecognition();
+      recognition.lang = 'vi-VN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        micIndicator.style.display = 'block';
+        micText.style.display = 'block';
+      };
+      recognition.onerror = (event) => {
+        micIndicator.style.display = 'none';
+        micText.style.display = 'none';
+        hienThiModal('⚠️ Lỗi nhận diện: ' + event.error);
+      };
+      recognition.onend = () => {
+        micIndicator.style.display = 'none';
+        micText.style.display = 'none';
+      };
+      recognition.onresult = (event) => {
+        let text = event.results[0][0].transcript.toLowerCase();
+        document.getElementById('input').value = text;
+        giaiMa();
+      };
+
+      recognition.start();
+    }
   </script>
 </body>
 </html>
