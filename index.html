@@ -1,632 +1,678 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta charset="UTF-8" />
-  <title>Giải mã Doraemon</title>
-  <style>
-    body {
-@@ -15,22 +15,19 @@
-      align-items: center;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <title>Giải mã Doraemon</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('https://image.tmdb.org/t/p/original/Z3mSxuPRNiFYxf1LBoGz3YrJzC.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .overlay {
+            background: rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        h1 {
+            font-size: 2.4em;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 70%;
+            height: 70px;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1em;
+            resize: none;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 18px;
+            font-size: 1em;
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%;
+            animation: gradientFlow 10s ease infinite;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 180px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 1.2em;
+            white-space: pre-wrap;
+            min-height: 40px;
+        }
+        .mic-indicator {
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            display: none;
+        }
+        .mic-indicator svg {
+            width: 100%;
+            height: 100%;
+            fill: #00bfff;
+            animation: micWave 1s infinite ease-in-out;
+        }
+        @keyframes micWave {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+        #micText {
+            margin-top: 10px;
+            font-style: italic;
+            display: none;
+        }
+        .settings-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 1.3em;
+            transition: transform 0.5s ease-out; /* Đảm bảo transition mượt mà cho transform */
+        }
+        .settings-panel {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 12px 18px;
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            color: white;
+            z-index: 101;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            color: white;
+            z-index: 999;
+        }
+        .modal .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal .close-btn {
+            align-self: flex-end;
+            background: crimson;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+        }
+        .modal .history-item button {
+            background: #444;
+            border: none;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #messageBox {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.95em;
+            min-height: 25px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #messageBox.show {
+            opacity: 1;
+        }
 
-    .overlay {
-      background: rgba(0, 0, 0, 0.1);
-      max-width: 800px;
-      margin: 10vh auto;
-      padding: 35px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-      position: relative;
-    }
+        /* Styles for the custom confirmation modal */
+        #confirmModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 20px;
+            color: white;
+            z-index: 1000; /* Higher than other modals */
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+            max-width: 350px;
+            text-align: center;
+        }
+        #confirmModal p {
+            font-size: 1.1em;
+            margin: 0;
+        }
+        #confirmModal .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        #confirmModal .confirm-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 100px;
+        }
+        #confirmModal .confirm-buttons button.cancel-btn {
+            background: #6c757d; /* Gray */
+            color: white;
+        }
+        #confirmModal .confirm-buttons button.cancel-btn:hover {
+            background: #5a6268;
+        }
+        #confirmModal .confirm-buttons button.continue-btn {
+            background: #dc3545; /* Red */
+            color: white;
+        }
+        #confirmModal .confirm-buttons button.continue-btn:hover {
+            background: #c82333;
+        }
 
-    h1 {
-      font-size: 2.4em;
-      margin-bottom: 20px;
-    }
+        /* NEW CSS for settings toggle rotation */
+        .settings-toggle.rotate {
+            animation: rotate 0.5s ease-out forwards;
+        }
 
-    textarea {
-      width: 70%;
-      height: 70px;
-@@ -41,100 +38,244 @@
-      font-size: 1em;
-      resize: none;
-    }
+        .settings-toggle.rotate-back {
+            animation: rotate-back 0.5s ease-out forwards;
+        }
 
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(180deg); /* Xoay 180 độ (nửa vòng) */
+            }
+        }
 
-  button {
-    padding: 10px 18px;
-    font-size: 1em;
-    background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
-    background-size: 1000% 1000%;
-    animation: gradientFlow 10s ease infinite;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    white-space: nowrap;
-    min-width: 180px;
-    transition: transform 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
-  }
-
-  button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px 8px rgba(30, 144, 255, 0.8);
-  }
-
-  @keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  
-
-    button {
-      padding: 10px 18px;
-      font-size: 1em;
-      background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
-      background-size: 1000% 1000%;
-      animation: gradientFlow 10s ease infinite;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      white-space: nowrap;
-      min-width: 180px;
-      transition: transform 0.3s ease;
-      box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
-    }
-    button:hover {
-      transform: scale(1.05);
-    }
-    @keyframes gradientFlow {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-    #output {
-      margin-top: 20px;
-      font-size: 1.2em;
-      white-space: pre-wrap;
-      min-height: 40px;
-    }
-
-    .mic-indicator {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background-color: transparent;
-      border: 3px solid #00bfff;
-      margin-top: 20px;
-      margin-left: auto;
-      margin-right: auto;
-      width: 50px;
-      height: 50px;
-      margin: 20px auto;
-      display: none;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.7; }
-    .mic-indicator svg {
-      width: 100%;
-      height: 100%;
-      fill: #00bfff;
-      animation: micWave 1s infinite ease-in-out;
-    }
-
-    @media (max-width: 600px) {
-      textarea {
-        width: 95%;
-        height: 80px;
-    @keyframes micWave {
-      0%,
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-
-      .overlay {
-        padding: 20px;
-      50% {
-        transform: scale(1.2);
-        opacity: 0.7;
-      }
-    }
-    #micText {
-      margin-top: 10px;
-      font-style: italic;
-      display: none;
-    }
-    .settings-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      cursor: pointer;
-      font-size: 1.3em;
-      color: white;
-      user-select: none;
-      z-index: 110;
-    }
-    .settings-panel {
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.85);
-      padding: 12px 18px;
-      border-radius: 10px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      color: white;
-      z-index: 101;
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-      min-width: 190px;
-    }
-    .settings-panel label {
-      cursor: pointer;
-      user-select: none;
-    }
-    .settings-panel button {
-      background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
-      background-size: 1000% 1000%;
-      animation: gradientFlow 10s ease infinite;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 1em;
-      box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
-      transition: transform 0.3s ease;
-      white-space: nowrap;
-    }
-    .settings-panel button:hover {
-      transform: scale(1.05);
-    }
-    /* Modal chung */
-    .modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,  0,  0,  0.9);
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      color: white;
-      z-index: 999;
-      box-sizing: border-box;
-    }
-    .modal .history-item {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 10px;
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .modal .close-btn {
-      align-self: flex-end;
-      background: crimson;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-    }
-    .modal .history-item button {
-      background: #444;
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    /* Modal xác nhận xóa */
-    #modalXoaLichSu p {
-      font-size: 1.1em;
-      text-align: center;
-      margin: 0;
-    }
-    #modalXoaLichSu button {
-      min-width: 100px;
-      font-weight: bold;
-    }
-    /* Toast nhỏ hiện tạm */
-    #toastMessage {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 191, 255, 0.9);
-      color: white;
-      padding: 12px 25px;
-      border-radius: 30px;
-      font-size: 1.1em;
-      box-shadow: 0 0 10px rgba(0, 191, 255, 0.7);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-      z-index: 1100;
-    }
-    #toastMessage.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  </style>
+        @keyframes rotate-back {
+            from {
+                transform: rotate(180deg); /* Bắt đầu từ 180 độ nếu đang ở trạng thái mở */
+            }
+            to {
+                transform: rotate(0deg); /* Quay về 0 độ */
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="overlay">
-    <h1>🔍 Giải mã Doraemon</h1>
-    <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea><br>
-    <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
-    <div class="button-group">
-      <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
-      <button onclick="saoChep()">📋 Copy kết quả</button>
-      <button onclick="startDictation()">🎤 Nhận diện giọng nói</button>
+    <div class="overlay">
+        <h1>🔍 Giải mã Doraemon</h1>
+        <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
+        <div class="button-group">
+            <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
+            <button onclick="saoChep()">📋 Copy kết quả</button>
+            <button onclick="startDictation()">🎤 Nhận diện giọng nói</button>
+        </div>
+        <div id="output"></div>
+        <div id="messageBox"></div>
+
+        <div class="mic-indicator" id="micIndicator">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z" />
+            </svg>
+        </div>
+        <div id="micText">🎙️ Đang lắng nghe...</div>
+        <div class="settings-toggle" onclick="toggleSettings()">⚙️</div>
+        <div class="settings-panel" id="settingsPanel">
+            <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
+            <button onclick="openLichSu()">📜 Xem lịch sử</button>
+            <button onclick="showConfirmDeleteAll()">🗑️ Xóa lịch sử</button>
+        </div>
     </div>
-    <div id="output"></div>
-    <div id="stats"></div>
-    <div id="micIndicator" class="mic-indicator"></div>
-    <div class="mic-indicator" id="micIndicator">
-      <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z"/></svg>
+
+    <div class="modal" id="modalLichSu">
+        <button class="close-btn" onclick="closeLichSu()">Đóng</button>
+        <div id="lichSuNoiDung"></div>
     </div>
-    <div id="micText">🎙️ Đang lắng nghe...</div>
 
-    <div class="settings-toggle" onclick="toggleSettings()">⚙️</div>
-    <div class="settings-panel" id="settingsPanel">
-      <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
-      <button onclick="openLichSu()">📜 Xem lịch sử</button>
-      <button onclick="xoaToanBoLichSu()">🗑️ Xóa lịch sử</button>
+    <div class="modal" id="confirmModal">
+        <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
+        <div class="confirm-buttons">
+            <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
+            <button class="continue-btn" onclick="proceedConfirmation()">Tiếp tục</button>
+        </div>
     </div>
-  </div>
 
-  <audio id="myAudio" muted>
-    <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
-  </audio>
-  <!-- Modal lịch sử -->
-  <div class="modal" id="modalLichSu">
-    <button class="close-btn" onclick="closeLichSu()">Đóng</button>
-    <div id="lichSuNoiDung"></div>
-  </div>
+    <audio id="myAudio" loop muted>
+        <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
+    </audio>
+    <audio id="typeSound" preload="auto">
+        <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
+    </audio>
 
-  <!-- Modal xác nhận xóa lịch sử -->
-  <div class="modal" id="modalXoaLichSu">
-    <p>Bạn có chắc muốn xóa toàn bộ lịch sử?</p>
-    <div style="display:flex; justify-content:center; gap: 15px; margin-top: 15px;">
-      <button onclick="huyXoaLichSu()" style="background:#777;">Bỏ qua</button>
-      <button onclick="xacNhanXoaLichSu()" style="background:crimson;">Tiếp tục</button>
-    </div>
-  </div>
+    <script>
+        const tuDienDoraemon = {
+            "cái loa biết đi": "Jaian",
+            "thánh chảnh": "Suneo",
+            "cục nợ quốc dân": "Nobita",
+            "trùm chém gió": "Suneo",
+            "boss ăn vặt": "Doraemon",
+            "siêu nhân gục ngã": "Nobita",
+            "máy phát kẹo": "Doraemon",
+            "ổ bom di động": "Jaian",
+            "thánh phá đồ": "Nobita",
+            "chuyên gia gây họa": "Nobita",
+            "nhà tài trợ nước mắt": "mẹ Nobita",
+            "lò luyện điểm 0": "lớp học của Nobita",
+            "trùm thất tình": "Nobita",
+            "đứa trẻ cuối cùng của mushika": "Micca",
+            "máy ATM biết đi": "Doraemon",
+            "trí tuệ nhân tạo có tâm": "Doraemon",
+            "con tinh tinh": "Jaian",
+            "con khỉ đột": "Jaian", "khỉ đột": "Jaian",
+            "tinh tinh": "Jaian",
+            "con cáo": "Suneo", "cáo": "Suneo",
+            "bạch tuộc": "Noise",
+            "quần dài": "2 con cá trắm đen đc làm ở Pháp rất là mắc tiền (của Suneo)",
+            "mụ phù thủy": "mẹ của Nobita",
+            "tên ngốc hậu đậu": "Nobita",
+            "tên robinson phiền phức": "Nobita",
+            "thiên tài ngủ": "Nobita",
+            "diễn viên suất sắc": "Nobita",
+            "bậc thầy năn nỉ": "Nobita",
+            "thiên tài thắt dây": "Nobita",
+            "tay vua súng": "Nobita",
+            "xe buýt": "Nobita", "xe bus":
+            "Nobita", "mèo máy": "Doraemon",
+            "mỏ nhọn": "Suneo",
+            "lồi rốn": "Jaian",
+            "yên ắng": "nhà Shizuka",
+            "hình tròn": "bánh rán dorayaki",
+            "kẻ tham lam": "Jaian",
+            "hai người nổi tiếng ham ăn": "Jaian và Suneo",
+            "điểm đen": "điểm 0",
+            "bàn tay vàng trong làng ngáo ngơ": "Nobita",
+            "cục tạ quốc dân": "Nobita",
+            "đại ca sân trường": "Jaian",
+            "người mẫu sừng sỏ": "Suneo",
+            "cô gái tắm mỗi tập": "Shizuka",
+            "vua bánh rán": "Doraemon",
+            "thánh cầu cứu": "Nobita",
+            "người đến từ tương lai": "Doraemon",
+            "cây ATM sống": "Doraemon",
+            "lồng tiếng động đất": "Jaian",
+            "diễn viên chính của bi kịch": "Nobita",
+            "fan cuồng công nghệ": "Suneo",
+            "kẻ lười biếng nhỏ bé": "Nobita",
+            "chồn xanh nhỏ đáng yêu": "Doraemon",
+            "bình yên trước cơn bão": "nhà Shizuka",
+            "cậu bé sáo lạc điệu": "Nobita",
+            "loa phóng thanh biết đi": "Jaian",
+            "trùm phá nốt": "Nobita",
+            "người cứu âm nhạc địa cầu": "Doraemon",
+            "quái vật hút âm": "bào tử noise",
+            "người bạn đến từ hành tinh âm nhạc": "Micca",
+            "thánh phá bản nhạc": "Nobita",
+            "cây sáo truyền thuyết": "cây sáo dọc của mushika",
+            "bản nhạc giải cứu trái đất": "bản giao hưởng địa cầu",
+            "phi công nghiệp dư": "Nobita",
+            "vùng đất trong mơ": "Utopia",
+            "cư dân đám mây": "người sống ở Utopia",
+            "nhà trên trời view đẹp": "Utopia",
+            "người bạn Utopia": "Sonya",
+            "trùm điều khiển thời tiết": "quản lý Utopia",
+            "mặt trăng bay lạc": "Utopia",
+            "chuyến phiêu lưu trên trời": "hành trình của nhóm Nobita",
+            "lâu đài mây thần bí": "trung tâm điều hành Utopia",
+            "trùm chấn động bầu trời": "Suneo lái máy bay",
+            "cậu bé bay không bằng lái": "Nobita",
+            "thánh nhảy moonwalk ngoài vũ trụ": "Nobita",
+            "chuyên gia té không trọng lực": "Nobita",
+            "trạm vũ trụ di động": "tàu của Doraemon",
+            "người bạn tai dài trên mặt trăng": "Luca",
+            "cư dân mặt trăng bí ẩn": "tộc người Espal",
+            "đội thám hiểm mặt trăng": "nhóm Nobita",
+            "mặt trăng giả tưởng": "thế giới do bảo bối tạo ra",
+            "cuộc chiến không trọng lực": "trận đấu trên mặt trăng",
+            "lũ bạn ngoài hành tinh đáng yêu": "Luca và đồng bọn",
+            "bầu trời đêm đầy ảo mộng": "khung cảnh mặt trăng",
+            "cậu bé lười biếng nhất thành phố": "Nobita",
+            "cậu bé xấu tính nhất thành phố": "Jaian",
+            "nhạc sĩ vũ trụ": "Trupet",
+            "nhà soạn nhạc vĩ đại": "Trupet",
+            "người sáng tác giao hưởng địa cầu": "Trupet",
+            "chủ nhân bản giao hưởng địa cầu": "Trupet",
+            "nhà sáng tạo âm nhạc vũ trụ": "Trupet",
+            "nhạc sĩ bảo vệ hòa bình âm nhạc": "Trupet",
+            "rùa siêu tốc vũ trụ": "Moto",
+            "rùa vũ trụ có mai thép": "Moto",
+            "rùa siêu bền": "Moto",
+            "tốc độ vũ trụ từ mai rùa": "Moto",
+            "vũ trụ đua rùa": "Moto",
+            "con rùa nhanh nhất trong không gian": "Moto",
+            "viên đạn của đại bác không khí": "Moto"
+        };
 
-  <!-- Toast nhỏ -->
-  <div id="toastMessage"></div>
+        let lastDecodedResult = "";
+        let audioPlayedFirstTime = false;
+        let pendingDeleteIndex = -1; // Biến để lưu trữ chỉ số của mục sẽ xóa
+        let isDeletingAll = false; // Biến cờ để biết đang xóa toàn bộ hay xóa từng mục
 
-  <!-- Âm thanh -->
-  <audio id="myAudio" loop>
-    <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg" />
-  </audio>
-  <audio id="typeSound" preload="auto">
-    <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
-    <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg" />
-  </audio>
+        function showMessage(msg, type = 'info') {
+            const msgBox = document.getElementById('messageBox');
+            msgBox.textContent = msg;
+            msgBox.className = 'show';
+            if (type === 'error') {
+                msgBox.style.backgroundColor = 'rgba(220, 20, 60, 0.8)';
+            } else if (type === 'success') {
+                msgBox.style.backgroundColor = 'rgba(60, 179, 113, 0.8)';
+            } else {
+                msgBox.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            }
 
-  <script>
-@@ -243,111 +384,217 @@ <h1>🔍 Giải mã Doraemon</h1>
-      "viên đạn của đại bác không khí": "Moto"
-    };
-
-    function escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    async function giaiMa() {
-      const inputElement = document.getElementById("input");
-      let text = inputElement.value.toLowerCase().trim();
-      const originalText = text;
-
-      if (text === "") {
-        goChuTungKyTu("⚠️ Bạn chưa nhập gì cả!", "output", 30);
-        return;
-    let lichSu = JSON.parse(localStorage.getItem('lichSuDoraemon')) || [];
-    const audio = document.getElementById('myAudio');
-    const typeSound = document.getElementById('typeSound');
-    const output = document.getElementById('output');
-    const micIndicator = document.getElementById('micIndicator');
-    const micText = document.getElementById('micText');
-    const settingsPanel = document.getElementById('settingsPanel');
-    const toggleSoundCheckbox = document.getElementById('toggleSound');
-    let audioStarted = false;
-
-    function chanEnter(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        giaiMa();
-      }
-    }
-
-      goChuTungKyTu("➡️ Đang xử lý...", "output", 60);
-
-      const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
-      for (const [khoa, giaTri] of entries) {
-        const re = new RegExp(escapeRegExp(khoa), "gi");
-        text = text.replace(re, giaTri);
-    // Bật nhạc nền khi user tương tác lần đầu nếu không tắt âm
-    function startAudioOnFirstInteraction() {
-      if (!audioStarted && !toggleSoundCheckbox.checked) {
-        audio.play().catch(() => {});
-        audioStarted = true;
-      }
-    }
-    ['click', 'keydown', 'touchstart'].forEach(eventType => {
-      window.addEventListener(eventType, startAudioOnFirstInteraction, { once: true });
-    });
-function giaiMa() {
-  let inputVal = document.getElementById('input').value.trim().toLowerCase();
-  if (!inputVal) {
-    hienThiModal('Vui lòng nhập mã troll!');
-    return;
-  }
-
-      if (text === originalText) {
-        goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp trong từ điển Doraemon.", "output", 30);
-        return;
-  let ketQua = tuDienDoraemon[inputVal];
-  if (!ketQua) {
-    ketQua = '❓ Không tìm thấy từ khóa phù hợp trong từ điển Doraemon.';
-    // Khi không tìm thấy, không thêm dấu ngoặc kép
-    output.textContent = '';  
-    let i = 0;
-    function typingEffect() {
-      if (i < ketQua.length) {
-        output.textContent += ketQua.charAt(i);
-        if (!toggleSoundCheckbox.checked && ketQua.charAt(i) !== ' ') {
-          typeSound.currentTime = 0;
-          typeSound.play();
+            if (msgBox.timer) clearTimeout(msgBox.timer);
+            msgBox.timer = setTimeout(() => {
+                msgBox.className = '';
+                msgBox.textContent = '';
+            }, 3000);
         }
-        i++;
-        setTimeout(typingEffect, 30);
-      }
 
-      goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
-    }
-    typingEffect();
-    return; // kết thúc hàm vì không cần lưu lịch sử khi không tìm thấy
-  }
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }
 
-    function goChuTungKyTu(text, elementId, speed) {
-  const outputElement = document.getElementById(elementId);
-  let index = 0;
-  output.textContent = '';  // reset trước
+        function giaiMa() {
+            const input = document.getElementById("input").value.trim().toLowerCase();
+            if (!input) {
+                showMessage("⚠️ Bạn chưa nhập gì cả!", "error");
+                lastDecodedResult = "";
+                return;
+            }
 
-  // Nếu đã có timer trước đó thì clear
-  if (outputElement.typingTimer) clearTimeout(outputElement.typingTimer);
-  // Nếu tìm thấy thì hiển thị dạng ➡️ Kết quả: "NỘI DUNG"
-  const prefix = '➡️ Kết quả: "';
-  const suffix = '"';
+            let text = input;
+            const original = text;
+            goChuTungKyTu("➡️ Đang xử lý...", "output", 30);
 
-  outputElement.textContent = "";
-  let fullText = prefix + ketQua + suffix;
-  let i = 0;
+            const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
+            for (const [k, v] of entries) {
+                const re = new RegExp(escapeRegExp(k), "gi");
+                text = text.replace(re, v);
+            }
 
-  function type() {
-    if (index < text.length) {
-      outputElement.textContent += text.charAt(index);
-      index++;
-      outputElement.typingTimer = setTimeout(type, speed);
-  function typingEffect() {
-    if (i < fullText.length) {
-      output.textContent += fullText.charAt(i);
-      if (!toggleSoundCheckbox.checked && fullText.charAt(i) !== ' ' && fullText.charAt(i) !== '"') {
-        typeSound.currentTime = 0;
-        typeSound.play();
-      }
-      i++;
-      setTimeout(typingEffect, 50);
-    } else {
-      lichSu.unshift({ query: inputVal, result: ketQua });
-      if (lichSu.length > 50) lichSu.pop();
-      localStorage.setItem('lichSuDoraemon', JSON.stringify(lichSu));
-    }
-  }
+            if (text === original) {
+                goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp.", "output", 30);
+                lastDecodedResult = "";
+            } else {
+                goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
+                lastDecodedResult = text;
+                const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                lichSu.unshift({
+                    input: original,
+                    output: text
+                });
+                localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu.slice(0, 20)));
+            }
+        }
 
-  type();
-  typingEffect();
-}
+        function goChuTungKyTu(text, elementId, speed) {
+            const el = document.getElementById(elementId);
+            const sound = document.getElementById("typeSound");
 
+            el.textContent = "";
+            let index = 0;
 
+            if (el.typingTimer) clearTimeout(el.typingTimer);
 
-    // Copy kết quả
-    function saoChep() {
-      const outputElement = document.getElementById("output");
-      if (!outputElement.textContent.trim()) {
-        alert("⚠️ Chưa có nội dung để sao chép!");
-      if (!output.textContent) {
-        hienThiModal('Chưa có kết quả để sao chép!');
-        return;
-      }
-      const range = document.createRange();
-      range.selectNode(outputElement);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-      document.execCommand('copy');
-      alert("📋 Đã sao chép kết quả!");
-      navigator.clipboard.writeText(output.textContent).then(() => {
-        hienThiModal('✅ Đã sao chép kết quả!');
-      }).catch(() => {
-        hienThiModal('❌ Không thể sao chép!');
-      });
-    }
+            function type() {
+                if (index < text.length) {
+                    el.textContent += text.charAt(index);
+                    if (!sound.muted) {
+                        try {
+                            sound.pause();
+                            sound.currentTime = 0;
+                            sound.play();
+                        } catch (e) {
+                            console.error("Lỗi khi phát âm thanh:", e);
+                        }
+                    }
+                    el.typingTimer = setTimeout(type, speed);
+                    index++;
+                }
+            }
+            type();
+        }
 
-    let recognition;
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'vi-VN';
+        function saoChep() {
+            if (!lastDecodedResult) {
+                showMessage("⚠️ Chưa có kết quả giải mã để sao chép!", "error");
+                return;
+            }
+            navigator.clipboard.writeText(lastDecodedResult).then(() => {
+                showMessage("📋 Đã sao chép kết quả!", "success");
+            }).catch(err => {
+                console.error('Không thể sao chép văn bản: ', err);
+                showMessage('Có lỗi xảy ra khi sao chép. Vui lòng thử lại hoặc sao chép thủ công.', "error");
+            });
+        }
 
-      function startDictation() {
-        const micIndicator = document.getElementById("micIndicator");
-        micIndicator.style.display = "block";
-        recognition.start();
-    // Modal nhỏ hiện nội dung (thay alert)
-    function hienThiModal(noiDung) {
-      output.textContent = noiDung;
-      // Hoặc bạn có thể làm thêm modal toast nhỏ (mình có thêm dưới)
-      showToast(noiDung);
-    }
+        let recognition;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'vi-VN';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
 
-        recognition.onresult = function(event) {
-          const transcript = event.results[0][0].transcript;
-          document.getElementById("input").value = transcript;
-          micIndicator.style.display = "none";
-        };
-    // Toast nhỏ hiện tạm
-    function showToast(message) {
-      const toast = document.getElementById('toastMessage');
-      toast.textContent = message;
-      toast.classList.add('show');
-      clearTimeout(toast.timeout);
-      toast.timeout = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2500);
-    }
+            function startDictation() {
+                showMessage("🎙️ Đang lắng nghe...", "info");
+                document.getElementById("micIndicator").style.display = "block";
+                document.getElementById("micText").style.display = "block";
+                recognition.start();
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById("input").value = transcript;
+                    document.getElementById("micIndicator").style.display = "none";
+                    document.getElementById("micText").style.display = "none";
+                    showMessage("✅ Nhận diện giọng nói hoàn tất.", "success");
+                    giaiMa();
+                };
+                recognition.onerror = function(event) {
+                    console.error("Lỗi nhận diện giọng nói:", event.error);
+                    showMessage("⚠️ Không nhận diện được, thử lại. Lỗi: " + event.error, "error");
+                    document.getElementById("micIndicator").style.display = "none";
+                    document.getElementById("micText").style.display = "none";
+                };
+                recognition.onend = function() {
+                    document.getElementById("micIndicator").style.display = "none";
+                    document.getElementById("micText").style.display = "none";
+                };
+            }
+        } else {
+            function startDictation() {
+                showMessage("⚠️ Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Chỉ hoạt động tốt trên Chrome).", "error");
+            }
+        }
 
-        recognition.onerror = function(event) {
-          console.error("Lỗi nhận diện giọng nói: " + event.error);
-          alert("⚠️ Không thể nhận diện giọng nói, vui lòng thử lại.");
-          micIndicator.style.display = "none";
-        };
-    // Mở tắt settings
-    function toggleSettings() {
-      if (settingsPanel.style.display === 'flex') {
-        settingsPanel.style.display = 'none';
-      } else {
-        settingsPanel.style.display = 'flex';
-      }
-    } else {
-      function startDictation() {
-        alert("⚠️ Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.");
-    }
+        function chanEnter(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                giaiMa();
+            }
+        }
 
-    // Bật tắt âm thanh
-    function toggleAudio() {
-      if (toggleSoundCheckbox.checked) {
-        audio.pause();
-      } else {
-        audio.play().catch(() => {});
-      }
-    }
+        // UPDATED toggleSettings function for rotation
+        function toggleSettings() {
+            const panel = document.getElementById("settingsPanel");
+            const toggleButton = document.querySelector(".settings-toggle"); // Get the settings button
 
-    function chanEnter(event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        giaiMa();
-    // Lịch sử
-    function openLichSu() {
-      const modal = document.getElementById('modalLichSu');
-      const lichSuNoiDung = document.getElementById('lichSuNoiDung');
-      lichSuNoiDung.innerHTML = '';
-      if (lichSu.length === 0) {
-        lichSuNoiDung.textContent = 'Chưa có lịch sử nào.';
-      } else {
-        lichSu.forEach((item, index) => {
-          const div = document.createElement('div');
-          div.className = 'history-item';
-          div.innerHTML = `
-            <span><b>${index + 1}.</b> Mã: ${item.query} → Kết quả: ${item.result}</span>
-            <button onclick="xoaMotLichSu(${index})" title="Xóa dòng này">❌</button>
-          `;
-          lichSuNoiDung.appendChild(div);
+            if (panel.style.display === "flex") {
+                // If the panel is currently open, close it
+                panel.style.display = "none";
+                toggleButton.classList.remove("rotate"); // Remove the 'open' rotation class
+                toggleButton.classList.add("rotate-back"); // Add the 'close' rotation class
+            } else {
+                // If the panel is currently closed, open it
+                panel.style.display = "flex";
+                toggleButton.classList.remove("rotate-back"); // Remove the 'close' rotation class
+                toggleButton.classList.add("rotate"); // Add the 'open' rotation class
+            }
+        }
+
+        function toggleAudio() {
+            const muted = document.getElementById("toggleSound").checked;
+            document.getElementById("myAudio").muted = muted;
+            document.getElementById("typeSound").muted = muted;
+            localStorage.setItem("doraemonSoundMuted", muted);
+        }
+
+        function openLichSu() {
+            const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+            const box = document.getElementById("lichSuNoiDung");
+            box.innerHTML = lichSu.map((item, idx) =>
+                `<div class="history-item">${item.input} ➡️ ${item.output}
+                    <button onclick="showConfirmDeleteOne(${idx})">❌</button></div>`
+            ).join('') || "<i>Chưa có lịch sử.</i>";
+            document.getElementById("modalLichSu").style.display = "flex";
+        }
+
+        function closeLichSu() {
+            document.getElementById("modalLichSu").style.display = "none";
+        }
+
+        function showConfirmDeleteOne(index) {
+            pendingDeleteIndex = index;
+            isDeletingAll = false;
+            document.getElementById("confirmMessage").textContent = "Bạn có chắc muốn xóa mục này khỏi lịch sử?";
+            document.getElementById("confirmModal").style.display = "flex";
+        }
+
+        function showConfirmDeleteAll() {
+            isDeletingAll = true;
+            document.getElementById("confirmMessage").textContent = "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?";
+            document.getElementById("confirmModal").style.display = "flex";
+        }
+
+        function proceedConfirmation() {
+            if (isDeletingAll) {
+                localStorage.removeItem("lichSuDoraemon");
+                showMessage("🗑️ Đã xóa toàn bộ lịch sử!", "success");
+                closeLichSu();
+            } else if (pendingDeleteIndex !== -1) {
+                const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                lichSu.splice(pendingDeleteIndex, 1);
+                localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu));
+                showMessage("🗑️ Đã xóa mục khỏi lịch sử!", "success");
+                pendingDeleteIndex = -1;
+            }
+            document.getElementById("confirmModal").style.display = "none";
+            openLichSu(); // Refresh history display
+        }
+
+        function cancelConfirmation() {
+            pendingDeleteIndex = -1;
+            isDeletingAll = false;
+            document.getElementById("confirmModal").style.display = "none";
+        }
+
+        document.addEventListener("click", function(e) {
+            const panel = document.getElementById("settingsPanel");
+            const toggle = document.querySelector(".settings-toggle");
+            const modal = document.getElementById("modalLichSu");
+            const confirmModal = document.getElementById("confirmModal");
+
+            if (panel.style.display === "flex" && !panel.contains(e.target) && !toggle.contains(e.target) && !modal.contains(e.target) && !confirmModal.contains(e.target)) {
+                panel.style.display = "none";
+                toggle.classList.remove("rotate"); // Ensure it rotates back when clicking outside
+                toggle.classList.add("rotate-back");
+            }
+
+            if (!audioPlayedFirstTime) {
+                const audio = document.getElementById("myAudio");
+                const toggleSoundCheckbox = document.getElementById("toggleSound");
+
+                if (!toggleSoundCheckbox.checked) {
+                    audio.muted = false;
+                    audio.play().catch(error => {
+                        console.log("Lỗi khi phát nhạc nền:", error);
+                    });
+                }
+                audioPlayedFirstTime = true;
+            }
+        }, { once: false });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("typeSound").volume = 0.2;
+            const savedMuteState = localStorage.getItem("doraemonSoundMuted");
+            if (savedMuteState === "true") {
+                document.getElementById("toggleSound").checked = true;
+                document.getElementById("myAudio").muted = true;
+                document.getElementById("typeSound").muted = true;
+            } else {
+                document.getElementById("toggleSound").checked = false;
+                document.getElementById("myAudio").muted = false;
+                document.getElementById("typeSound").muted = false;
+            }
         });
-      }
-      modal.style.display = 'flex';
-    }
-    function closeLichSu() {
-      document.getElementById('modalLichSu').style.display = 'none';
-    }
-    function xoaMotLichSu(index) {
-      lichSu.splice(index, 1);
-      localStorage.setItem('lichSuDoraemon', JSON.stringify(lichSu));
-      openLichSu();
-    }
 
-    // Xóa toàn bộ lịch sử - mở modal xác nhận
-    function xoaToanBoLichSu() {
-      document.getElementById('modalXoaLichSu').style.display = 'flex';
-    }
-    // Hủy xóa
-    function huyXoaLichSu() {
-      document.getElementById('modalXoaLichSu').style.display = 'none';
-    }
-    // Xác nhận xóa lịch sử thật sự
-    function xacNhanXoaLichSu() {
-      lichSu = [];
-      localStorage.removeItem('lichSuDoraemon');
-      openLichSu();
-      document.getElementById('modalXoaLichSu').style.display = 'none';
-      showToast("🗑️ Đã xóa toàn bộ lịch sử!");
-    }
-
-    document.body.addEventListener("click", () => {
-      const audio = document.getElementById("myAudio");
-      audio.muted = false;
-      audio.play().catch(() => {});
-    }, { once: true });
-    // Giọng nói
-    function startDictation() {
-      if (!('webkitSpeechRecognition' in window)) {
-        hienThiModal('⚠️ Trình duyệt không hỗ trợ nhận diện giọng nói!');
-        return;
-      }
-      let recognition = new webkitSpeechRecognition();
-      recognition.lang = 'vi-VN';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onstart = () => {
-        micIndicator.style.display = 'block';
-        micText.style.display = 'block';
-      };
-      recognition.onerror = (event) => {
-        micIndicator.style.display = 'none';
-        micText.style.display = 'none';
-        hienThiModal('⚠️ Lỗi nhận diện: ' + event.error);
-      };
-      recognition.onend = () => {
-        micIndicator.style.display = 'none';
-        micText.style.display = 'none';
-      };
-      recognition.onresult = (event) => {
-        let text = event.results[0][0].transcript.toLowerCase();
-        document.getElementById('input').value = text;
-        giaiMa();
-      };
-
-      recognition.start();
-    }
-  </script>
+        document.getElementById("toggleSound").addEventListener("change", toggleAudio);
+    </script>
 </body>
 </html>
