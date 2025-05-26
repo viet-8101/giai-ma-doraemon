@@ -441,8 +441,8 @@ function giaiMa() {
 
   output.textContent = '';  // reset trước
 
-  // Nếu tìm thấy thì hiển thị dạng ➡️ Kết quả: NỘI DUNG
-  const prefix = '➡️ Kết quả: ;
+  // Nếu tìm thấy thì hiển thị dạng ➡️ Kết quả: "NỘI DUNG"
+  const prefix = '➡️ Kết quả: "';
   const suffix = '"';
 
   let fullText = prefix + ketQua + suffix;
@@ -469,35 +469,44 @@ function giaiMa() {
 
 
     // Copy kết quả
-function saoChep() {
-  const inputText = document.getElementById('input').value.trim();
-  const outputText = output.textContent.trim();
+    function saoChep() {
+      if (!output.textContent) {
+        hienThiModal('Chưa có kết quả để sao chép!');
+        return;
+      }
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        hienThiModal('✅ Đã sao chép kết quả!');
+      }).catch(() => {
+        hienThiModal('❌ Không thể sao chép!');
+      });
+    }
 
-  // Nếu người dùng chưa nhập gì → không cho sao chép
-  if (!inputText) {
-    showToast('Vui lòng nhập mã troll!');
-    return;
-  }
+    // Modal nhỏ hiện nội dung (thay alert)
+    function hienThiModal(noiDung) {
+      output.textContent = noiDung;
+      // Hoặc bạn có thể làm thêm modal toast nhỏ (mình có thêm dưới)
+      showToast(noiDung);
+    }
 
-  // Nếu chưa có kết quả gì để sao chép
-  if (!outputText) {
-    showToast('Chưa có kết quả để sao chép!');
-    return;
-  }
+    // Toast nhỏ hiện tạm
+    function showToast(message) {
+      const toast = document.getElementById('toastMessage');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toast.timeout);
+      toast.timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
 
-  // Chỉ sao chép nếu đúng định dạng ➡️ Kết quả: ...
-  if (outputText.startsWith("➡️ Kết quả: ")) {
-    navigator.clipboard.writeText(outputText).then(() => {
-      showToast('✅ Đã sao chép kết quả!');
-    }).catch(() => {
-      showToast('❌ Không thể sao chép!');
-    });
-  } else {
-    // Không đúng định dạng thì không sao chép
-    showToast('Chưa có kết quả để sao chép!');
-  }
-}
-
+    // Mở tắt settings
+    function toggleSettings() {
+      if (settingsPanel.style.display === 'flex') {
+        settingsPanel.style.display = 'none';
+      } else {
+        settingsPanel.style.display = 'flex';
+      }
+    }
 
     // Bật tắt âm thanh
     function toggleAudio() {
@@ -519,10 +528,10 @@ function saoChep() {
         lichSu.forEach((item, index) => {
           const div = document.createElement('div');
           div.className = 'history-item';
-          div.innerHTML = `
+          div.innerHTML = 
             <span><b>${index + 1}.</b> Mã: ${item.query} → Kết quả: ${item.result}</span>
             <button onclick="xoaMotLichSu(${index})" title="Xóa dòng này">❌</button>
-          `;
+          ;
           lichSuNoiDung.appendChild(div);
         });
       }
