@@ -2,49 +2,82 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giải mã Doraemon</title>
     <link rel="icon" href="Doraenon_logo.ico" type="image/x-icon">
+
     <style>
+        /* CSS CƠ BẢN VÀ CHUNG */
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            background: url('doraemon-bg.jpg') no-repeat center center fixed;
+            background: url('doraemon-bg.jpg') no-repeat center center fixed; /* Đổi 'doraemon-bg.jpg' thành ảnh nền của bạn */
             background-size: cover;
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh; /* Đảm bảo đủ chiều cao */
+            overflow: hidden; /* Ngăn cuộn khi splash screen đang hoạt động */
+        }
+
+        /* Giao diện chính của ứng dụng */
+        #mainContent {
+            display: none; /* Ban đầu ẩn giao diện chính */
+            opacity: 0; /* Cho hiệu ứng mờ dần khi hiện ra */
+            transition: opacity 1s ease-in;
+            flex-direction: column; /* Để căn giữa nội dung overlay */
+            justify-content: center;
+            align-items: center;
+            width: 100%; /* Chiếm toàn bộ chiều rộng để căn giữa overlay */
             height: 100vh;
         }
+
+        #mainContent.visible {
+            display: flex; /* Hiển thị lại khi splash screen ẩn */
+            opacity: 1;
+        }
+
         .overlay {
             background: rgba(0, 0, 0, 0.1);
             max-width: 800px;
+            width: 90%; /* Responsive width */
             padding: 35px;
             border-radius: 20px;
             text-align: center;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
             position: relative;
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
         }
+
         h1 {
             font-size: 2.4em;
             margin-bottom: 20px;
+            color: white; /* Đảm bảo màu sắc hiển thị rõ ràng */
         }
+
         textarea {
-            width: 70%;
+            width: calc(100% - 24px); /* Chiếm gần hết chiều rộng, trừ padding */
             height: 70px;
-            margin-bottom: 20px;
             padding: 12px;
+            margin-bottom: 20px;
             border-radius: 10px;
             border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
             font-size: 1em;
             resize: none;
+            box-sizing: border-box;
         }
+
         .button-group {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+            gap: 12px; /* Khoảng cách giữa các nút */
+            margin-bottom: 20px;
         }
+
         button {
             padding: 10px 18px;
             font-size: 1em;
@@ -60,116 +93,25 @@
             transition: transform 0.3s ease;
             box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
         }
+
         button:hover {
             transform: scale(1.05);
         }
+
         @keyframes gradientFlow {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
+
         #output {
             margin-top: 20px;
             font-size: 1.2em;
             white-space: pre-wrap;
             min-height: 40px;
-        }
-        .mic-indicator {
-            width: 50px;
-            height: 50px;
-            margin: 20px auto;
-            display: none;
-        }
-        .mic-indicator svg {
-            width: 100%;
-            height: 100%;
-            fill: #00bfff;
-            animation: micWave 1s infinite ease-in-out;
-        }
-        @keyframes micWave {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.7;
-            }
-        }
-        #micText {
-            margin-top: 10px;
-            font-style: italic;
-            display: none;
-        }
-        .settings-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            font-size: 1.3em;
-            transition: transform 0.5s ease-out; /* Đảm bảo transition mượt mà cho transform */
-        }
-        .settings-panel {
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.85);
-            padding: 12px 18px;
-            border-radius: 10px;
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            color: white;
-            z-index: 101;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-        }
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            color: white;
-            z-index: 999;
-        }
-        .modal .history-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal .close-btn {
-            align-self: flex-end;
-            background: crimson;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
             color: white;
         }
-        .modal .history-item button {
-            background: #444;
-            border: none;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+
         #messageBox {
             margin-top: 15px;
             padding: 10px;
@@ -186,27 +128,205 @@
             opacity: 1;
         }
 
-        /* Styles for the custom confirmation modal */
-        #confirmModal {
+        /* Microphone Indicator */
+        .mic-indicator {
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            display: none; /* Hidden by default */
+        }
+        .mic-indicator svg {
+            width: 100%;
+            height: 100%;
+            fill: #00bfff;
+            animation: micWave 1s infinite ease-in-out;
+        }
+        @keyframes micWave {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        #micText {
+            margin-top: 10px;
+            font-style: italic;
+            display: none; /* Hidden by default */
+            color: #ccc;
+        }
+
+        /* Settings Panel */
+        .settings-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.5s ease-out;
+            z-index: 10;
+            /* Cài đặt mới cho img logo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px; /* Kích thước logo */
+            height: 40px;
+        }
+
+        .settings-toggle img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Đảm bảo logo không bị méo */
+        }
+
+        .settings-toggle.rotate {
+            animation: rotate 0.5s ease-out forwards;
+        }
+        .settings-toggle.rotate-back {
+            animation: rotate-back 0.5s ease-out forwards;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
+        @keyframes rotate-back { from { transform: rotate(180deg); } to { transform: rotate(0deg); } }
+
+
+        .settings-panel {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 65px; /* Vị trí dưới nút cài đặt */
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.85);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9; /* Dưới nút toggle */
+            min-width: 150px;
+        }
+
+        .settings-panel label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1em;
+            color: #ccc;
+        }
+
+        .settings-panel input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+            accent-color: #00bfff; /* Màu checkbox */
+        }
+
+        .settings-panel button {
+            background: linear-gradient(270deg, #00bfff, #1e90ff); /* Blueish gradient */
+            color: white;
+            padding: 10px;
+            font-size: 0.9em;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: none; /* Remove default shadow for panel buttons */
+            min-width: unset; /* Remove min-width from general button */
+        }
+        .settings-panel button:hover {
+            transform: none; /* No scale for panel buttons */
+            background: linear-gradient(270deg, #1e90ff, #00bfff); /* Slightly darker */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
             position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            animation: fadeInModal 0.3s ease-out;
+        }
+
+        .modal .close-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-top: 20px; /* Space from content */
+        }
+        .modal .close-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        #modalLichSu .modal-content {
+            background-color: #222;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh; /* Giới hạn chiều cao */
+            overflow-y: auto; /* Cho phép cuộn */
+            color: white;
+            display: flex; /* Dùng flex để dễ căn chỉnh nút đóng */
+            flex-direction: column;
+            align-items: center; /* Căn giữa nội dung và nút đóng */
+        }
+
+        #lichSuNoiDung {
+            width: 100%; /* Chiếm toàn bộ chiều rộng của modal-content */
+            text-align: left;
+        }
+        #lichSuNoiDung .history-item {
+            background-color: #333;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            word-break: break-word; /* Đã đổi từ break-all sang break-word để trông tự nhiên hơn */
+            border-left: 5px solid #00bfff; /* Màu xanh nước biển */
+            position: relative;
+            padding-right: 40px; /* Đủ chỗ cho nút xóa */
+        }
+
+        #lichSuNoiDung .delete-item-btn {
+            position: absolute;
+            right: 10px;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateY(-50%);
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #lichSuNoiDung .delete-item-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Confirmation Modal */
+        #confirmModal {
+            text-align: center;
             background: rgba(0, 0, 0, 0.95);
             padding: 25px;
             border-radius: 15px;
-            display: none; /* Hidden by default */
-            flex-direction: column;
-            gap: 20px;
-            color: white;
-            z-index: 1000; /* Higher than other modals */
             box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
             max-width: 350px;
-            text-align: center;
+            flex-direction: column;
+            gap: 20px;
         }
         #confirmModal p {
             font-size: 1.1em;
             margin: 0;
+            color: white;
         }
         #confirmModal .confirm-buttons {
             display: flex;
@@ -236,63 +356,274 @@
             background: #c82333;
         }
 
-        /* NEW CSS for settings toggle rotation */
-        .settings-toggle.rotate {
-            animation: rotate 0.5s ease-out forwards;
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .settings-toggle.rotate-back {
-            animation: rotate-back 0.5s ease-out forwards;
+        /* ======================================= */
+        /* CSS CHO SPLASH SCREEN MỚI - ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT */
+        /* ======================================= */
+
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Quan trọng để các phần tách không tạo thanh cuộn */
+            display: flex; /* Để căn giữa tên */
+            justify-content: center;
+            align-items: center;
+            z-index: 10000; /* Luôn nằm trên cùng */
+            /* Nền gradient cho màn hình chính của splash screen, sẽ hiển thị sau khi blackScreenOverlay mờ đi */
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%;
+            animation: gradientFlow 15s ease infinite; /* Giữ animation nền */
         }
 
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
+        /* Màn hình đen ban đầu */
+        #blackScreenOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 10002; /* Trên tên, dưới các phần tách */
+            opacity: 1;
+            animation: blackScreenFadeOut 2s linear forwards; /* Mờ dần trong 2s */
+            animation-delay: 0s; /* Bắt đầu ngay lập tức */
+        }
+
+        /* Tên của bạn */
+        #myNameContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Căn giữa */
+            z-index: 10001; /* Dưới màn hình đen và các phần tách */
+            opacity: 0; /* Ban đầu ẩn */
+            color: white;
+            font-family: 'Arial Black', sans-serif; /* Font nổi bật hơn */
+            font-size: 4.5em; /* Kích thước to hơn */
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            /* Animation: hiện ra (2-4s) và mờ đi (4-6s) */
+            animation: 
+                myNameFadeInScale 2s ease-out 2s forwards, 
+                myNameFadeOutScale 2s ease-in 4s forwards;
+            white-space: nowrap; /* Giữ tên trên một dòng nếu có thể */
+            padding: 0 10px; /* Đảm bảo tên không bị tràn ra ngoài màn hình quá sát lề */
+            box-sizing: border-box;
+        }
+        #myNameContainer .my-name {
+            display: inline-block; /* Để áp dụng transform và animation tốt hơn */
+            text-align: center; /* Đảm bảo căn giữa cho tên nhiều dòng (nếu có) */
+        }
+
+
+        /* Các phần chia */
+        .split-part {
+            position: absolute;
+            width: 50vw; /* Chiếm 50% viewport width */
+            height: 50vh; /* Chiếm 50% viewport height */
+            opacity: 0; /* Ban đầu ẩn */
+            /* Kế thừa nền gradient từ #splashScreen */
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%; /* Giữ animation nền */
+            /* Animation cho mỗi phần: xuất hiện, di chuyển, và mờ dần */
+            animation: 
+                splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
+                finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
+            z-index: 10003; /* Nằm trên cùng */
+        }
+
+        /* Vị trí ban đầu và animation di chuyển riêng của từng phần */
+        .split-part.top-left { 
+            top: 0; left: 0; 
+            animation: 
+                splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
+                splitMoveTopLeft 1s ease-out 6s forwards, /* Di chuyển ra từ giây 6-7 */
+                finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
+        }
+        .split-part.top-right { 
+            top: 0; left: 50vw; 
+            animation: 
+                splitAppear 0s linear 6s forwards,
+                splitMoveTopRight 1s ease-out 6s forwards, 
+                finalFadeOut 3s linear 7s forwards;
+        }
+        .split-part.bottom-left { 
+            top: 50vh; left: 0; 
+            animation: 
+                splitAppear 0s linear 6s forwards,
+                splitMoveBottomLeft 1s ease-out 6s forwards, 
+                finalFadeOut 3s linear 7s forwards;
+        }
+        .split-part.bottom-right { 
+            top: 50vh; left: 50vw; 
+            animation: 
+                splitAppear 0s linear 6s forwards,
+                splitMoveBottomRight 1s ease-out 6s forwards, 
+                finalFadeOut 3s linear 7s forwards;
+        }
+
+        /* ================== */
+        /* ĐỊNH NGHĨA KEYFRAMES */
+        /* ================== */
+
+        /* Nền gradient */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Màn hình đen mờ dần (0-2s) */
+        @keyframes blackScreenFadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* Tên hiện ra và phóng to (2-4s) */
+        @keyframes myNameFadeInScale {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Tên mờ dần và thu nhỏ (4-6s) */
+        @keyframes myNameFadeOutScale {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); visibility: hidden; }
+        }
+
+        /* Các phần chia xuất hiện (tại giây 6) */
+        @keyframes splitAppear {
+            to { opacity: 1; }
+        }
+
+        /* Các phần chia di chuyển ra (6-7s) */
+        @keyframes splitMoveTopLeft {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, -100%); } /* Di chuyển lên trái */
+        }
+        @keyframes splitMoveTopRight {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100%, -100%); } /* Di chuyển lên phải */
+        }
+        @keyframes splitMoveBottomLeft {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 100%); } /* Di chuyển xuống trái */
+        }
+        @keyframes splitMoveBottomRight {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100%, 100%); } /* Di chuyển xuống phải */
+        }
+
+        /* Mờ dần cuối cùng của các phần tách (7-10s) */
+        @keyframes finalFadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
             }
-            to {
-                transform: rotate(180deg); /* Xoay 180 độ (nửa vòng) */
+            button {
+                padding: 10px 15px; /* Giảm padding ngang cho nút */
+                font-size: 0.95em; /* Giảm font size cho nút */
+                min-width: 150px; /* Điều chỉnh min-width để tránh tràn */
+            }
+            .overlay {
+                padding: 25px 15px; /* Giảm padding ngang của overlay */
+            }
+            #myNameContainer {
+                font-size: 3em; /* Nhỏ hơn trên di động */
+                word-wrap: break-word; /* Cho phép ngắt từ nếu tên quá dài */
+                white-space: normal; /* Cho phép xuống dòng */
+                max-width: 90vw; /* Giới hạn chiều rộng để không tràn ra ngoài */
+            }
+            .settings-panel {
+                right: 15px; /* Điều chỉnh vị trí panel */
+                min-width: 130px;
+            }
+            .settings-panel button {
+                font-size: 0.85em;
             }
         }
 
-        @keyframes rotate-back {
-            from {
-                transform: rotate(180deg); /* Bắt đầu từ 180 độ nếu đang ở trạng thái mở */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
             }
-            to {
-                transform: rotate(0deg); /* Quay về 0 độ */
+            textarea {
+                height: 80px;
+            }
+            button {
+                padding: 8px 12px; /* Giảm padding nhỏ hơn nữa */
+                font-size: 0.85em; /* Giảm font size nhỏ hơn nữa */
+                min-width: 130px; /* Điều chỉnh min-width chặt chẽ hơn */
+            }
+            .overlay {
+                padding: 15px 10px; /* Giảm padding rất nhiều */
+            }
+            #myNameContainer {
+                font-size: 1.8em; /* Nhỏ hơn nữa trên di động */
+            }
+            .button-group {
+                gap: 8px; /* Giảm khoảng cách giữa các nút */
             }
         }
     </style>
 </head>
 <body>
-    <div class="overlay">
-        <h1>🔍 Giải mã Doraemon</h1>
-        <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
-        <div class="button-group">
-            <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
-            <button onclick="saoChep()">📋 Copy kết quả</button>
-            <button onclick="startDictation()">🎤 Nhận diện giọng nói</button>
-        </div>
-        <div id="output"></div>
-        <div id="messageBox"></div>
-
-        <div class="mic-indicator" id="micIndicator">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z" />
-            </svg>
-        </div>
-        <div id="micText">🎙️ Đang lắng nghe...</div>
-        <div class="settings-toggle" onclick="toggleSettings()">⚙️</div>
-        <div class="settings-panel" id="settingsPanel">
-            <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
-            <button onclick="openLichSu()">📜 Xem lịch sử</button>
-            <button onclick="showConfirmDeleteAll()">🗑️ Xóa lịch sử</button>
-        </div>
+    <div id="splashScreen">
+        <div id="blackScreenOverlay"></div>
+        <div id="myNameContainer">
+            <span class="my-name">NGUYỄN ĐẮC HOÀNG VIỆT</span> </div>
+        <div class="split-part top-left"></div>
+        <div class="split-part top-right"></div>
+        <div class="split-part bottom-left"></div>
+        <div class="split-part bottom-right"></div>
     </div>
 
+    <div id="mainContent">
+        <div class="overlay">
+            <h1>🔍 Giải mã Doraemon</h1>
+            <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
+            <div class="button-group">
+                <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
+                <button onclick="saoChep()">📋 Copy kết quả</button>
+                <button onclick="startDictation()">🎤 Nhận diện giọng nói</button>
+            </div>
+            <div id="output"></div>
+            <div id="messageBox"></div>
+
+            <div class="mic-indicator" id="micIndicator">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z" />
+                </svg>
+            </div>
+            <div id="micText">🎙️ Đang lắng nghe...</div>
+            
+            <div class="settings-toggle" onclick="toggleSettings()">
+                <img src="Doraenon_logo.ico" alt="Cài đặt">
+            </div>
+            <div class="settings-panel" id="settingsPanel">
+                <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
+                <button onclick="openLichSu()">📜 Xem lịch sử</button>
+                <button onclick="showConfirmDeleteAll()">🗑️ Xóa lịch sử</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="modal" id="modalLichSu">
-        <button class="close-btn" onclick="closeLichSu()">Đóng</button>
-        <div id="lichSuNoiDung"></div>
+        <div class="modal-content"> <button class="close-btn" onclick="closeLichSu()">Đóng</button>
+            <div id="lichSuNoiDung"></div>
+        </div>
     </div>
 
     <div class="modal" id="confirmModal">
@@ -309,7 +640,7 @@
     <audio id="typeSound" preload="auto">
         <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
     </audio>
-    
+
     <script>
         const tuDienDoraemon = {
             "cái loa biết đi": "Jaian",
@@ -442,7 +773,10 @@
         }
 
         function giaiMa() {
-            const input = document.getElementById("input").value.trim().toLowerCase();
+            const inputElement = document.getElementById("input");
+            const outputElement = document.getElementById("output");
+            const input = inputElement.value.trim().toLowerCase();
+
             if (!input) {
                 showMessage("⚠️ Bạn chưa nhập gì cả!", "error");
                 lastDecodedResult = "";
@@ -451,41 +785,49 @@
 
             let text = input;
             const original = text;
+            // Clear current output and start typing animation
             goChuTungKyTu("➡️ Đang xử lý...", "output", 30);
 
-            const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
-            for (const [k, v] of entries) {
-                const re = new RegExp(escapeRegExp(k), "gi");
-                text = text.replace(re, v);
-            }
+            // Give a short delay to allow "Đang xử lý..." to appear before actual processing
+            setTimeout(() => {
+                const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
+                for (const [k, v] of entries) {
+                    const re = new RegExp(escapeRegExp(k), "gi");
+                    text = text.replace(re, v);
+                }
 
-            if (text === original) {
-                goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp.", "output", 30);
-                lastDecodedResult = "";
-            } else {
-                goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
-                lastDecodedResult = text;
-                const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
-                lichSu.unshift({
-                    input: original,
-                    output: text
-                });
-                localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu.slice(0, 20)));
-            }
+                if (text === original) {
+                    goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp.", "output", 30);
+                    lastDecodedResult = "";
+                } else {
+                    goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
+                    lastDecodedResult = text;
+                    const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                    // Add timestamp to history item
+                    lichSu.unshift({
+                        input: original,
+                        output: text,
+                        timestamp: new Date().toLocaleString('vi-VN')
+                    });
+                    localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu.slice(0, 20))); // Limit to 20 items
+                }
+            }, 500); // Small delay to let the processing message show
         }
 
         function goChuTungKyTu(text, elementId, speed) {
             const el = document.getElementById(elementId);
             const sound = document.getElementById("typeSound");
 
-            el.textContent = "";
-            let index = 0;
-
+            // Stop any ongoing typing animation and clear content
             if (el.typingTimer) clearTimeout(el.typingTimer);
+            el.textContent = "";
+
+            let index = 0;
 
             function type() {
                 if (index < text.length) {
                     el.textContent += text.charAt(index);
+                    // Only play sound if not muted
                     if (!sound.muted) {
                         try {
                             sound.pause();
@@ -497,6 +839,10 @@
                     }
                     el.typingTimer = setTimeout(type, speed);
                     index++;
+                } else {
+                    // Ensure sound is stopped after typing is complete
+                    sound.pause();
+                    sound.currentTime = 0;
                 }
             }
             type();
@@ -559,21 +905,18 @@
             }
         }
 
-        // UPDATED toggleSettings function for rotation
         function toggleSettings() {
             const panel = document.getElementById("settingsPanel");
-            const toggleButton = document.querySelector(".settings-toggle"); // Get the settings button
+            const toggleButton = document.querySelector(".settings-toggle");
 
             if (panel.style.display === "flex") {
-                // If the panel is currently open, close it
                 panel.style.display = "none";
-                toggleButton.classList.remove("rotate"); // Remove the 'open' rotation class
-                toggleButton.classList.add("rotate-back"); // Add the 'close' rotation class
+                toggleButton.classList.remove("rotate");
+                toggleButton.classList.add("rotate-back");
             } else {
-                // If the panel is currently closed, open it
                 panel.style.display = "flex";
-                toggleButton.classList.remove("rotate-back"); // Remove the 'close' rotation class
-                toggleButton.classList.add("rotate"); // Add the 'open' rotation class
+                toggleButton.classList.remove("rotate-back");
+                toggleButton.classList.add("rotate");
             }
         }
 
@@ -587,10 +930,28 @@
         function openLichSu() {
             const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
             const box = document.getElementById("lichSuNoiDung");
-            box.innerHTML = lichSu.map((item, idx) =>
-                `<div class="history-item">${item.input} ➡️ ${item.output}
-                    <button onclick="showConfirmDeleteOne(${idx})">❌</button></div>`
-            ).join('') || "<i>Chưa có lịch sử.</i>";
+            
+            box.innerHTML = ''; // Clear previous content
+
+            if (lichSu.length === 0) {
+                box.innerHTML = '<p style="text-align: center; color: #ccc;"><i>Chưa có lịch sử.</i></p>';
+            } else {
+                lichSu.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.classList.add('history-item');
+                    div.innerHTML = `<strong>(${item.timestamp})</strong><br>${item.input} ➡️ ${item.output}`;
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '❌';
+                    deleteButton.classList.add('delete-item-btn');
+                    deleteButton.onclick = (event) => {
+                        event.stopPropagation(); // Prevent modal from closing if button is within it
+                        showConfirmDeleteOne(idx);
+                    };
+                    div.appendChild(deleteButton);
+                    box.appendChild(div);
+                });
+            }
             document.getElementById("modalLichSu").style.display = "flex";
         }
 
@@ -615,7 +976,7 @@
             if (isDeletingAll) {
                 localStorage.removeItem("lichSuDoraemon");
                 showMessage("🗑️ Đã xóa toàn bộ lịch sử!", "success");
-                closeLichSu();
+                closeLichSu(); // Close history modal after deleting all
             } else if (pendingDeleteIndex !== -1) {
                 const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
                 lichSu.splice(pendingDeleteIndex, 1);
@@ -624,7 +985,7 @@
                 pendingDeleteIndex = -1;
             }
             document.getElementById("confirmModal").style.display = "none";
-            openLichSu(); // Refresh history display
+            openLichSu(); // Refresh history display after any deletion
         }
 
         function cancelConfirmation() {
@@ -633,46 +994,67 @@
             document.getElementById("confirmModal").style.display = "none";
         }
 
-        document.addEventListener("click", function(e) {
-            const panel = document.getElementById("settingsPanel");
-            const toggle = document.querySelector(".settings-toggle");
-            const modal = document.getElementById("modalLichSu");
-            const confirmModal = document.getElementById("confirmModal");
-
-            if (panel.style.display === "flex" && !panel.contains(e.target) && !toggle.contains(e.target) && !modal.contains(e.target) && !confirmModal.contains(e.target)) {
-                panel.style.display = "none";
-                toggle.classList.remove("rotate"); // Ensure it rotates back when clicking outside
-                toggle.classList.add("rotate-back");
-            }
-
-            if (!audioPlayedFirstTime) {
-                const audio = document.getElementById("myAudio");
-                const toggleSoundCheckbox = document.getElementById("toggleSound");
-
-                if (!toggleSoundCheckbox.checked) {
-                    audio.muted = false;
-                    audio.play().catch(error => {
-                        console.log("Lỗi khi phát nhạc nền:", error);
-                    });
-                }
-                audioPlayedFirstTime = true;
-            }
-        }, { once: false });
-
         document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("typeSound").volume = 0.2;
+            const splashScreen = document.getElementById("splashScreen");
+            const mainContent = document.getElementById("mainContent");
+            const myAudio = document.getElementById("myAudio");
+            const toggleSoundCheckbox = document.getElementById("toggleSound");
+
+            // Khởi tạo trạng thái âm thanh ban đầu từ localStorage
+            document.getElementById("typeSound").volume = 0.2; // Đặt âm lượng cho âm thanh gõ
             const savedMuteState = localStorage.getItem("doraemonSoundMuted");
             if (savedMuteState === "true") {
-                document.getElementById("toggleSound").checked = true;
-                document.getElementById("myAudio").muted = true;
+                toggleSoundCheckbox.checked = true;
+                myAudio.muted = true;
                 document.getElementById("typeSound").muted = true;
             } else {
-                document.getElementById("toggleSound").checked = false;
-                document.getElementById("myAudio").muted = false;
+                toggleSoundCheckbox.checked = false;
+                myAudio.muted = false;
                 document.getElementById("typeSound").muted = false;
             }
+
+            // Tổng thời gian của tất cả các animation là 10 giây (10000 ms)
+            const totalAnimationDuration = 10000; 
+
+            // Sau khi tất cả các animation hoàn tất (10 giây), ẩn splash screen và hiện main content
+            setTimeout(() => {
+                splashScreen.style.display = "none"; // Ẩn hoàn toàn splash screen
+                mainContent.style.display = "flex"; // Hiển thị nội dung chính
+                mainContent.classList.add("visible"); // Kích hoạt hiệu ứng mờ dần cho main content
+
+                // Logic phát nhạc nền: Do chính sách của trình duyệt, nhạc sẽ chỉ phát khi có tương tác người dùng.
+                // Sự kiện 'click' trên 'document' ở dưới đã xử lý việc này.
+                // Dòng dưới đây chỉ là để đánh dấu đã cố gắng phát nếu chưa phát lần nào
+                if (!audioPlayedFirstTime && !myAudio.muted) {
+                     myAudio.play().catch(error => {
+                         console.log("Lỗi khi phát nhạc nền tự động (cần tương tác người dùng):", error);
+                         // Có thể hiển thị một thông báo nhỏ cho người dùng click để bật nhạc
+                     });
+                }
+                audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát nhạc nền
+            }, totalAnimationDuration);
+
+            // Gắn lại sự kiện lắng nghe click toàn bộ document, đảm bảo nó luôn hoạt động
+            // Kể cả khi splash screen biến mất, click vào giao diện chính sẽ kích hoạt nhạc nền
+            document.addEventListener("click", function(e) {
+                const panel = document.getElementById("settingsPanel");
+                const toggle = document.querySelector(".settings-toggle");
+                const modal = document.getElementById("modalLichSu");
+                const confirmModal = document.getElementById("confirmModal");
+
+                // Logic đóng settings panel khi click ra ngoài
+                if (panel.style.display === "flex" && !panel.contains(e.target) && !toggle.contains(e.target) && !modal.contains(e.target) && !confirmModal.contains(e.target)) {
+                    panel.style.display = "none";
+                    toggle.classList.remove("rotate");
+                    toggle.classList.add("rotate-back");
+                }
+                // Logic cho nhạc nền (đã có từ trước và vẫn hoạt động)
+                // Nó sẽ được kích hoạt khi người dùng click lần đầu vào trang web
+                // (bao gồm cả click đầu tiên lên giao diện chính sau splash screen).
+            }, { once: false });
         });
 
+        // Event listener for toggleSound checkbox (moved to DOMContentLoaded)
         document.getElementById("toggleSound").addEventListener("change", toggleAudio);
     </script>
 </body>
