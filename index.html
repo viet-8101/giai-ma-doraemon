@@ -313,16 +313,18 @@
         }
 
         /* Confirmation Modal */
-        #confirmModal {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
-            max-width: 350px;
-            flex-direction: column;
-            gap: 20px;
-        }
+#confirmModal {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.95);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+    max-width: 350px;
+    flex-direction: column;
+    gap: 20px;
+    /* THÊM DÒNG NÀY ĐỂ ĐẢM BẢO NÓ LUÔN LÀ FLEX CONTAINER */
+    display: flex; /* Đảm bảo confirmModal cũng là flex để căn giữa nội dung bên trong */
+}
         #confirmModal p {
             font-size: 1.1em;
             margin: 0;
