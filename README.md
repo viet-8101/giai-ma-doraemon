@@ -6,7 +6,7 @@ Một ứng dụng web vui nhộn cho phép bạn "giải mã" các biệt danh 
 
 ## 🚀 Tính năng nổi bật
 
-- ✅ Tra nhanh biệt danh troll như "cái loa biết đi" → `Jaian`
+- ✅ Tra nhanh biệt danh troll như "cái loa biết đi" → `Jaian`. từ điển gồm 109 từ khóa khác nhau.
 - 🎨 Giao diện hiện đại, hoạt ảnh mượt và tương thích di động
 - 🎤 Nhận diện giọng nói tiếng Việt để nhập nhanh
 - 📋 Sao chép kết quả chỉ với một cú click
