@@ -32,7 +32,6 @@
             width: 100%; /* Chiếm toàn bộ chiều rộng để căn giữa overlay */
             height: 100vh;
         }
-
         #mainContent.visible {
             display: flex; /* Hiển thị lại khi splash screen ẩn */
             opacity: 1;
@@ -93,7 +92,6 @@
             transition: transform 0.3s ease;
             box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
         }
-
         button:hover {
             transform: scale(1.05);
         }
@@ -168,7 +166,6 @@
             width: 40px; /* Kích thước logo */
             height: 40px;
         }
-
         .settings-toggle img {
             width: 100%;
             height: 100%;
@@ -184,7 +181,6 @@
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
         @keyframes rotate-back { from { transform: rotate(180deg); } to { transform: rotate(0deg); } }
 
-
         .settings-panel {
             display: none; /* Hidden by default */
             position: absolute;
@@ -199,7 +195,6 @@
             z-index: 9; /* Dưới nút toggle */
             min-width: 150px;
         }
-
         .settings-panel label {
             display: flex;
             align-items: center;
@@ -207,13 +202,11 @@
             font-size: 1em;
             color: #ccc;
         }
-
         .settings-panel input[type="checkbox"] {
             margin-right: 8px;
             transform: scale(1.2);
             accent-color: #00bfff; /* Màu checkbox */
         }
-
         .settings-panel button {
             background: linear-gradient(270deg, #00bfff, #1e90ff); /* Blueish gradient */
             color: white;
@@ -231,7 +224,7 @@
 
         /* Modal Styles */
         .modal {
-            display: flex; /* Hidden by default */
+            display: none; /* Ban đầu ẩn modal */
             position: fixed;
             z-index: 100;
             left: 0;
@@ -239,11 +232,12 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
+            /* Các thuộc tính quan trọng để căn giữa nội dung */
+            display: flex; /* Biến container thành flexbox */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            align-items: center;     /* Căn giữa theo chiều dọc */
             animation: fadeInModal 0.3s ease-out;
         }
-
         .modal .close-btn {
             background-color: #f44336;
             color: white;
@@ -274,7 +268,6 @@
             flex-direction: column;
             align-items: center; /* Căn giữa nội dung và nút đóng */
         }
-
         #lichSuNoiDung {
             width: 100%; /* Chiếm toàn bộ chiều rộng của modal-content */
             text-align: left;
@@ -289,7 +282,6 @@
             position: relative;
             padding-right: 40px; /* Đủ chỗ cho nút xóa */
         }
-
         #lichSuNoiDung .delete-item-btn {
             position: absolute;
             right: 10px;
@@ -312,30 +304,30 @@
             background-color: #d32f2f;
         }
 
-        /* Confirmation Modal */
-#confirmModal {
-    text-align: center;
-    background: rgba(0, 0, 0, 0.95);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
-    max-width: 350px;
-    flex-direction: column;
-    gap: 20px;
-    /* THÊM DÒNG NÀY ĐỂ ĐẢM BẢO NÓ LUÔN LÀ FLEX CONTAINER */
-    display: flex; /* Đảm bảo confirmModal cũng là flex để căn giữa nội dung bên trong */
-}
-        #confirmModal p {
+        /* Confirmation Modal Content Styles */
+        /* Đặt các style của hộp thoại xác nhận vào #confirmModalContent (phần tử con của .modal) */
+        #confirmModalContent {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+            max-width: 350px;
+            display: flex; /* Đảm bảo nội dung bên trong nó cũng là flex để sắp xếp các nút */
+            flex-direction: column;
+            gap: 20px;
+        }
+        #confirmModalContent p {
             font-size: 1.1em;
             margin: 0;
             color: white;
         }
-        #confirmModal .confirm-buttons {
+        #confirmModalContent .confirm-buttons {
             display: flex;
             justify-content: center;
             gap: 15px;
         }
-        #confirmModal .confirm-buttons button {
+        #confirmModalContent .confirm-buttons button {
             padding: 10px 20px;
             font-size: 1em;
             border-radius: 8px;
@@ -343,18 +335,18 @@
             transition: background-color 0.3s ease;
             min-width: 100px;
         }
-        #confirmModal .confirm-buttons button.cancel-btn {
+        #confirmModalContent .confirm-buttons button.cancel-btn {
             background: #6c757d; /* Gray */
             color: white;
         }
-        #confirmModal .confirm-buttons button.cancel-btn:hover {
+        #confirmModalContent .confirm-buttons button.cancel-btn:hover {
             background: #5a6268;
         }
-        #confirmModal .confirm-buttons button.continue-btn {
+        #confirmModalContent .confirm-buttons button.continue-btn {
             background: #dc3545; /* Red */
             color: white;
         }
-        #confirmModal .confirm-buttons button.continue-btn:hover {
+        #confirmModalContent .confirm-buttons button.continue-btn:hover {
             background: #c82333;
         }
 
@@ -412,8 +404,8 @@
             font-weight: bold;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
             /* Animation: hiện ra (2-4s) và mờ đi (4-6s) */
-            animation: 
-                myNameFadeInScale 2s ease-out 2s forwards, 
+            animation:
+                myNameFadeInScale 2s ease-out 2s forwards,
                 myNameFadeOutScale 2s ease-in 4s forwards;
             white-space: nowrap; /* Giữ tên trên một dòng nếu có thể */
             padding: 0 10px; /* Đảm bảo tên không bị tràn ra ngoài màn hình quá sát lề */
@@ -423,7 +415,6 @@
             display: inline-block; /* Để áp dụng transform và animation tốt hơn */
             text-align: center; /* Đảm bảo căn giữa cho tên nhiều dòng (nếu có) */
         }
-
 
         /* Các phần chia */
         .split-part {
@@ -435,39 +426,39 @@
             background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
             background-size: 1000% 1000%; /* Giữ animation nền */
             /* Animation cho mỗi phần: xuất hiện, di chuyển, và mờ dần */
-            animation: 
+            animation:
                 splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
                 finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
             z-index: 10003; /* Nằm trên cùng */
         }
 
         /* Vị trí ban đầu và animation di chuyển riêng của từng phần */
-        .split-part.top-left { 
-            top: 0; left: 0; 
-            animation: 
+        .split-part.top-left {
+            top: 0; left: 0;
+            animation:
                 splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
                 splitMoveTopLeft 1s ease-out 6s forwards, /* Di chuyển ra từ giây 6-7 */
                 finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
         }
-        .split-part.top-right { 
-            top: 0; left: 50vw; 
-            animation: 
+        .split-part.top-right {
+            top: 0; left: 50vw;
+            animation:
                 splitAppear 0s linear 6s forwards,
-                splitMoveTopRight 1s ease-out 6s forwards, 
+                splitMoveTopRight 1s ease-out 6s forwards,
                 finalFadeOut 3s linear 7s forwards;
         }
-        .split-part.bottom-left { 
-            top: 50vh; left: 0; 
-            animation: 
+        .split-part.bottom-left {
+            top: 50vh; left: 0;
+            animation:
                 splitAppear 0s linear 6s forwards,
-                splitMoveBottomLeft 1s ease-out 6s forwards, 
+                splitMoveBottomLeft 1s ease-out 6s forwards,
                 finalFadeOut 3s linear 7s forwards;
         }
-        .split-part.bottom-right { 
-            top: 50vh; left: 50vw; 
-            animation: 
+        .split-part.bottom-right {
+            top: 50vh; left: 50vw;
+            animation:
                 splitAppear 0s linear 6s forwards,
-                splitMoveBottomRight 1s ease-out 6s forwards, 
+                splitMoveBottomRight 1s ease-out 6s forwards,
                 finalFadeOut 3s linear 7s forwards;
         }
 
@@ -556,7 +547,6 @@
                 font-size: 0.85em;
             }
         }
-
         @media (max-width: 480px) {
             h1 {
                 font-size: 1.5em;
@@ -591,19 +581,17 @@
         <div class="split-part bottom-left"></div>
         <div class="split-part bottom-right"></div>
     </div>
-
     <div id="mainContent">
         <div class="overlay">
-            <h1>🔍 Giải mã Doraemon</h1>
+            <h1> 🔍  Giải mã Doraemon</h1>
             <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
             <div class="button-group">
                 <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
-                <button onclick="saoChep()">📋 Copy kết quả</button>
-                <button onclick="startDictation()">🎤 Nhận diện giọng nói</button>
+                <button onclick="saoChep()"> 📋  Copy kết quả</button>
+                <button onclick="startDictation()"> 🎤  Nhận diện giọng nói</button>
             </div>
             <div id="output"></div>
             <div id="messageBox"></div>
-
             <div class="mic-indicator" id="micIndicator">
                 <svg viewBox="0 0 24 24">
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z" />
@@ -611,27 +599,29 @@
             </div>
             <div id="micText">🎙️ Đang lắng nghe...</div>
             <div class="settings-toggle" onclick="toggleSettings()">
-    <i class="fas fa-cog"></i>
+                <img src="Doraenon_logo.ico" alt="Settings">
             </div>
             <div class="settings-panel" id="settingsPanel">
                 <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
-                <button onclick="openLichSu()">📜 Xem lịch sử</button>
+                <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
                 <button onclick="showConfirmDeleteAll()">🗑️ Xóa lịch sử</button>
             </div>
         </div>
     </div>
-    
+
     <div class="modal" id="modalLichSu">
-        <div class="modal-content"> <button class="close-btn" onclick="closeLichSu()">Đóng</button>
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeLichSu()">Đóng</button>
             <div id="lichSuNoiDung"></div>
         </div>
     </div>
 
     <div class="modal" id="confirmModal">
-        <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
-        <div class="confirm-buttons">
-            <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
-            <button class="continue-btn" onclick="proceedConfirmation()">Tiếp tục</button>
+        <div id="confirmModalContent"> <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
+            <div class="confirm-buttons">
+                <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
+                <button class="continue-btn" onclick="proceedConfirmation()">Tiếp tục</button>
+            </div>
         </div>
     </div>
 
@@ -641,7 +631,6 @@
     <audio id="typeSound" preload="auto">
         <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
     </audio>
-
     <script>
         const tuDienDoraemon = {
             "cái loa biết đi": "Jaian",
@@ -674,8 +663,7 @@
             "bậc thầy năn nỉ": "Nobita",
             "thiên tài thắt dây": "Nobita",
             "tay vua súng": "Nobita",
-            "xe buýt": "Nobita", "xe bus":
-            "Nobita", "mèo máy": "Doraemon",
+            "xe buýt": "Nobita", "xe bus": "Nobita", "mèo máy": "Doraemon",
             "mỏ nhọn": "Suneo",
             "lồi rốn": "Jaian",
             "yên ắng": "nhà Shizuka",
@@ -744,7 +732,6 @@
             "con rùa nhanh nhất trong không gian": "Moto",
             "viên đạn của đại bác không khí": "Moto"
         };
-
         let lastDecodedResult = "";
         let audioPlayedFirstTime = false;
         let pendingDeleteIndex = -1; // Biến để lưu trữ chỉ số của mục sẽ xóa
@@ -761,7 +748,6 @@
             } else {
                 msgBox.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             }
-
             if (msgBox.timer) clearTimeout(msgBox.timer);
             msgBox.timer = setTimeout(() => {
                 msgBox.className = '';
@@ -779,15 +765,16 @@
             const input = inputElement.value.trim().toLowerCase();
 
             if (!input) {
-                showMessage("⚠️ Bạn chưa nhập gì cả!", "error");
+                showMessage(" ⚠️  Bạn chưa nhập gì cả!", "error");
                 lastDecodedResult = "";
                 return;
             }
 
             let text = input;
             const original = text;
+
             // Clear current output and start typing animation
-            goChuTungKyTu("➡️ Đang xử lý...", "output", 30);
+            goChuTungKyTu(" ➡️  Đang xử lý...", "output", 30);
 
             // Give a short delay to allow "Đang xử lý..." to appear before actual processing
             setTimeout(() => {
@@ -798,11 +785,12 @@
                 }
 
                 if (text === original) {
-                    goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp.", "output", 30);
+                    goChuTungKyTu(" ❓  Không tìm thấy từ khóa phù hợp.", "output", 30);
                     lastDecodedResult = "";
                 } else {
-                    goChuTungKyTu("➡️ Kết quả: " + text, "output", 30);
+                    goChuTungKyTu(" ➡️  Kết quả: " + text, "output", 30);
                     lastDecodedResult = text;
+
                     const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
                     // Add timestamp to history item
                     lichSu.unshift({
@@ -818,13 +806,11 @@
         function goChuTungKyTu(text, elementId, speed) {
             const el = document.getElementById(elementId);
             const sound = document.getElementById("typeSound");
-
             // Stop any ongoing typing animation and clear content
             if (el.typingTimer) clearTimeout(el.typingTimer);
             el.textContent = "";
 
             let index = 0;
-
             function type() {
                 if (index < text.length) {
                     el.textContent += text.charAt(index);
@@ -851,11 +837,11 @@
 
         function saoChep() {
             if (!lastDecodedResult) {
-                showMessage("⚠️ Chưa có kết quả giải mã để sao chép!", "error");
+                showMessage(" ⚠️  Chưa có kết quả giải mã để sao chép!", "error");
                 return;
             }
             navigator.clipboard.writeText(lastDecodedResult).then(() => {
-                showMessage("📋 Đã sao chép kết quả!", "success");
+                showMessage(" 📋  Đã sao chép kết quả!", "success");
             }).catch(err => {
                 console.error('Không thể sao chép văn bản: ', err);
                 showMessage('Có lỗi xảy ra khi sao chép. Vui lòng thử lại hoặc sao chép thủ công.', "error");
@@ -874,20 +860,23 @@
                 document.getElementById("micIndicator").style.display = "block";
                 document.getElementById("micText").style.display = "block";
                 recognition.start();
+
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
                     document.getElementById("input").value = transcript;
                     document.getElementById("micIndicator").style.display = "none";
                     document.getElementById("micText").style.display = "none";
-                    showMessage("✅ Nhận diện giọng nói hoàn tất.", "success");
+                    showMessage(" ✅  Nhận diện giọng nói hoàn tất.", "success");
                     giaiMa();
                 };
+
                 recognition.onerror = function(event) {
                     console.error("Lỗi nhận diện giọng nói:", event.error);
-                    showMessage("⚠️ Không nhận diện được, thử lại. Lỗi: " + event.error, "error");
+                    showMessage(" ⚠️  Không nhận diện được, thử lại. Lỗi: " + event.error, "error");
                     document.getElementById("micIndicator").style.display = "none";
                     document.getElementById("micText").style.display = "none";
                 };
+
                 recognition.onend = function() {
                     document.getElementById("micIndicator").style.display = "none";
                     document.getElementById("micText").style.display = "none";
@@ -895,7 +884,7 @@
             }
         } else {
             function startDictation() {
-                showMessage("⚠️ Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Chỉ hoạt động tốt trên Chrome).", "error");
+                showMessage(" ⚠️  Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Chỉ hoạt động tốt trên Chrome).", "error");
             }
         }
 
@@ -908,8 +897,8 @@
 
         function toggleSettings() {
             const panel = document.getElementById("settingsPanel");
+            // Sử dụng querySelector để chọn settings-toggle vì nó có thể có nhiều nội dung (icon hoặc img)
             const toggleButton = document.querySelector(".settings-toggle");
-
             if (panel.style.display === "flex") {
                 panel.style.display = "none";
                 toggleButton.classList.remove("rotate");
@@ -931,19 +920,18 @@
         function openLichSu() {
             const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
             const box = document.getElementById("lichSuNoiDung");
-            
-            box.innerHTML = ''; // Clear previous content
 
+            box.innerHTML = ''; // Clear previous content
             if (lichSu.length === 0) {
                 box.innerHTML = '<p style="text-align: center; color: #ccc;"><i>Chưa có lịch sử.</i></p>';
             } else {
                 lichSu.forEach((item, idx) => {
                     const div = document.createElement('div');
                     div.classList.add('history-item');
-                    div.innerHTML = `<strong>(${item.timestamp})</strong><br>${item.input} ➡️ ${item.output}`;
-                    
+                    div.innerHTML = `<strong>(${item.timestamp})</strong><br>${item.input}  ➡️  ${item.output}`;
+
                     const deleteButton = document.createElement('button');
-                    deleteButton.textContent = '❌';
+                    deleteButton.textContent = ' ❌ ';
                     deleteButton.classList.add('delete-item-btn');
                     deleteButton.onclick = (event) => {
                         event.stopPropagation(); // Prevent modal from closing if button is within it
@@ -960,6 +948,7 @@
             document.getElementById("modalLichSu").style.display = "none";
         }
 
+        // Đã cập nhật để hiển thị #confirmModal (là container .modal)
         function showConfirmDeleteOne(index) {
             pendingDeleteIndex = index;
             isDeletingAll = false;
@@ -967,6 +956,7 @@
             document.getElementById("confirmModal").style.display = "flex";
         }
 
+        // Đã cập nhật để hiển thị #confirmModal (là container .modal)
         function showConfirmDeleteAll() {
             isDeletingAll = true;
             document.getElementById("confirmMessage").textContent = "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?";
@@ -1001,7 +991,6 @@
             const myAudio = document.getElementById("myAudio");
             const toggleSoundCheckbox = document.getElementById("toggleSound");
 
-            // Khởi tạo trạng thái âm thanh ban đầu từ localStorage
             document.getElementById("typeSound").volume = 0.2; // Đặt âm lượng cho âm thanh gõ
             const savedMuteState = localStorage.getItem("doraemonSoundMuted");
             if (savedMuteState === "true") {
@@ -1015,33 +1004,27 @@
             }
 
             // Tổng thời gian của tất cả các animation là 10 giây (10000 ms)
-            const totalAnimationDuration = 10000; 
-
+            const totalAnimationDuration = 10000;
             // Sau khi tất cả các animation hoàn tất (10 giây), ẩn splash screen và hiện main content
             setTimeout(() => {
                 splashScreen.style.display = "none"; // Ẩn hoàn toàn splash screen
                 mainContent.style.display = "flex"; // Hiển thị nội dung chính
                 mainContent.classList.add("visible"); // Kích hoạt hiệu ứng mờ dần cho main content
 
-                // Logic phát nhạc nền: Do chính sách của trình duyệt, nhạc sẽ chỉ phát khi có tương tác người dùng.
-                // Sự kiện 'click' trên 'document' ở dưới đã xử lý việc này.
-                // Dòng dưới đây chỉ là để đánh dấu đã cố gắng phát nếu chưa phát lần nào
                 if (!audioPlayedFirstTime && !myAudio.muted) {
                      myAudio.play().catch(error => {
                          console.log("Lỗi khi phát nhạc nền tự động (cần tương tác người dùng):", error);
-                         // Có thể hiển thị một thông báo nhỏ cho người dùng click để bật nhạc
                      });
                 }
                 audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát nhạc nền
             }, totalAnimationDuration);
 
             // Gắn lại sự kiện lắng nghe click toàn bộ document, đảm bảo nó luôn hoạt động
-            // Kể cả khi splash screen biến mất, click vào giao diện chính sẽ kích hoạt nhạc nền
             document.addEventListener("click", function(e) {
                 const panel = document.getElementById("settingsPanel");
-                const toggle = document.querySelector(".settings-toggle");
+                const toggle = document.querySelector(".settings-toggle"); // Sử dụng querySelector
                 const modal = document.getElementById("modalLichSu");
-                const confirmModal = document.getElementById("confirmModal");
+                const confirmModal = document.getElementById("confirmModal"); // Lấy container modal
 
                 // Logic đóng settings panel khi click ra ngoài
                 if (panel.style.display === "flex" && !panel.contains(e.target) && !toggle.contains(e.target) && !modal.contains(e.target) && !confirmModal.contains(e.target)) {
@@ -1049,13 +1032,8 @@
                     toggle.classList.remove("rotate");
                     toggle.classList.add("rotate-back");
                 }
-                // Logic cho nhạc nền (đã có từ trước và vẫn hoạt động)
-                // Nó sẽ được kích hoạt khi người dùng click lần đầu vào trang web
-                // (bao gồm cả click đầu tiên lên giao diện chính sau splash screen).
             }, { once: false });
         });
-
-        // Event listener for toggleSound checkbox (moved to DOMContentLoaded)
         document.getElementById("toggleSound").addEventListener("change", toggleAudio);
     </script>
 </body>
