@@ -220,7 +220,7 @@
 
         /* Modal Styles */
         .modal {
-            display: none; /* Ban đầu ẩn modal */
+            display: none; /* Đã sửa: Ban đầu ẩn modal để không hiện trước giao diện chính */
             position: fixed;
             z-index: 100;
             left: 0;
@@ -229,7 +229,6 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
             /* Các thuộc tính quan trọng để căn giữa nội dung */
-            display: flex; /* Biến container thành flexbox */
             justify-content: center; /* Căn giữa theo chiều ngang */
             align-items: center;     /* Căn giữa theo chiều dọc */
             animation: fadeInModal 0.3s ease-out;
@@ -571,7 +570,8 @@
     <div id="splashScreen">
         <div id="blackScreenOverlay"></div>
         <div id="myNameContainer">
-            <span class="my-name">NGUYỄN ĐẮC HOÀNG VIỆT</span> </div>
+            <span class="my-name">NGUYỄN ĐẮC HOÀNG VIỆT</span>
+        </div>
         <div class="split-part top-left"></div>
         <div class="split-part top-right"></div>
         <div class="split-part bottom-left"></div>
@@ -595,11 +595,13 @@
             </div>
             <div id="micText">🎙️ Đang lắng nghe...</div>
             <div class="settings-toggle" onclick="toggleSettings()">
-                <i class="fas fa-cog"></i> </div>
+                <i class="fas fa-cog"></i>
+            </div>
             <div class="settings-panel" id="settingsPanel">
                 <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
                 <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
-                <button onclick="clearAllHistory()">🗑️ Xóa lịch sử</button> </div>
+                <button onclick="clearAllHistory()">🗑️ Xóa lịch sử</button>
+            </div>
         </div>
     </div>
 
@@ -611,7 +613,8 @@
     </div>
 
     <div class="modal" id="confirmModal" tabindex="-1">
-        <div id="confirmModalContent"> <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
+        <div id="confirmModalContent">
+            <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
             <div class="confirm-buttons">
                 <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
                 <button class="continue-btn" onclick="proceedConfirmation()">Tiếp tục</button>
@@ -625,6 +628,7 @@
     <audio id="typeSound" preload="auto">
         <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
     </audio>
+
     <script>
         const tuDienDoraemon = {
             "cái loa biết đi": "Jaian",
@@ -953,7 +957,6 @@
             document.getElementById("confirmModal").style.display = "flex"; // Show the modal container
         }
         
-        // *** PHẦN ĐÃ SỬA ***
         // Hàm này sẽ hiển thị hộp thoại xác nhận trước khi xóa toàn bộ lịch sử.
         function clearAllHistory() {
             const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
