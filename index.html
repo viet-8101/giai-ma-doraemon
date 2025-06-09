@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giải mã Doraemon</title>
     <link rel="icon" href="Doraenon_logo.ico" type="image/x-icon">
@@ -23,9 +23,9 @@
 
         /* Giao diện chính của ứng dụng */
         #mainContent {
-            display: none; /* Ban đầu ẩn giao diện chính */
+            visibility: hidden; /* Ban đầu ẩn giao diện chính */
             opacity: 0; /* Cho hiệu ứng mờ dần khi hiện ra */
-            transition: opacity 1s ease-in;
+            transition: opacity 1s ease-in, visibility 1s ease-in; /* Thêm transition cho visibility */
             flex-direction: column; /* Để căn giữa nội dung overlay */
             justify-content: center;
             align-items: center;
@@ -33,7 +33,7 @@
             height: 100vh;
         }
         #mainContent.visible {
-            display: flex; /* Hiển thị lại khi splash screen ẩn */
+            visibility: visible; /* Hiển thị lại khi splash screen ẩn */
             opacity: 1;
         }
 
@@ -56,14 +56,14 @@
         }
 
         textarea {
-            width: calc(70% - 24px); /* Chiếm gần hết chiều rộng, trừ padding */
+            width: calc(100% - 100px); /* Chiếm gần hết chiều rộng, trừ padding (50px * 2) */
             height: 100px;
             padding: 50px;
             margin-bottom: 20px;
             border-radius: 10px;
             border: none;
             background-color: rgba(255, 255, 255, 1);
-            color: white;
+            color: black; /* Changed to black for visibility */
             font-size: 1em;
             resize: none;
             box-sizing: border-box;
@@ -568,8 +568,7 @@
             .button-group {
                 gap: 8px; /* Giảm khoảng cách giữa các nút */
             }
-        }
-    </style>
+        </style>
 </head>
 <body>
     <div id="splashScreen">
@@ -609,14 +608,14 @@
         </div>
     </div>
 
-    <div class="modal" id="modalLichSu">
+    <div class="modal" id="modalLichSu" tabindex="-1">
         <div class="modal-content">
             <button class="close-btn" onclick="closeLichSu()">Đóng</button>
             <div id="lichSuNoiDung"></div>
         </div>
     </div>
 
-    <div class="modal" id="confirmModal">
+    <div class="modal" id="confirmModal" tabindex="-1">
         <div id="confirmModalContent"> <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
             <div class="confirm-buttons">
                 <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
@@ -767,24 +766,29 @@
             if (!input) {
                 showMessage(" ⚠️  Bạn chưa nhập gì cả!", "error");
                 lastDecodedResult = "";
+                outputElement.textContent = ""; // Clear previous output if any
                 return;
             }
 
             let text = input;
             const original = text;
 
-            // Clear current output and start typing animation
+            // Clear current output and start typing animation with "Đang xử lý..."
             goChuTungKyTu(" ➡️  Đang xử lý...", "output", 30);
 
             // Give a short delay to allow "Đang xử lý..." to appear before actual processing
             setTimeout(() => {
                 const entries = Object.entries(tuDienDoraemon).sort((a, b) => b[0].length - a[0].length);
+                let replaced = false;
                 for (const [k, v] of entries) {
                     const re = new RegExp(escapeRegExp(k), "gi");
-                    text = text.replace(re, v);
+                    if (text.match(re)) { // Check if the key exists in the text
+                        text = text.replace(re, v);
+                        replaced = true;
+                    }
                 }
 
-                if (text === original) {
+                if (!replaced) { // If no replacement occurred
                     goChuTungKyTu(" ❓  Không tìm thấy từ khóa phù hợp.", "output", 30);
                     lastDecodedResult = "";
                 } else {
@@ -948,19 +952,17 @@
             document.getElementById("modalLichSu").style.display = "none";
         }
 
-        // Đã cập nhật để hiển thị #confirmModal (là container .modal)
         function showConfirmDeleteOne(index) {
             pendingDeleteIndex = index;
             isDeletingAll = false;
             document.getElementById("confirmMessage").textContent = "Bạn có chắc muốn xóa mục này khỏi lịch sử?";
-            document.getElementById("confirmModal").style.display = "flex";
+            document.getElementById("confirmModal").style.display = "flex"; // Show the modal container
         }
 
-        // Đã cập nhật để hiển thị #confirmModal (là container .modal)
         function showConfirmDeleteAll() {
             isDeletingAll = true;
             document.getElementById("confirmMessage").textContent = "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?";
-            document.getElementById("confirmModal").style.display = "flex";
+            document.getElementById("confirmModal").style.display = "flex"; // Show the modal container
         }
 
         function proceedConfirmation() {
@@ -975,14 +977,14 @@
                 showMessage("🗑️ Đã xóa mục khỏi lịch sử!", "success");
                 pendingDeleteIndex = -1;
             }
-            document.getElementById("confirmModal").style.display = "none";
+            document.getElementById("confirmModal").style.display = "none"; // Hide the confirmation modal
             openLichSu(); // Refresh history display after any deletion
         }
 
         function cancelConfirmation() {
             pendingDeleteIndex = -1;
             isDeletingAll = false;
-            document.getElementById("confirmModal").style.display = "none";
+            document.getElementById("confirmModal").style.display = "none"; // Hide the confirmation modal
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -1008,8 +1010,11 @@
             // Sau khi tất cả các animation hoàn tất (10 giây), ẩn splash screen và hiện main content
             setTimeout(() => {
                 splashScreen.style.display = "none"; // Ẩn hoàn toàn splash screen
-                mainContent.style.display = "flex"; // Hiển thị nội dung chính
-                mainContent.classList.add("visible"); // Kích hoạt hiệu ứng mờ dần cho main content
+
+                // Make mainContent visible and trigger fade-in
+                mainContent.style.visibility = "visible";
+                mainContent.style.display = "flex"; // Ensure it's flex for centering
+                mainContent.classList.add("visible"); // Trigger opacity transition
 
                 if (!audioPlayedFirstTime && !myAudio.muted) {
                      myAudio.play().catch(error => {
@@ -1023,11 +1028,15 @@
             document.addEventListener("click", function(e) {
                 const panel = document.getElementById("settingsPanel");
                 const toggle = document.querySelector(".settings-toggle"); // Sử dụng querySelector
-                const modal = document.getElementById("modalLichSu");
-                const confirmModal = document.getElementById("confirmModal"); // Lấy container modal
+                const modalLichSu = document.getElementById("modalLichSu"); // Get the history modal
+                const confirmModal = document.getElementById("confirmModal"); // Get the confirmation modal
 
-                // Logic đóng settings panel khi click ra ngoài
-                if (panel.style.display === "flex" && !panel.contains(e.target) && !toggle.contains(e.target) && !modal.contains(e.target) && !confirmModal.contains(e.target)) {
+                // Logic đóng settings panel khi click ra ngoài, tránh đóng khi click vào các modal
+                if (panel.style.display === "flex" &&
+                    !panel.contains(e.target) &&
+                    !toggle.contains(e.target) &&
+                    !modalLichSu.contains(e.target) && // Exclude history modal
+                    !confirmModal.contains(e.target)) { // Exclude confirmation modal
                     panel.style.display = "none";
                     toggle.classList.remove("rotate");
                     toggle.classList.add("rotate-back");
