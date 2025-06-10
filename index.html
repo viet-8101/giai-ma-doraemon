@@ -358,7 +358,7 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden; /* Quan trọng để các phần tách không tạo thanh cuộn */
-            display: flex; /* Để căn giữa tên */
+            display: flex; /* Để căn giữa nội dung */
             justify-content: center;
             align-items: center;
             z-index: 10000; /* Luôn nằm trên cùng */
@@ -382,7 +382,7 @@
             animation-delay: 0s; /* Bắt đầu ngay lập tức */
         }
 
-        /* Tên của bạn */
+        /* Container cho tên và subtitle */
         #myNameContainer {
             position: absolute;
             top: 50%;
@@ -402,10 +402,50 @@
             white-space: nowrap; /* Giữ tên trên một dòng nếu có thể */
             padding: 0 10px; /* Đảm bảo tên không bị tràn ra ngoài màn hình quá sát lề */
             box-sizing: border-box;
+            text-align: center; /* Căn giữa nội dung bên trong */
         }
         #myNameContainer .my-name {
             display: inline-block; /* Để áp dụng transform và animation tốt hơn */
-            text-align: center; /* Đảm bảo căn giữa cho tên nhiều dòng (nếu có) */
+        }
+        
+        /* ✅ CSS SUBTITLE */
+        .intro-subtitle {
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            font-size: 0.3em; /* Kích thước tương đối so với tên */
+            font-weight: normal;
+            display: block; /* Hiển thị ở dòng mới */
+            margin-top: 15px; /* Khoảng cách với tên */
+            color: #f0f8ff; /* Màu trắng sáng (AliceBlue) */
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+            /* Animation cho subtitle */
+            opacity: 0;
+            animation: subtitleFadeIn 2s ease-out 2.5s forwards, /* Hiện ra sau tên một chút */
+                         subtitleFadeOut 2s ease-in 4s forwards; /* Mờ đi cùng lúc với tên */
+        }
+        
+        /* ✅ CSS CHO NÚT SKIP */
+        #skipButton {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 10px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid white;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 10004; /* Nằm trên tất cả các lớp khác của splash screen */
+            opacity: 0; /* Ban đầu ẩn */
+            visibility: hidden; /* Ẩn hoàn toàn */
+            transition: all 0.4s ease-in-out;
+            animation: skipButtonFadeIn 1s ease-out 2s forwards; /* Hiện ra sau 2 giây */
+        }
+        #skipButton:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
         }
 
         /* Các phần chia */
@@ -482,6 +522,24 @@
             0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
             100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); visibility: hidden; }
         }
+        
+        /* ✅ KEYFRAMES cho SUBTITLE */
+        @keyframes subtitleFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes subtitleFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* ✅ KEYFRAME cho NÚT SKIP */
+        @keyframes skipButtonFadeIn {
+            to {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
 
         /* Các phần chia xuất hiện (tại giây 6) */
         @keyframes splitAppear {
@@ -531,6 +589,15 @@
                 white-space: normal; /* Cho phép xuống dòng */
                 max-width: 90vw; /* Giới hạn chiều rộng để không tràn ra ngoài */
             }
+            .intro-subtitle {
+                font-size: 0.25em; /* Giảm size subtitle trên mobile */
+            }
+            #skipButton {
+                font-size: 0.9em;
+                padding: 8px 20px;
+                bottom: 20px;
+                right: 20px;
+            }
             .settings-panel {
                 right: 15px; /* Điều chỉnh vị trí panel */
                 min-width: 130px;
@@ -557,6 +624,9 @@
             #myNameContainer {
                 font-size: 1.8em; /* Nhỏ hơn nữa trên di động */
             }
+            .intro-subtitle {
+                font-size: 0.3em; /* Tăng lại một chút cho cân đối */
+            }
             .button-group {
                 gap: 8px; /* Giảm khoảng cách giữa các nút */
             }
@@ -568,12 +638,15 @@
         <div id="blackScreenOverlay"></div>
         <div id="myNameContainer">
             <span class="my-name">NGUYỄN ĐẮC HOÀNG VIỆT</span>
+            <span class="intro-subtitle">✨ Chuẩn bị khám phá thế giới kỳ diệu của Doraemon... ✨</span>
         </div>
         <div class="split-part top-left"></div>
         <div class="split-part top-right"></div>
         <div class="split-part bottom-left"></div>
         <div class="split-part bottom-right"></div>
+        <button id="skipButton" onclick="skipIntro()">Skip</button>
     </div>
+
     <div id="mainContent">
         <div class="overlay">
             <h1> 🔍  Giải mã Doraemon</h1>
@@ -732,6 +805,7 @@
         let audioPlayedFirstTime = false;
         let pendingDeleteIndex = -1; // Biến để lưu trữ chỉ số của mục sẽ xóa
         let isDeletingAll = false; // Biến cờ để biết đang xóa toàn bộ hay xóa từng mục
+        let splashTimer = null; // ✅ Biến để quản lý setTimeout
 
         function showMessage(msg, type = 'info') {
             const msgBox = document.getElementById('messageBox');
@@ -990,10 +1064,33 @@
             isDeletingAll = false;
             document.getElementById("confirmModal").style.display = "none"; // Ẩn modal xác nhận
         }
-
-        document.addEventListener("DOMContentLoaded", () => {
+        
+        // ✅ HÀM KẾT THÚC INTRO (DÙNG CHO CẢ SKIP VÀ KHI HẾT GIỜ)
+        function endIntro() {
+            clearTimeout(splashTimer); // Xóa bộ đếm thời gian nếu có
             const splashScreen = document.getElementById("splashScreen");
             const mainContent = document.getElementById("mainContent");
+            const myAudio = document.getElementById("myAudio");
+            
+            splashScreen.style.display = "none"; // Ẩn hoàn toàn splash screen
+            mainContent.style.visibility = "visible";
+            mainContent.style.display = "flex";
+            mainContent.classList.add("visible");
+            
+            if (!audioPlayedFirstTime && !myAudio.muted) {
+                 myAudio.play().catch(error => {
+                     console.log("Lỗi khi phát nhạc nền tự động (cần tương tác người dùng):", error);
+                 });
+            }
+            audioPlayedFirstTime = true;
+        }
+        
+        // ✅ HÀM CHO NÚT SKIP
+        function skipIntro() {
+            endIntro();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
             const myAudio = document.getElementById("myAudio");
             const toggleSoundCheckbox = document.getElementById("toggleSound");
 
@@ -1008,25 +1105,11 @@
                 myAudio.muted = false;
                 document.getElementById("typeSound").muted = false;
             }
-
+            
             // Tổng thời gian của tất cả các animation là 10 giây (10000 ms)
             const totalAnimationDuration = 10000;
-            // Sau khi tất cả các animation hoàn tất (10 giây), ẩn splash screen và hiện main content
-            setTimeout(() => {
-                splashScreen.style.display = "none"; // Ẩn hoàn toàn splash screen
-
-                // Make mainContent visible and trigger fade-in
-                mainContent.style.visibility = "visible";
-                mainContent.style.display = "flex"; // Ensure it's flex for centering
-                mainContent.classList.add("visible"); // Trigger opacity transition
-
-                if (!audioPlayedFirstTime && !myAudio.muted) {
-                     myAudio.play().catch(error => {
-                         console.log("Lỗi khi phát nhạc nền tự động (cần tương tác người dùng):", error);
-                     });
-                }
-                audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát nhạc nền
-            }, totalAnimationDuration);
+            // Sau khi tất cả các animation hoàn tất (10 giây), gọi hàm endIntro
+            splashTimer = setTimeout(endIntro, totalAnimationDuration);
 
             // Gắn lại sự kiện lắng nghe click toàn bộ document, đảm bảo nó luôn hoạt động
             document.addEventListener("click", function(e) {
