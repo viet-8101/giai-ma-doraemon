@@ -802,7 +802,7 @@
             "viên đạn của đại bác không khí": "Moto"
         };
         let lastDecodedResult = "";
-        let audioPlayedFirstTime = false;
+        let audioPlayedFirstTime = false; // Biến cờ để kiểm tra xem nhạc đã phát lần đầu chưa
         let pendingDeleteIndex = -1; // Biến để lưu trữ chỉ số của mục sẽ xóa
         let isDeletingAll = false; // Biến cờ để biết đang xóa toàn bộ hay xóa từng mục
         let splashTimer = null; // ✅ Biến để quản lý setTimeout
@@ -990,6 +990,14 @@
             document.getElementById("myAudio").muted = muted;
             document.getElementById("typeSound").muted = muted;
             localStorage.setItem("doraemonSoundMuted", muted);
+
+            // Nếu người dùng bật âm thanh và chưa phát lần nào, thử phát lại
+            if (!muted && !audioPlayedFirstTime) {
+                document.getElementById("myAudio").play().catch(error => {
+                    console.log("Lỗi khi phát nhạc nền tự động (sau khi bỏ tắt tiếng):", error);
+                });
+                audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát
+            }
         }
 
         function openLichSu() {
@@ -1077,17 +1085,26 @@
             mainContent.style.display = "flex";
             mainContent.classList.add("visible");
             
+            // Sau khi splash screen ẩn, cố gắng phát nhạc nếu chưa phát và không bị tắt tiếng
             if (!audioPlayedFirstTime && !myAudio.muted) {
                  myAudio.play().catch(error => {
                      console.log("Lỗi khi phát nhạc nền tự động (cần tương tác người dùng):", error);
                  });
             }
-            audioPlayedFirstTime = true;
+            audioPlayedFirstTime = true; // Đánh dấu là đã cố gắng phát nhạc
         }
         
         // ✅ HÀM CHO NÚT SKIP
         function skipIntro() {
-            endIntro();
+            endIntro(); // Khi nhấn nút skip, cũng gọi endIntro để ẩn splash và hiển thị nội dung chính
+            // Sau khi skip, đây được coi là một tương tác của người dùng, nên thử phát nhạc
+            const myAudio = document.getElementById("myAudio");
+            if (!audioPlayedFirstTime && !myAudio.muted) {
+                myAudio.play().catch(error => {
+                    console.log("Lỗi khi phát nhạc sau Skip (có thể do đã chạy ở endIntro hoặc chính sách trình duyệt):", error);
+                });
+                audioPlayedFirstTime = true;
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -1110,6 +1127,22 @@
             const totalAnimationDuration = 10000;
             // Sau khi tất cả các animation hoàn tất (10 giây), gọi hàm endIntro
             splashTimer = setTimeout(endIntro, totalAnimationDuration);
+
+            // Thêm event listener cho bất kỳ tương tác nào trên tài liệu (click/tap)
+            // Sự kiện này sẽ gỡ bỏ chính nó sau khi được kích hoạt lần đầu
+            document.body.addEventListener('click', function firstInteractionPlay() {
+                const myAudio = document.getElementById("myAudio");
+                // Chỉ phát nếu chưa phát lần nào và không bị tắt tiếng
+                if (!audioPlayedFirstTime && !myAudio.muted) {
+                    myAudio.play().then(() => {
+                        audioPlayedFirstTime = true; // Đánh dấu đã phát thành công
+                        document.body.removeEventListener('click', firstInteractionPlay); // Gỡ bỏ listener sau khi phát
+                    }).catch(error => {
+                        console.log("Lỗi khi phát nhạc nền sau tương tác đầu tiên:", error);
+                        // Có thể thêm một nút "Bật nhạc" nhỏ nếu muốn người dùng kích hoạt thủ công
+                    });
+                }
+            }, { once: true }); // Dùng once: true để chỉ nghe sự kiện này một lần
 
             // Gắn lại sự kiện lắng nghe click toàn bộ document, đảm bảo nó luôn hoạt động
             document.addEventListener("click", function(e) {
