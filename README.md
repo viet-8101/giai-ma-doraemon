@@ -38,6 +38,8 @@ Một ứng dụng web vui nhộn cho phép bạn "giải mã" các biệt danh 
 📦 File an toàn 100% do tác giả tự tạo.  
 ⚠️ Google có thể báo "Không thể quét virus" vì file >25MB — bạn **cứ yên tâm tải về**.
 
+---
+
 ## 👤 Tác giả
 
 **Nguyễn Đắc Hoàng Việt**  
