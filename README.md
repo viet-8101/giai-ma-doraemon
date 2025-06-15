@@ -28,7 +28,7 @@ Một ứng dụng web vui nhộn cho phép bạn "giải mã" các biệt danh 
 
 ## 🖥️ Tải ứng dụng bản Windows (.exe)
 
-👉 [Tải bản cài đặt tại đây (Google Drive)]([https://drive.google.com/file/d/1IlueOz-GKihPrzPKHGj9-98LZs6IharY/view?usp=drive_link](https://drive.google.com/file/d/18EWkkxHPMNb_OI6FD8xhQjRb6v63_l1k/view)
+👉 [Tải bản cài đặt tại đây (Google Drive)]([https://drive.google.com/file/d/1IlueOz-GKihPrzPKHGj9-98LZs6IharY/view?usp=drive_link](https://drive.google.com/file/d/18EWkkxHPMNb_OI6FD8xhQjRb6v63_l1k/view))
 
 > ⚠️ Nếu bị trình duyệt cảnh báo khi tải, bạn có thể chọn **“Giữ lại” / “Keep”** vì đây là phần mềm sạch và an toàn do tác giả tự tạo.  
 > 🖱 Khi mở file, bạn chỉ cần nhấn “Tiếp theo” vài bước là cài xong!
