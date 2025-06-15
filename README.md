@@ -26,12 +26,17 @@ Một ứng dụng web vui nhộn cho phép bạn "giải mã" các biệt danh 
 
 ---
 
-## 🖥️ Tải ứng dụng bản Windows (.exe)
+## 🖥️ Tải ứng dụng bản Windows (.zip)
 
-👉 [Tải bản cài đặt tại đây (Google Drive)]([https://drive.google.com/file/d/1IlueOz-GKihPrzPKHGj9-98LZs6IharY/view?usp=drive_link](https://drive.google.com/file/d/18EWkkxHPMNb_OI6FD8xhQjRb6v63_l1k/view).
-> 🖱 Khi mở file, bạn chỉ cần nhấn “Tiếp theo” vài bước là cài xong!
+👉 [Tải ứng dụng dạng nén (Google Drive)](https://drive.google.com/file/d/13SHOlF-A2pLRT5-kM-djqD9G5UJG07Cp/view?usp=sharing)
 
----
+> Sau khi tải về:
+> 1. **Giải nén file `.zip`**
+> 2. Mở thư mục đã giải nén
+> 3. Chạy file `Giải Mã Doraemon.exe` để bắt đầu sử dụng
+
+📦 File an toàn 100% do tác giả tự tạo.  
+⚠️ Google có thể báo "Không thể quét virus" vì file >25MB — bạn **cứ yên tâm tải về**.
 
 ## 👤 Tác giả
 
