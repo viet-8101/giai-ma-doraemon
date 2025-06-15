@@ -28,7 +28,7 @@ Một ứng dụng web vui nhộn cho phép bạn "giải mã" các biệt danh 
 
 ## 🖥️ Tải ứng dụng bản Windows (.zip)
 
-👉 [Tải ứng dụng dạng nén (Google Drive)](https://drive.google.com/file/d/13SHOlF-A2pLRT5-kM-djqD9G5UJG07Cp/view?usp=sharing)
+👉 [Tải ứng dụng tại đây](https://drive.google.com/file/d/13SHOlF-A2pLRT5-kM-djqD9G5UJG07Cp/view?usp=sharing)
 
 > Sau khi tải về:
 > 1. **Giải nén file `.zip`**
