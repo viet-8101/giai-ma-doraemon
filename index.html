@@ -209,6 +209,7 @@
             box-sizing: border-box;
             box-shadow: none; /* Remove default shadow for panel buttons */
             min-width: unset; /* Remove min-width from general button */
+            margin-top: 5px; /* Add some space above buttons in settings */
         }
         .settings-panel button:hover {
             transform: none; /* No scale for panel buttons */
@@ -668,7 +669,10 @@
                 <i class="fas fa-cog"></i>
             </div>
             <div class="settings-panel" id="settingsPanel">
-                <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh</label>
+                <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh nền</label>
+                <!-- New audio controls within the settings panel -->
+                <button onclick="playAudio('giao-huong')">🎵 Bản giao hưởng địa cầu</button>
+                <button onclick="playAudio('com-ngon')">🎶 Bữa cơm ngon lành</button>
                 <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
                 <button onclick="clearAllHistory()">🗑️ Xóa lịch sử</button>
             </div>
@@ -697,6 +701,13 @@
     </audio>
     <audio id="typeSound" preload="auto">
         <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
+    </audio>
+    <!-- New audio elements -->
+    <audio id="com-ngon" preload="auto">
+        <source src="https://media.vocaroo.com/mp3/1883Jz7Qz18d" type="audio/mpeg">
+    </audio>
+    <audio id="giao-huong" preload="auto">
+        <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
     </audio>
 
     <script>
@@ -989,6 +1000,8 @@
             const muted = document.getElementById("toggleSound").checked;
             document.getElementById("myAudio").muted = muted;
             document.getElementById("typeSound").muted = muted;
+            document.getElementById("com-ngon").muted = muted; // New: Mute/unmute "com-ngon"
+            document.getElementById("giao-huong").muted = muted; // New: Mute/unmute "giao-huong"
             localStorage.setItem("doraemonSoundMuted", muted);
 
             // Nếu người dùng bật âm thanh và chưa phát lần nào, thử phát lại
@@ -997,6 +1010,32 @@
                     console.log("Lỗi khi phát nhạc nền tự động (sau khi bỏ tắt tiếng):", error);
                 });
                 audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát
+            }
+        }
+
+        // New function to play specific audio
+        function playAudio(audioId) {
+            const audio = document.getElementById(audioId);
+            // Pause and reset other audios if they are playing
+            ['myAudio', 'typeSound', 'com-ngon', 'giao-huong'].forEach(id => {
+                const otherAudio = document.getElementById(id);
+                if (otherAudio && otherAudio !== audio) {
+                    otherAudio.pause();
+                    otherAudio.currentTime = 0;
+                }
+            });
+
+            if (audio) {
+                audio.loop = true; // Set the audio to loop
+                if (audio.paused) {
+                    audio.play().catch(error => {
+                        console.error("Error playing audio:", error);
+                        showMessage("⚠️ Không thể phát âm thanh. Vui lòng tương tác trang trước.", "error");
+                    });
+                } else {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
             }
         }
 
@@ -1110,17 +1149,27 @@
         document.addEventListener("DOMContentLoaded", () => {
             const myAudio = document.getElementById("myAudio");
             const toggleSoundCheckbox = document.getElementById("toggleSound");
+            const comNgonAudio = document.getElementById("com-ngon"); // Get new audio elements
+            const giaoHuongAudio = document.getElementById("giao-huong");
 
             document.getElementById("typeSound").volume = 0.2; // Đặt âm lượng cho âm thanh gõ
+            // Set volumes for new audio elements (optional, adjust as needed)
+            comNgonAudio.volume = 0.5;
+            giaoHuongAudio.volume = 0.5;
+
             const savedMuteState = localStorage.getItem("doraemonSoundMuted");
             if (savedMuteState === "true") {
                 toggleSoundCheckbox.checked = true;
                 myAudio.muted = true;
                 document.getElementById("typeSound").muted = true;
+                comNgonAudio.muted = true; // New: Mute on load if saved state is muted
+                giaoHuongAudio.muted = true; // New: Mute on load if saved state is muted
             } else {
                 toggleSoundCheckbox.checked = false;
                 myAudio.muted = false;
                 document.getElementById("typeSound").muted = false;
+                comNgonAudio.muted = false; // New: Unmute on load
+                giaoHuongAudio.muted = false; // New: Unmute on load
             }
             
             // Tổng thời gian của tất cả các animation là 10 giây (10000 ms)
