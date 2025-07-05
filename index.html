@@ -725,6 +725,39 @@
     <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
 
     <script>
+        // Biến để lưu trữ ID widget reCAPTCHA
+        let recaptchaWidgetId; 
+
+        // Hàm callback khi reCAPTCHA API được tải, phải ở global scope
+        window.onloadCallback = function() {
+            recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+                'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I',
+                'callback': 'onRecaptchaSuccess', // Đây là hàm sẽ được gọi khi reCAPTCHA thành công
+                'size': 'invisible'
+            });
+        };
+
+        // Hàm được reCAPTCHA gọi khi xác minh thành công
+        window.onRecaptchaSuccess = function(token) {
+            console.log("reCAPTCHA token:", token);
+            // Giải quyết Promise của executeRecaptcha()
+            if (window._recaptchaResolve) { // Kiểm tra biến resolve đã được định nghĩa chưa
+                window._recaptchaResolve(token);
+                window._recaptchaResolve = null; // Xóa biến sau khi sử dụng
+            }
+            grecaptcha.reset(recaptchaWidgetId); // Reset reCAPTCHA cho lần sử dụng tiếp theo
+        };
+
+        // Hàm được reCAPTCHA gọi khi có lỗi
+        window.onRecaptchaError = function() {
+            console.error("reCAPTCHA encountered an error.");
+            if (window._recaptchaReject) { // Kiểm tra biến reject đã được định nghĩa chưa
+                window._recaptchaReject("reCAPTCHA_ERROR");
+                window._recaptchaReject = null; // Xóa biến sau khi sử dụng
+            }
+            grecaptcha.reset(recaptchaWidgetId); // Reset reCAPTCHA
+        };
+
         const tuDienDoraemon = {
             "cái loa biết đi": "Jaian",
             "thánh chảnh": "Suneo",
@@ -832,18 +865,6 @@
         let isDeletingAll = false; // Biến cờ để biết đang xóa toàn bộ hay xóa từng mục
         let splashTimer = null; // ✅ Biến để quản lý setTimeout
 
-        // Biến để lưu trữ ID widget reCAPTCHA
-        let recaptchaWidgetId; 
-
-        // Hàm callback khi reCAPTCHA API được tải
-        const onloadCallback = function() {
-            recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
-                'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I',
-                'callback': 'onRecaptchaSuccess',
-                'size': 'invisible'
-            });
-        };
-
         // Hàm chính để thực hiện giải mã sau khi kiểm tra bảo mật
         async function performDecodingWithSecurity() {
             showMessage("Đang kiểm tra bảo mật...", "info");
@@ -876,20 +897,18 @@
                     return reject("reCAPTCHA_NOT_READY");
                 }
                 
+                // Lưu trữ hàm resolve và reject vào biến toàn cục để onRecaptchaSuccess/Error có thể gọi
+                window._recaptchaResolve = resolve;
+                window._recaptchaReject = reject;
+
                 // Set a timeout for reCAPTCHA execution
                 const timeout = setTimeout(() => {
-                    reject("reCAPTCHA_TIMEOUT");
-                }, 10000); // 10 seconds timeout
-
-                // Define the success callback in the global scope (as required by reCAPTCHA)
-                window.onRecaptchaSuccess = function(token) {
-                    clearTimeout(timeout);
-                    console.log("reCAPTCHA token:", token);
-                    // Có thể gửi token này đến backend để xác minh thêm nếu có
-                    resolve(token);
-                    // Reset reCAPTCHA for future use
+                    if (window._recaptchaReject) { // Kiểm tra để tránh lỗi nếu đã resolve/reject
+                        window._recaptchaReject("reCAPTCHA_TIMEOUT");
+                        window._recaptchaReject = null;
+                    }
                     grecaptcha.reset(recaptchaWidgetId);
-                };
+                }, 10000); // 10 seconds timeout
 
                 grecaptcha.execute(recaptchaWidgetId);
             });
