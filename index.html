@@ -6,6 +6,8 @@
     <title>Giải mã Doraemon</title>
     <link rel="icon" href="Doraenon_logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google reCAPTCHA v2 (invisible) -->
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
     <style>
         /* CSS CƠ BẢN VÀ CHUNG */
         body {
@@ -653,7 +655,8 @@
             <h1> 🔍  Giải mã Doraemon</h1>
             <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
             <div class="button-group">
-                <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
+                <!-- Nút Giải mã Doraemon sẽ gọi hàm bao bọc để tích hợp bảo mật -->
+                <button onclick="performDecodingWithSecurity()">🧠 Giải mã Doraemon</button>
                 <button onclick="saoChep()"> 📋  Copy kết quả</button>
                 <button onclick="startDictation()"> 🎤  Nhận diện giọng nói</button>
             </div>
@@ -696,6 +699,14 @@
         </div>
     </div>
 
+    <!-- reCAPTCHA v2 invisible container -->
+    <div id="recaptcha-container"
+         class="g-recaptcha"
+         data-sitekey="6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I"
+         data-callback="onRecaptchaSuccess"
+         data-size="invisible">
+    </div>
+
     <audio id="myAudio" loop muted>
         <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
     </audio>
@@ -709,6 +720,9 @@
     <audio id="giao-huong" preload="auto">
         <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
     </audio>
+
+    <!-- FingerprintJS CDN -->
+    <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
 
     <script>
         const tuDienDoraemon = {
@@ -817,6 +831,126 @@
         let pendingDeleteIndex = -1; // Biến để lưu trữ chỉ số của mục sẽ xóa
         let isDeletingAll = false; // Biến cờ để biết đang xóa toàn bộ hay xóa từng mục
         let splashTimer = null; // ✅ Biến để quản lý setTimeout
+
+        // Biến để lưu trữ ID widget reCAPTCHA
+        let recaptchaWidgetId; 
+
+        // Hàm callback khi reCAPTCHA API được tải
+        const onloadCallback = function() {
+            recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+                'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I',
+                'callback': 'onRecaptchaSuccess',
+                'size': 'invisible'
+            });
+        };
+
+        // Hàm chính để thực hiện giải mã sau khi kiểm tra bảo mật
+        async function performDecodingWithSecurity() {
+            showMessage("Đang kiểm tra bảo mật...", "info");
+            
+            // 1. Kiểm tra reCAPTCHA
+            try {
+                await executeRecaptcha();
+                console.log("reCAPTCHA kiểm tra thành công.");
+            } catch (error) {
+                console.error("Lỗi reCAPTCHA:", error);
+                showMessage("Lỗi xác minh reCAPTCHA. Vui lòng thử lại.", "error");
+                return;
+            }
+
+            // 2. Lấy thông tin IP
+            await getIpInfo();
+
+            // 3. Lấy Fingerprint
+            await getVisitorId();
+
+            // Nếu tất cả các bước bảo mật đều thành công, tiến hành giải mã
+            giaiMa();
+        }
+
+        // --- 1. TÍCH HỢP GOOGLE RECAPTCHA V2 (INVISIBLE) ---
+        function executeRecaptcha() {
+            return new Promise((resolve, reject) => {
+                if (typeof grecaptcha === 'undefined' || !recaptchaWidgetId) {
+                    console.error("reCAPTCHA chưa sẵn sàng.");
+                    return reject("reCAPTCHA_NOT_READY");
+                }
+                
+                // Set a timeout for reCAPTCHA execution
+                const timeout = setTimeout(() => {
+                    reject("reCAPTCHA_TIMEOUT");
+                }, 10000); // 10 seconds timeout
+
+                // Define the success callback in the global scope (as required by reCAPTCHA)
+                window.onRecaptchaSuccess = function(token) {
+                    clearTimeout(timeout);
+                    console.log("reCAPTCHA token:", token);
+                    // Có thể gửi token này đến backend để xác minh thêm nếu có
+                    resolve(token);
+                    // Reset reCAPTCHA for future use
+                    grecaptcha.reset(recaptchaWidgetId);
+                };
+
+                grecaptcha.execute(recaptchaWidgetId);
+            });
+        }
+
+
+        // --- 2. TÍCH HỢP IPINFO API (LITE) ---
+        async function getIpInfo() {
+            const ipinfoToken = "97322fdbb8213c"; // Your IPInfo token
+            try {
+                const response = await fetch(`https://ipinfo.io/json?token=${ipinfoToken}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log("Thông tin IP:");
+                console.log("  IP:", data.ip);
+                console.log("  Quốc gia:", data.country);
+                console.log("  Vùng:", data.region);
+                console.log("  Tổ chức:", data.org);
+                console.log("  Hostname:", data.hostname || "N/A"); // hostname có thể không có trong Lite plan
+                
+                // Ví dụ kiểm tra IP từ Việt Nam
+                if (data.country && data.country !== "VN") {
+                    console.warn("Người dùng truy cập từ ngoài Việt Nam:", data.country);
+                    // Có thể thêm logic chặn hoặc cảnh báo tại đây
+                    showMessage(`Cảnh báo: Truy cập từ ${data.country}.`, "info");
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy thông tin IP:", error);
+                showMessage("Không thể lấy thông tin IP.", "error");
+            }
+        }
+
+        // --- 3. TÍCH HỢP FINGERPRINTJS ---
+        async function getVisitorId() {
+            try {
+                const fp = await FingerprintJS.load();
+                const result = await fp.get();
+                const visitorId = result.visitorId;
+                console.log("Fingerprint Visitor ID:", visitorId);
+
+                const storedVisitorId = localStorage.getItem("doraemonVisitorId");
+                if (storedVisitorId) {
+                    if (storedVisitorId !== visitorId) {
+                        console.warn("Visitor ID mới phát hiện khác với lần trước:", visitorId);
+                        showMessage("Phát hiện truy cập lạ!.", "info");
+                        // Có thể thêm logic cảnh báo hoặc hành động khác ở đây
+                    } else {
+                        console.log("Visitor ID khớp với lần truy cập trước.");
+                    }
+                } else {
+                    localStorage.setItem("doraemonVisitorId", visitorId);
+                    console.log("Lưu Visitor ID mới:", visitorId);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy Fingerprint ID:", error);
+                showMessage("Không thể lấy mã định danh người dùng.", "error");
+            }
+        }
+
 
         function showMessage(msg, type = 'info') {
             const msgBox = document.getElementById('messageBox');
@@ -953,7 +1087,7 @@
                     document.getElementById("micIndicator").style.display = "none";
                     document.getElementById("micText").style.display = "none";
                     showMessage(" ✅  Nhận diện giọng nói hoàn tất.", "success");
-                    giaiMa();
+                    performDecodingWithSecurity(); // Gọi hàm bảo mật sau khi nhận diện giọng nói
                 };
 
                 recognition.onerror = function(event) {
@@ -977,7 +1111,7 @@
         function chanEnter(e) {
             if (e.key === "Enter") {
                 e.preventDefault();
-                giaiMa();
+                performDecodingWithSecurity(); // Gọi hàm bảo mật khi nhấn Enter
             }
         }
 
