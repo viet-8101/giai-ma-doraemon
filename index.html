@@ -459,11 +459,8 @@
             opacity: 0; /* Ban đầu ẩn */
             /* Kế thừa nền gradient từ #splashScreen */
             background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
-            background-size: 1000% 1000%; /* Giữ animation nền */
-            /* Animation cho mỗi phần: xuất hiện, di chuyển, và mờ dần */
-            animation:
-                splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
-                finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
+            background-size: 1000% 1000%;
+            animation: gradientFlow 15s ease infinite; /* Giữ animation nền */
             z-index: 10003; /* Nằm trên cùng */
         }
 
@@ -634,6 +631,44 @@
                 gap: 8px; /* Giảm khoảng cách giữa các nút */
             }
         }
+
+        /* Styles for the new Access Statistics Modal */
+        #modalThongKeTruyCap .modal-content {
+            background-color: #222;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 600px; /* Adjust max-width as needed */
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #thongKeNoiDung {
+            width: 100%;
+            text-align: left;
+        }
+        #thongKeNoiDung h3, #thongKeNoiDung h4 {
+            color: #00bfff; /* Doraemon blue */
+            margin-top: 15px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #thongKeNoiDung p {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+        #thongKeNoiDung .info-section {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 5px solid #ff69b4; /* Pink accent */
+        }
     </style>
 </head>
 <body>
@@ -678,6 +713,8 @@
                 <button onclick="playAudio('com-ngon')">🎶 Bữa cơm ngon lành</button>
                 <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
                 <button onclick="clearAllHistory()">🗑️ Xóa lịch sử</button>
+                <!-- Nút mới để xem thông tin truy cập -->
+                <button onclick="openThongKeTruyCap()">📊 Xem thông tin truy cập</button>
             </div>
         </div>
     </div>
@@ -696,6 +733,14 @@
                 <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
                 <button class="continue-btn" onclick="proceedConfirmation()">Tiếp tục</button>
             </div>
+        </div>
+    </div>
+
+    <!-- New modal for Access Statistics -->
+    <div class="modal" id="modalThongKeTruyCap" tabindex="-1">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeThongKeTruyCap()">Đóng</button>
+            <div id="thongKeNoiDung"></div>
         </div>
     </div>
 
@@ -727,6 +772,9 @@
     <script>
         // Biến để lưu trữ ID widget reCAPTCHA
         let recaptchaWidgetId; 
+        // Biến toàn cục để lưu thông tin IP và Fingerprint
+        let currentIpInfo = null;
+        let currentVisitorId = null;
 
         // Hàm callback khi reCAPTCHA API được tải, phải ở global scope
         window.onloadCallback = function() {
@@ -931,6 +979,9 @@
                 console.log("  Tổ chức:", data.org);
                 console.log("  Hostname:", data.hostname || "N/A"); // hostname có thể không có trong Lite plan
                 
+                // Lưu trữ thông tin IP vào biến toàn cục
+                currentIpInfo = data;
+
                 // Ví dụ kiểm tra IP từ Việt Nam
                 if (data.country && data.country !== "VN") {
                     console.warn("Người dùng truy cập từ ngoài Việt Nam:", data.country);
@@ -950,6 +1001,9 @@
                 const result = await fp.get();
                 const visitorId = result.visitorId;
                 console.log("Fingerprint Visitor ID:", visitorId);
+
+                // Lưu trữ Visitor ID vào biến toàn cục
+                currentVisitorId = visitorId;
 
                 const storedVisitorId = localStorage.getItem("doraemonVisitorId");
                 if (storedVisitorId) {
@@ -1299,6 +1353,59 @@
             }
         }
 
+        // Hàm mở modal thống kê truy cập
+        function openThongKeTruyCap() {
+            const box = document.getElementById("thongKeNoiDung");
+            box.innerHTML = ''; // Xóa nội dung cũ
+
+            let content = '<h3>📊 Thông tin truy cập hiện tại:</h3>';
+
+            if (currentIpInfo) {
+                content += '<div class="info-section">';
+                content += '<h4>Thông tin IP:</h4>';
+                content += `<p><strong>IP:</strong> ${currentIpInfo.ip || 'N/A'}</p>`;
+                content += `<p><strong>Quốc gia:</strong> ${currentIpInfo.country || 'N/A'}</p>`;
+                content += `<p><strong>Vùng:</strong> ${currentIpInfo.region || 'N/A'}</p>`;
+                content += `<p><strong>Tổ chức:</strong> ${currentIpInfo.org || 'N/A'}</p>`;
+                content += `<p><strong>Hostname:</strong> ${currentIpInfo.hostname || 'N/A'}</p>`;
+                content += '</div>';
+            } else {
+                content += '<p>Chưa có thông tin IP. Vui lòng thực hiện hành động "Giải mã Doraemon" trước.</p>';
+            }
+
+            if (currentVisitorId) {
+                content += '<div class="info-section">';
+                content += '<h4>Mã định danh người dùng (Fingerprint):</h4>';
+                content += `<p><strong>Visitor ID:</strong> ${currentVisitorId}</p>`;
+                const storedId = localStorage.getItem("doraemonVisitorId");
+                if (storedId) {
+                    if (storedId === currentVisitorId) {
+                        content += '<p><i>(ID này khớp với ID đã lưu trước đó.)</i></p>';
+                    } else {
+                        content += `<p><i>(ID này khác với ID đã lưu: ${storedId}. Có thể là truy cập mới hoặc thay đổi thiết bị.)</i></p>`;
+                    }
+                } else {
+                    content += '<p><i>(ID này đã được lưu cho lần truy cập sau.)</i></p>';
+                }
+                content += '</div>';
+            } else {
+                content += '<p>Chưa có mã định danh người dùng. Vui lòng thực hiện hành động "Giải mã Doraemon" trước.</p>';
+            }
+
+            if (!currentIpInfo && !currentVisitorId) {
+                content = '<p style="text-align: center; color: #ccc;"><i>Chưa có dữ liệu thống kê truy cập. Vui lòng thực hiện hành động "Giải mã Doraemon" trước để thu thập dữ liệu.</i></p>';
+            }
+
+            box.innerHTML = content;
+            document.getElementById("modalThongKeTruyCap").style.display = "flex";
+        }
+
+        // Hàm đóng modal thống kê truy cập
+        function closeThongKeTruyCap() {
+            document.getElementById("modalThongKeTruyCap").style.display = "none";
+        }
+
+
         document.addEventListener("DOMContentLoaded", () => {
             const myAudio = document.getElementById("myAudio");
             const toggleSoundCheckbox = document.getElementById("toggleSound");
@@ -1352,13 +1459,15 @@
                 const toggle = document.querySelector(".settings-toggle"); // Sử dụng querySelector
                 const modalLichSu = document.getElementById("modalLichSu"); // Get the history modal
                 const confirmModal = document.getElementById("confirmModal"); // Get the confirmation modal
+                const modalThongKeTruyCap = document.getElementById("modalThongKeTruyCap"); // Get the new stats modal
 
                 // Logic đóng settings panel khi click ra ngoài, tránh đóng khi click vào các modal
                 if (panel.style.display === "flex" &&
                     !panel.contains(e.target) &&
                     !toggle.contains(e.target) &&
                     !modalLichSu.contains(e.target) && // Exclude history modal
-                    !confirmModal.contains(e.target)) { // Exclude confirmation modal
+                    !confirmModal.contains(e.target) && // Exclude confirmation modal
+                    !modalThongKeTruyCap.contains(e.target)) { // Exclude new stats modal
                     panel.style.display = "none";
                     toggle.classList.remove("rotate");
                     toggle.classList.add("rotate-back");
