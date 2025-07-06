@@ -7,7 +7,7 @@
     <link rel="icon" href="Doraenon_logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <script src="https://www.google.com/recaptcha/api.js" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
     
     <style>
         /* CSS CƠ BẢN VÀ CHUNG */
@@ -1298,5 +1298,6 @@
         // Gắn sự kiện change cho checkbox tắt/bật âm thanh
         document.getElementById("toggleSound").addEventListener("change", toggleAudio);
     </script>
+    <div id="recaptcha-container"></div>
 </body>
 </html>
