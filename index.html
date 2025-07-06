@@ -10,98 +10,925 @@
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
     
     <style>
-        /* Toàn bộ CSS của bạn giữ nguyên, không cần thay đổi */
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: url('doraemon-bg.jpg') no-repeat center center fixed; background-size: cover; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .overlay { background: rgba(0, 0, 0, 0.1); max-width: 800px; width: 90%; padding: 35px; border-radius: 20px; text-align: center; box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); position: relative; box-sizing: border-box; }
-        h1 { font-size: 2.4em; margin-bottom: 20px; color: white; }
-        textarea { width: 70%; height: 70px; margin-bottom: 20px; padding: 12px; border-radius: 10px; border: none; font-size: 1em; resize: none; }
-        .button-group { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-        button { padding: 10px 18px; font-size: 1em; background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff); background-size: 1000% 1000%; animation: gradientFlow 10s ease infinite; color: white; border: none; border-radius: 10px; cursor: pointer; white-space: nowrap; min-width: 180px; transition: transform 0.3s ease; box-shadow: 0 0 10px rgba(0, 191, 255, 0.5); }
-        button:hover { transform: scale(1.05); }
-        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        #output { margin-top: 20px; font-size: 1.2em; white-space: pre-wrap; min-height: 40px; color: white; }
-        #messageBox { margin-top: 15px; padding: 10px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95em; min-height: 25px; text-align: center; opacity: 0; transition: opacity 0.5s ease-in-out; }
-        #messageBox.show { opacity: 1; }
-        /* ... các CSS khác của bạn ... */
+        /* CSS CƠ BẢN VÀ CHUNG */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('doraemon-bg.jpg') no-repeat center center fixed; /* Đổi 'doraemon-bg.jpg' thành ảnh nền của bạn */
+            background-size: cover;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Đảm bảo đủ chiều cao */
+            overflow: hidden; /* Ngăn cuộn khi splash screen đang hoạt động */
+        }
+
+        /* Giao diện chính của ứng dụng */
+        #mainContent {
+            visibility: hidden; /* Ban đầu ẩn giao diện chính */
+            opacity: 0; /* Cho hiệu ứng mờ dần khi hiện ra */
+            transition: opacity 1s ease-in, visibility 1s ease-in; /* Thêm transition cho visibility */
+            flex-direction: column; /* Để căn giữa nội dung overlay */
+            justify-content: center;
+            align-items: center;
+            width: 100%; /* Chiếm toàn bộ chiều rộng để căn giữa overlay */
+            height: 100vh;
+        }
+        #mainContent.visible {
+            visibility: visible; /* Hiển thị lại khi splash screen ẩn */
+            opacity: 1;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%; /* Responsive width */
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            position: relative;
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+        }
+
+        h1 {
+            font-size: 2.4em;
+            margin-bottom: 20px;
+            color: white; /* Đảm bảo màu sắc hiển thị rõ ràng */
+        }
+
+    textarea {
+      width: 70%;
+      height: 70px;
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1em;
+      resize: none;
+    }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+            gap: 12px; /* Khoảng cách giữa các nút */
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 18px;
+            font-size: 1em;
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%;
+            animation: gradientFlow 10s ease infinite;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 180px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #output {
+            margin-top: 20px;
+            font-size: 1.2em;
+            white-space: pre-wrap;
+            min-height: 40px;
+            color: white;
+        }
+
+        #messageBox {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.95em;
+            min-height: 25px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #messageBox.show {
+            opacity: 1;
+        }
+
+        /* Microphone Indicator */
+        .mic-indicator {
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            display: none; /* Hidden by default */
+        }
+        .mic-indicator svg {
+            width: 100%;
+            height: 100%;
+            fill: #00bfff;
+            animation: micWave 1s infinite ease-in-out;
+        }
+        @keyframes micWave {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        #micText {
+            margin-top: 10px;
+            font-style: italic;
+            display: none; /* Hidden by default */
+            color: #ccc;
+        }
+
+        /* Settings Panel */
+        .settings-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.5s ease-out;
+            z-index: 10;
+            /* Cài đặt mới cho icon bánh răng */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px; /* Kích thước icon */
+            height: 40px;
+            font-size: 2.2em; /* Kích thước icon bánh răng */
+        }
+
+        .settings-toggle.rotate {
+            animation: rotate 0.5s ease-out forwards;
+        }
+        .settings-toggle.rotate-back {
+            animation: rotate-back 0.5s ease-out forwards;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
+        @keyframes rotate-back { from { transform: rotate(180deg); } to { transform: rotate(0deg); } }
+
+        .settings-panel {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 65px; /* Vị trí dưới nút cài đặt */
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.85);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9; /* Dưới nút toggle */
+            min-width: 150px;
+        }
+        .settings-panel label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1em;
+            color: #ccc;
+        }
+        .settings-panel input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+            accent-color: #00bfff; /* Màu checkbox */
+        }
+        .settings-panel button {
+            background: linear-gradient(270deg, #00bfff, #1e90ff); /* Blueish gradient */
+            color: white;
+            padding: 10px;
+            font-size: 0.9em;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: none; /* Remove default shadow for panel buttons */
+            min-width: unset; /* Remove min-width from general button */
+            margin-top: 5px; /* Add some space above buttons in settings */
+        }
+        .settings-panel button:hover {
+            transform: none; /* No scale for panel buttons */
+            background: linear-gradient(270deg, #1e90ff, #00bfff); /* Slightly darker */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Ban đầu ẩn modal để không hiện trước giao diện chính */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            /* Các thuộc tính quan trọng để căn giữa nội dung */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            align-items: center;     /* Căn giữa theo chiều dọc */
+            animation: fadeInModal 0.3s ease-out;
+        }
+        .modal .close-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-top: 20px; /* Space from content */
+        }
+        .modal .close-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        #modalLichSu .modal-content {
+            background-color: #222;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh; /* Giới hạn chiều cao */
+            overflow-y: auto; /* Cho phép cuộn */
+            color: white;
+            display: flex; /* Dùng flex để dễ căn chỉnh nút đóng */
+            flex-direction: column;
+            align-items: center; /* Căn giữa nội dung và nút đóng */
+        }
+        #lichSuNoiDung {
+            width: 100%; /* Chiếm toàn bộ chiều rộng của modal-content */
+            text-align: left;
+        }
+        #lichSuNoiDung .history-item {
+            background-color: #333;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            word-break: break-word; /* Đã đổi từ break-all sang break-word để trông tự nhiên hơn */
+            border-left: 5px solid #00bfff; /* Màu xanh nước biển */
+            position: relative;
+            padding-right: 40px; /* Đủ chỗ cho nút xóa */
+        }
+        #lichSuNoiDung .delete-item-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #lichSuNoiDung .delete-item-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Confirmation Modal Content Styles */
+        /* Đặt các style của hộp thoại xác nhận vào #confirmModalContent (phần tử con của .modal) */
+        #confirmModalContent {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+            max-width: 350px;
+            display: flex; /* Đảm bảo nội dung bên trong nó cũng là flex để sắp xếp các nút */
+            flex-direction: column;
+            gap: 20px;
+        }
+        #confirmModalContent p {
+            font-size: 1.1em;
+            margin: 0;
+            color: white;
+        }
+        #confirmModalContent .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        #confirmModalContent .confirm-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 100px;
+        }
+        #confirmModalContent .confirm-buttons button.cancel-btn {
+            background: #6c757d; /* Gray */
+            color: white;
+        }
+        #confirmModalContent .confirm-buttons button.cancel-btn:hover {
+            background: #5a6268;
+        }
+        #confirmModalContent .confirm-buttons button.continue-btn {
+            background: #dc3545; /* Red */
+            color: white;
+        }
+        #confirmModalContent .confirm-buttons button.continue-btn:hover {
+            background: #c82333;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ======================================= */
+        /* CSS CHO SPLASH SCREEN MỚI - ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT */
+        /* ======================================= */
+
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Quan trọng để các phần tách không tạo thanh cuộn */
+            display: flex; /* Để căn giữa nội dung */
+            justify-content: center;
+            align-items: center;
+            z-index: 10000; /* Luôn nằm trên cùng */
+            /* Nền gradient cho màn hình chính của splash screen, sẽ hiển thị sau khi blackScreenOverlay mờ đi */
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%;
+            animation: gradientFlow 15s ease infinite; /* Giữ animation nền */
+        }
+
+        /* Màn hình đen ban đầu */
+        #blackScreenOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 10002; /* Trên tên, dưới các phần tách */
+            opacity: 1;
+            animation: blackScreenFadeOut 2s linear forwards; /* Mờ dần trong 2s */
+            animation-delay: 0s; /* Bắt đầu ngay lập tức */
+        }
+
+        /* Container cho tên và subtitle */
+        #myNameContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Căn giữa */
+            z-index: 10001; /* Dưới màn hình đen và các phần tách */
+            opacity: 0; /* Ban đầu ẩn */
+            color: white;
+            font-family: 'Arial Black', sans-serif; /* Font nổi bật hơn */
+            font-size: 4.5em; /* Kích thước to hơn */
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            /* Animation: hiện ra (2-4s) và mờ đi (4-6s) */
+            animation:
+                myNameFadeInScale 2s ease-out 2s forwards,
+                myNameFadeOutScale 2s ease-in 4s forwards;
+            white-space: nowrap; /* Giữ tên trên một dòng nếu có thể */
+            padding: 0 10px; /* Đảm bảo tên không bị tràn ra ngoài màn hình quá sát lề */
+            box-sizing: border-box;
+            text-align: center; /* Căn giữa nội dung bên trong */
+        }
+        #myNameContainer .my-name {
+            display: inline-block; /* Để áp dụng transform và animation tốt hơn */
+        }
+        
+        /* CSS SUBTITLE */
+        .intro-subtitle {
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            font-size: 0.3em; /* Kích thước tương đối so với tên */
+            font-weight: normal;
+            display: block; /* Hiển thị ở dòng mới */
+            margin-top: 15px; /* Khoảng cách với tên */
+            color: #f0f8ff; /* Màu trắng sáng (AliceBlue) */
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+            /* Animation cho subtitle */
+            opacity: 0;
+            animation: subtitleFadeIn 2s ease-out 2.5s forwards, /* Hiện ra sau tên một chút */
+                         subtitleFadeOut 2s ease-in 4s forwards; /* Mờ đi cùng lúc với tên */
+        }
+        
+        /* CSS CHO NÚT SKIP */
+        #skipButton {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 10px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid white;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 10004; /* Nằm trên tất cả các lớp khác của splash screen */
+            opacity: 0; /* Ban đầu ẩn */
+            visibility: hidden; /* Ẩn hoàn toàn */
+            transition: all 0.4s ease-in-out;
+            animation: skipButtonFadeIn 1s ease-out 2s forwards; /* Hiện ra sau 2 giây */
+        }
+        #skipButton:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Các phần chia */
+        .split-part {
+            position: absolute;
+            width: 50vw; /* Chiếm 50% viewport width */
+            height: 50vh; /* Chiếm 50% viewport height */
+            opacity: 0; /* Ban đầu ẩn */
+            /* Kế thừa nền gradient từ #splashScreen */
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%; /* Giữ animation nền */
+            /* Animation cho mỗi phần: xuất hiện, di chuyển, và mờ dần */
+            animation:
+                splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
+                finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
+            z-index: 10003; /* Nằm trên cùng */
+        }
+
+        /* Vị trí ban đầu và animation di chuyển riêng của từng phần */
+        .split-part.top-left {
+            top: 0; left: 0;
+            animation:
+                splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
+                splitMoveTopLeft 1s ease-out 6s forwards, /* Di chuyển ra từ giây 6-7 */
+                finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
+        }
+        .split-part.top-right {
+            top: 0; left: 50vw;
+            animation:
+                splitAppear 0s linear 6s forwards,
+                splitMoveTopRight 1s ease-out 6s forwards,
+                finalFadeOut 3s linear 7s forwards;
+        }
+        .split-part.bottom-left {
+            top: 50vh; left: 0;
+            animation:
+                splitAppear 0s linear 6s forwards,
+                splitMoveBottomLeft 1s ease-out 6s forwards,
+                finalFadeOut 3s linear 7s forwards;
+        }
+        .split-part.bottom-right {
+            top: 50vh; left: 50vw;
+            animation:
+                splitAppear 0s linear 6s forwards,
+                splitMoveBottomRight 1s ease-out 6s forwards,
+                finalFadeOut 3s linear 7s forwards;
+        }
+
+        /* ================== */
+        /* ĐỊNH NGHĨA KEYFRAMES */
+        /* ================== */
+
+        /* Nền gradient */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Màn hình đen mờ dần (0-2s) */
+        @keyframes blackScreenFadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* Tên hiện ra và phóng to (2-4s) */
+        @keyframes myNameFadeInScale {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Tên mờ dần và thu nhỏ (4-6s) */
+        @keyframes myNameFadeOutScale {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); visibility: hidden; }
+        }
+        
+        /* KEYFRAMES cho SUBTITLE */
+        @keyframes subtitleFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes subtitleFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* KEYFRAME cho NÚT SKIP */
+        @keyframes skipButtonFadeIn {
+            to {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* Các phần chia xuất hiện (tại giây 6) */
+        @keyframes splitAppear {
+            to { opacity: 1; }
+        }
+
+        /* Các phần chia di chuyển ra (6-7s) */
+        @keyframes splitMoveTopLeft {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, -100%); } /* Di chuyển lên trái */
+        }
+        @keyframes splitMoveTopRight {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100%, -100%); } /* Di chuyển lên phải */
+        }
+        @keyframes splitMoveBottomLeft {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 100%); } /* Di chuyển xuống trái */
+        }
+        @keyframes splitMoveBottomRight {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100%, 100%); } /* Di chuyển xuống phải */
+        }
+
+        /* Mờ dần cuối cùng của các phần tách (7-10s) */
+        @keyframes finalFadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            button {
+                padding: 10px 15px; /* Giảm padding ngang cho nút */
+                font-size: 0.95em; /* Giảm font size cho nút */
+                min-width: 150px; /* Điều chỉnh min-width để tránh tràn */
+            }
+            .overlay {
+                padding: 25px 15px; /* Giảm padding ngang của overlay */
+            }
+            #myNameContainer {
+                font-size: 3em; /* Nhỏ hơn trên di động */
+                word-wrap: break-word; /* Cho phép ngắt từ nếu tên quá dài */
+                white-space: normal; /* Cho phép xuống dòng */
+                max-width: 90vw; /* Giới hạn chiều rộng để không tràn ra ngoài */
+            }
+            .intro-subtitle {
+                font-size: 0.25em; /* Giảm size subtitle trên mobile */
+            }
+            #skipButton {
+                font-size: 0.9em;
+                padding: 8px 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .settings-panel {
+                right: 15px; /* Điều chỉnh vị trí panel */
+                min-width: 130px;
+            }
+            .settings-panel button {
+                font-size: 0.85em;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            textarea {
+                height: 80px;
+            }
+            button {
+                padding: 8px 12px; /* Giảm padding nhỏ hơn nữa */
+                font-size: 0.85em; /* Giảm font size nhỏ hơn nữa */
+                min-width: 130px; /* Điều chỉnh min-width chặt chẽ hơn */
+            }
+            .overlay {
+                padding: 15px 10px; /* Giảm padding rất nhiều */
+            }
+            #myNameContainer {
+                font-size: 1.8em; /* Nhỏ hơn nữa trên di động */
+            }
+            .intro-subtitle {
+                font-size: 0.3em; /* Tăng lại một chút cho cân đối */
+            }
+            .button-group {
+                gap: 8px; /* Giảm khoảng cách giữa các nút */
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="overlay">
-        <h1>🔍 Giải mã Doraemon</h1>
-        <textarea id="input" placeholder="Nhập mã troll ở đây..."></textarea>
-        
-        <div class="button-group">
-            <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
-            <button onclick="saoChep()">📋 Copy kết quả</button>
+    <div id="splashScreen">
+        <div id="blackScreenOverlay"></div>
+        <div id="myNameContainer">
+            <span class="my-name">NGUYỄN ĐẮC HOÀNG VIỆT</span>
+            <span class="intro-subtitle">✨ Chuẩn bị khám phá thế giới kỳ diệu của Doraemon... ✨</span>
         </div>
-        
-        <div id="output"></div>
-        <div id="messageBox"></div>
-        
-        <div id="recaptcha-container"
-             class="g-recaptcha"
-             data-sitekey="YOUR_RECAPTCHA_SITE_KEY_HERE"
-             data-callback="onRecaptchaSuccess"
-             data-size="invisible">
+        <div class="split-part top-left"></div>
+        <div class="split-part top-right"></div>
+        <div class="split-part bottom-left"></div>
+        <div class="split-part bottom-right"></div>
+        <button id="skipButton" onclick="skipIntro()">Skip</button>
+    </div>
+
+    <div id="mainContent">
+        <div class="overlay">
+            <h1> 🔍  Giải mã Doraemon</h1>
+            <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
+            <div class="button-group">
+                <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
+                <button onclick="saoChep()"> 📋  Copy kết quả</button>
+                <button onclick="startDictation()"> 🎤  Nhận diện giọng nói</button>
+            </div>
+            <div id="output"></div>
+            <div id="messageBox"></div>
+            <div class="mic-indicator" id="micIndicator">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z" />
+                </svg>
+            </div>
+            <div id="micText">🎙️ Đang lắng nghe...</div>
+            <div class="settings-toggle" onclick="toggleSettings()">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="settings-panel" id="settingsPanel">
+                <label><input type="checkbox" id="toggleSound" onchange="toggleAudio()"> Tắt âm thanh nền</label>
+                <button onclick="playAudio('giao-huong')">🎵 Bản giao hưởng địa cầu</button>
+                <button onclick="playAudio('com-ngon')">🎶 Bữa cơm ngon lành</button>
+                <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
+                <button onclick="clearAllHistory()">🗑️ Xóa lịch sử</button>
+            </div>
         </div>
     </div>
 
+    <div class="modal" id="modalLichSu" tabindex="-1">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeLichSu()">Đóng</button>
+            <div id="lichSuNoiDung"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal" tabindex="-1">
+        <div id="confirmModalContent">
+            <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
+            <div class="confirm-buttons">
+                <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
+                <button class="continue-btn" onclick="proceedConfirmation()">Tiếp tục</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="myAudio" loop muted>
+        <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
+    </audio>
+    <audio id="typeSound" preload="auto">
+        <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="com-ngon" preload="auto">
+        <source src="https://media.vocaroo.com/mp3/1883Jz7Qz18d" type="audio/mpeg">
+    </audio>
+    <audio id="giao-huong" preload="auto">
+        <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
+    </audio>
+
     <script>
-        // --- PHẦN JAVASCRIPT ĐÃ ĐƯỢC VIẾT LẠI HOÀN TOÀN ĐỂ AN TOÀN HƠN ---
-
+        // Từ điển Doraemon - NỘI DUNG NÀY SẼ ĐƯỢC CHUYỂN HOÀN TOÀN SANG SERVER KHI CÓ BACKEND
+        // Hiện tại, nó đang nằm ở frontend để website hoạt động khi chưa có server.
+        const tuDienDoraemon = {
+            "cái loa biết đi": "Jaian",
+            "thánh chảnh": "Suneo",
+            "cục nợ quốc dân": "Nobita",
+            "trùm chém gió": "Suneo",
+            "boss ăn vặt": "Doraemon",
+            "siêu nhân gục ngã": "Nobita",
+            "máy phát kẹo": "Doraemon",
+            "ổ bom di động": "Jaian",
+            "thánh phá đồ": "Nobita",
+            "chuyên gia gây họa": "Nobita",
+            "nhà tài trợ nước mắt": "mẹ Nobita",
+            "lò luyện điểm 0": "lớp học của Nobita",
+            "trùm thất tình": "Nobita",
+            "đứa trẻ cuối cùng của mushika": "Micca",
+            "máy ATM biết đi": "Doraemon",
+            "trí tuệ nhân tạo có tâm": "Doraemon",
+            "con tinh tinh": "Jaian",
+            "con khỉ đột": "Jaian", "khỉ đột": "Jaian",
+            "tinh tinh": "Jaian",
+            "con cáo": "Suneo", "cáo": "Suneo",
+            "bạch tuộc": "Noise",
+            "quần dài": "2 con cá trắm đen đc làm ở Pháp rất là mắc tiền (của Suneo)",
+            "mụ phù thủy": "mẹ của Nobita",
+            "tên ngốc hậu đậu": "Nobita",
+            "tên robinson phiền phức": "Nobita",
+            "thiên tài ngủ": "Nobita",
+            "diễn viên suất sắc": "Nobita",
+            "bậc thầy năn nỉ": "Nobita",
+            "thiên tài thắt dây": "Nobita",
+            "tay vua súng": "Nobita",
+            "xe buýt": "Nobita", "xe bus":
+            "Nobita", "mèo máy": "Doraemon",
+            "mỏ nhọn": "Suneo",
+            "lồi rốn": "Jaian",
+            "yên ắng": "nhà Shizuka",
+            "hình tròn": "bánh rán dorayaki",
+            "kẻ tham lam": "Jaian",
+            "hai người nổi tiếng ham ăn": "Jaian và Suneo",
+            "điểm đen": "điểm 0",
+            "bàn tay vàng trong làng ngáo ngơ": "Nobita",
+            "cục tạ quốc dân": "Nobita",
+            "đại ca sân trường": "Jaian",
+            "người mẫu sừng sỏ": "Suneo",
+            "cô gái tắm mỗi tập": "Shizuka",
+            "vua bánh rán": "Doraemon",
+            "thánh cầu cứu": "Nobita",
+            "người đến từ tương lai": "Doraemon",
+            "cây ATM sống": "Doraemon",
+            "lồng tiếng động đất": "Jaian",
+            "diễn viên chính của bi kịch": "Nobita",
+            "fan cuồng công nghệ": "Suneo",
+            "kẻ lười biếng nhỏ bé": "Nobita",
+            "chồn xanh nhỏ đáng yêu": "Doraemon",
+            "bình yên trước cơn bão": "nhà Shizuka",
+            "cậu bé sáo lạc điệu": "Nobita",
+            "loa phóng thanh biết đi": "Jaian",
+            "trùm phá nốt": "Nobita",
+            "người cứu âm nhạc địa cầu": "Doraemon",
+            "quái vật hút âm": "bào tử noise",
+            "người bạn đến từ hành tinh âm nhạc": "Micca",
+            "thánh phá bản nhạc": "Nobita",
+            "cây sáo truyền thuyết": "cây sáo dọc của mushika",
+            "bản nhạc giải cứu trái đất": "bản giao hưởng địa cầu",
+            "phi công nghiệp dư": "Nobita",
+            "vùng đất trong mơ": "Utopia",
+            "cư dân đám mây": "người sống ở Utopia",
+            "nhà trên trời view đẹp": "Utopia",
+            "người bạn Utopia": "Sonya",
+            "trùm điều khiển thời tiết": "quản lý Utopia",
+            "mặt trăng bay lạc": "Utopia",
+            "chuyến phiêu lưu trên trời": "hành trình của nhóm Nobita",
+            "lâu đài mây thần bí": "trung tâm điều hành Utopia",
+            "trùm chấn động bầu trời": "Suneo lái máy bay",
+            "cậu bé bay không bằng lái": "Nobita",
+            "thánh nhảy moonwalk ngoài vũ trụ": "Nobita",
+            "chuyên gia té không trọng lực": "Nobita",
+            "trạm vũ trụ di động": "tàu của Doraemon",
+            "người bạn tai dài trên mặt trăng": "Luca",
+            "cư dân mặt trăng bí ẩn": "tộc người Espal",
+            "đội thám hiểm mặt trăng": "nhóm Nobita",
+            "mặt trăng giả tưởng": "thế giới do bảo bối tạo ra",
+            "cuộc chiến không trọng lực": "trận đấu trên mặt trăng",
+            "lũ bạn ngoài hành tinh đáng yêu": "Luca và đồng bọn",
+            "bầu trời đêm đầy ảo mộng": "khung cảnh mặt trăng",
+            "cậu bé lười biếng nhất thành phố": "Nobita",
+            "cậu bé xấu tính nhất thành phố": "Jaian",
+            "nhạc sĩ vũ trụ": "Trupet",
+            "nhà soạn nhạc vĩ đại": "Trupet",
+            "người sáng tác giao hưởng địa cầu": "Trupet",
+            "chủ nhân bản giao hưởng địa cầu": "Trupet",
+            "nhà sáng tạo âm nhạc vũ trụ": "Trupet",
+            "nhạc sĩ bảo vệ hòa bình âm nhạc": "Trupet",
+            "rùa siêu tốc vũ trụ": "Moto",
+            "rùa vũ trụ có mai thép": "Moto",
+            "rùa siêu bền": "Moto",
+            "tốc độ vũ trụ từ mai rùa": "Moto",
+            "vũ trụ đua rùa": "Moto",
+            "con rùa nhanh nhất trong không gian": "Moto",
+            "viên đạn của đại bác không khí": "Moto"
+        };
         let lastDecodedResult = "";
-        let recaptchaWidgetId;
+        let audioPlayedFirstTime = false; // Biến cờ để kiểm tra xem nhạc đã phát lần đầu chưa
+        let pendingDeleteIndex = -1; // Biến để lưu trữ chỉ số của mục sẽ xóa
+        let isDeletingAll = false; // Biến cờ để biết đang xóa toàn bộ hay xóa từng mục
+        let splashTimer = null; // Biến để quản lý setTimeout của splash screen
+        let recaptchaWidgetId; // Biến để lưu ID của widget reCAPTCHA
 
-        // A. HÀM ĐƯỢC GOOGLE GỌI KHI API TẢI XONG
+        // Hàm hiển thị thông báo ngắn trên giao diện người dùng
+        function showMessage(msg, type = 'info') {
+            const msgBox = document.getElementById('messageBox');
+            msgBox.textContent = msg; // Sử dụng textContent để chống XSS khi hiển thị thông báo
+            msgBox.className = 'show';
+            if (type === 'error') {
+                msgBox.style.backgroundColor = 'rgba(220, 20, 60, 0.8)';
+            } else if (type === 'success') {
+                msgBox.style.backgroundColor = 'rgba(60, 179, 113, 0.8)';
+            } else {
+                msgBox.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            }
+            if (msgBox.timer) clearTimeout(msgBox.timer);
+            msgBox.timer = setTimeout(() => {
+                msgBox.className = '';
+                msgBox.textContent = '';
+            }, 3000);
+        }
+
+        // Hàm thoát các ký tự đặc biệt trong biểu thức chính quy để tìm kiếm an toàn
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        // Hàm chính để giải mã nội dung nhập vào
+        // QUAN TRỌNG: Logic giải mã và xác thực reCAPTCHA sẽ được CHUYỂN sang server
+        function giaiMa() {
+            const inputElement = document.getElementById("input");
+            const outputElement = document.getElementById("output");
+            const input = inputElement.value.trim().toLowerCase();
+
+            if (!input) {
+                showMessage(" ⚠️  Bạn chưa nhập gì cả!", "error");
+                lastDecodedResult = "";
+                outputElement.textContent = ""; // Xóa kết quả cũ nếu có
+                return;
+            }
+
+            showMessage("Đang xác thực, vui lòng chờ...", "info");
+            // Kích hoạt reCAPTCHA. Khi xác thực thành công, onRecaptchaSuccess sẽ được gọi.
+            grecaptcha.execute(recaptchaWidgetId);
+        }
+
+        // Hàm được Google gọi khi reCAPTCHA API tải xong
         window.onloadCallback = function() {
             console.log("reCAPTCHA API đã sẵn sàng để sử dụng.");
             if (document.getElementById('recaptcha-container')) {
+                // Khởi tạo reCAPTCHA widget vô hình.
+                // 'sitekey' là khóa công khai bạn nhận được từ Google.
+                // 'callback' là hàm sẽ được gọi khi reCAPTCHA xác thực thành công.
                 recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
-                    'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I', // !!! THAY SITE KEY CỦA BẠN VÀO ĐÂY
+                    'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I', // reCAPTCHA site key của bạn
                     'callback': onRecaptchaSuccess,
-                    'size': 'invisible'
+                    'size': 'invisible' // Chế độ vô hình
                 });
             }
         };
 
-        // B. HÀM KÍCH HOẠT QUÁ TRÌNH GIẢI MÃ
-        function giaiMa() {
-            const userInput = document.getElementById("input").value.trim();
-            if (!userInput) {
-                showMessage("⚠️ Bạn chưa nhập gì cả!", "error");
-                return;
-            }
-            showMessage("Đang xác thực, vui lòng chờ...", "info");
-            // Ra lệnh cho reCAPTCHA chạy. Nếu thành công, nó sẽ tự gọi hàm 'onRecaptchaSuccess'
-            grecaptcha.execute(recaptchaWidgetId);
-        }
-
-        // C. HÀM ĐƯỢC GỌI SAU KHI RECAPTCHA XÁC THỰC THÀNH CÔNG VÀ TRẢ VỀ TOKEN
+        // Hàm được gọi sau khi reCAPTCHA xác thực thành công và trả về token
         async function onRecaptchaSuccess(token) {
             showMessage("✅ Xác thực thành công! Đang gửi đến máy chủ...", "success");
             const userInput = document.getElementById("input").value.trim();
+            const originalInput = userInput; // Lưu lại input gốc để lưu lịch sử
 
             try {
                 // Gửi yêu cầu (gồm input và token) đến backend của chúng ta
-                const response = await fetch('http://localhost:3000/giai-ma', {
+                // Địa chỉ này cần được thay thế bằng URL API thực tế của server bạn
+                const response = await fetch('http://localhost:3000/giai-ma', { // Địa chỉ server backend của bạn
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         userInput: userInput,
                         recaptchaToken: token
+                        // TẠI ĐÂY BẠN CŨNG CÓ THỂ GỬI THÊM:
+                        // - Fingerprint ID từ FingerprintJS (nếu bạn dùng)
+                        // - Thông tin địa chỉ IP (nếu bạn có cách lấy từ frontend, nhưng tốt nhất là lấy ở server)
                     }),
                 });
 
                 const data = await response.json();
 
                 if (!response.ok) {
-                    // Hiển thị lỗi nếu server trả về lỗi (ví dụ: token sai)
+                    // Hiển thị lỗi nếu server trả về lỗi (ví dụ: token reCAPTCHA sai, lỗi logic backend)
                     throw new Error(data.error || 'Lỗi không xác định từ máy chủ');
                 }
 
-                // Hiển thị kết quả thành công từ server
-                document.getElementById('output').textContent = "➡️ Kết quả: " + data.ketQua;
-                lastDecodedResult = data.ketQua;
+                // Nếu server trả về lỗi không tìm thấy từ khóa
+                if (data.status === 'notFound') { // Giả sử server trả về status này nếu không tìm thấy
+                    goChuTungKyTu(" ❓  Không tìm thấy từ khóa phù hợp.", "output", 30);
+                    lastDecodedResult = "";
+                } else {
+                    // Hiển thị kết quả thành công từ server
+                    goChuTungKyTu(" ➡️  Kết quả: " + data.ketQua, "output", 30);
+                    lastDecodedResult = data.ketQua;
+
+                    // Lưu lịch sử vào LocalStorage (vẫn chạy ở frontend)
+                    // **KHẮC PHỤC BẢO MẬT: Đảm bảo dữ liệu lưu trữ là sạch (được lọc từ server)
+                    // hoặc không chứa HTML/script nếu bạn muốn dùng innerHTML để hiển thị sau này.**
+                    // Hiện tại, dữ liệu được hiển thị bằng textContent nên không có nguy cơ XSS ở đây.
+                    const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                    lichSu.unshift({
+                        input: originalInput, // Input gốc
+                        output: data.ketQua, // Kết quả từ server
+                        timestamp: new Date().toLocaleString('vi-VN')
+                    });
+                    localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu.slice(0, 20))); // Giới hạn 20 mục
+                }
 
             } catch (error) {
                 console.error('Đã có lỗi xảy ra:', error);
@@ -112,31 +939,364 @@
             }
         }
         
-        // --- CÁC HÀM TIỆN ÍCH KHÁC (GIỮ NGUYÊN) ---
-        function showMessage(msg, type = 'info') {
-            const msgBox = document.getElementById('messageBox');
-            msgBox.textContent = msg;
-            msgBox.className = 'show';
-            if (type === 'error') {
-                msgBox.style.backgroundColor = 'rgba(220, 20, 60, 0.8)';
-            } else if (type === 'success') {
-                msgBox.style.backgroundColor = 'rgba(60, 179, 113, 0.8)';
-            } else {
-                msgBox.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        // Hàm này không cần thay đổi, chạy hoàn toàn ở client
+        function goChuTungKyTu(text, elementId, speed) {
+            const el = document.getElementById(elementId);
+            const sound = document.getElementById("typeSound");
+            // Stop any ongoing typing animation and clear content
+            if (el.typingTimer) clearTimeout(el.typingTimer);
+            el.textContent = "";
+
+            let index = 0;
+            function type() {
+                if (index < text.length) {
+                    el.textContent += text.charAt(index);
+                    // Only play sound if not muted
+                    if (!sound.muted) {
+                        try {
+                            sound.pause();
+                            sound.currentTime = 0;
+                            sound.play();
+                        } catch (e) {
+                            console.error("Lỗi khi phát âm thanh:", e);
+                        }
+                    }
+                    el.typingTimer = setTimeout(type, speed);
+                    index++;
+                } else {
+                    // Ensure sound is stopped after typing is complete
+                    sound.pause();
+                    sound.currentTime = 0;
+                }
             }
-            if (msgBox.timer) clearTimeout(msgBox.timer);
-            msgBox.timer = setTimeout(() => { msgBox.className = ''; msgBox.textContent = ''; }, 4000);
+            type();
         }
-        
+
+        // Hàm sao chép kết quả đã giải mã vào clipboard
         function saoChep() {
             if (!lastDecodedResult) {
-                showMessage("⚠️ Chưa có kết quả để sao chép!", "error");
+                showMessage(" ⚠️  Chưa có kết quả giải mã để sao chép!", "error");
                 return;
             }
             navigator.clipboard.writeText(lastDecodedResult).then(() => {
-                showMessage("📋 Đã sao chép kết quả!", "success");
+                showMessage(" 📋  Đã sao chép kết quả!", "success");
+            }).catch(err => {
+                console.error('Không thể sao chép văn bản: ', err);
+                showMessage('Có lỗi xảy ra khi sao chép. Vui lòng thử lại hoặc sao chép thủ công.', "error");
             });
         }
+
+        // Khởi tạo nhận diện giọng nói nếu trình duyệt hỗ trợ
+        let recognition;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'vi-VN'; // Ngôn ngữ tiếng Việt
+            recognition.interimResults = false; // Không trả về kết quả tạm thời
+            recognition.maxAlternatives = 1; // Chỉ lấy một kết quả tốt nhất
+
+            function startDictation() {
+                showMessage("🎙️ Đang lắng nghe...", "info");
+                document.getElementById("micIndicator").style.display = "block";
+                document.getElementById("micText").style.display = "block";
+                recognition.start();
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById("input").value = transcript;
+                    document.getElementById("micIndicator").style.display = "none";
+                    document.getElementById("micText").style.display = "none";
+                    showMessage(" ✅  Nhận diện giọng nói hoàn tất.", "success");
+                    // Sau khi nhận diện xong, tự động gọi hàm giải mã
+                    giaiMa();
+                };
+
+                recognition.onerror = function(event) {
+                    console.error("Lỗi nhận diện giọng nói:", event.error);
+                    showMessage(" ⚠️  Không nhận diện được, thử lại. Lỗi: " + event.error, "error");
+                    document.getElementById("micIndicator").style.display = "none";
+                    document.getElementById("micText").style.display = "none";
+                };
+
+                recognition.onend = function() {
+                    document.getElementById("micIndicator").style.display = "none";
+                    document.getElementById("micText").style.display = "none";
+                };
+            }
+        } else {
+            // Hàm thay thế nếu trình duyệt không hỗ trợ nhận diện giọng nói
+            function startDictation() {
+                showMessage(" ⚠️  Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Chỉ hoạt động tốt trên Chrome).", "error");
+            }
+        }
+
+        // Chặn phím Enter trong textarea và thay bằng gọi hàm giải mã
+        function chanEnter(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                giaiMa();
+            }
+        }
+
+        // Chức năng bật/tắt bảng cài đặt (bánh răng)
+        function toggleSettings() {
+            const panel = document.getElementById("settingsPanel");
+            const toggleButton = document.querySelector(".settings-toggle");
+            if (panel.style.display === "flex") {
+                panel.style.display = "none";
+                toggleButton.classList.remove("rotate");
+                toggleButton.classList.add("rotate-back");
+            }
+            else {
+                panel.style.display = "flex";
+                toggleButton.classList.remove("rotate-back");
+                toggleButton.classList.add("rotate");
+            }
+        }
+
+        // Chức năng bật/tắt âm thanh tổng thể
+        function toggleAudio() {
+            const muted = document.getElementById("toggleSound").checked;
+            document.getElementById("myAudio").muted = muted;
+            document.getElementById("typeSound").muted = muted;
+            document.getElementById("com-ngon").muted = muted;
+            document.getElementById("giao-huong").muted = muted;
+            localStorage.setItem("doraemonSoundMuted", muted);
+
+            // Nếu người dùng bật âm thanh và chưa phát lần nào, thử phát lại
+            if (!muted && !audioPlayedFirstTime) {
+                document.getElementById("myAudio").play().catch(error => {
+                    console.log("Lỗi khi phát nhạc nền tự động (sau khi bỏ tắt tiếng):", error);
+                });
+                audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát
+            }
+        }
+
+        // Hàm phát các bản nhạc cụ thể từ cài đặt
+        function playAudio(audioId) {
+            const audio = document.getElementById(audioId);
+            // Dừng và reset các audio khác đang phát
+            ['myAudio', 'typeSound', 'com-ngon', 'giao-huong'].forEach(id => {
+                const otherAudio = document.getElementById(id);
+                if (otherAudio && otherAudio !== audio) {
+                    otherAudio.pause();
+                    otherAudio.currentTime = 0;
+                }
+            });
+
+            if (audio) {
+                audio.loop = true; // Đặt âm thanh lặp lại
+                if (audio.paused) {
+                    audio.play().catch(error => {
+                        console.error("Error playing audio:", error);
+                        showMessage("⚠️ Không thể phát âm thanh. Vui lòng tương tác trang trước.", "error");
+                    });
+                } else {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            }
+        }
+
+        // Hàm mở modal lịch sử giải mã
+        function openLichSu() {
+            const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+            const box = document.getElementById("lichSuNoiDung");
+
+            box.innerHTML = ''; // Xóa nội dung cũ
+            if (lichSu.length === 0) {
+                box.innerHTML = '<p style="text-align: center; color: #ccc;"><i>Chưa có lịch sử.</i></p>';
+            } else {
+                lichSu.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.classList.add('history-item');
+
+                    // **KHẮC PHỤC BẢO MẬT: Chuyển sang sử dụng textContent hoặc tạo TextNode
+                    // để ngăn ngừa XSS khi hiển thị dữ liệu từ localStorage.**
+                    // Dữ liệu từ item.input và item.output được coi là dữ liệu người dùng
+                    // và có thể chứa script độc hại nếu không được xử lý đúng cách.
+                    
+                    const timestampSpan = document.createElement('strong');
+                    timestampSpan.textContent = `(${item.timestamp})`;
+
+                    const inputContent = document.createTextNode(item.input);
+                    const arrowText = document.createTextNode(' ➡️ ');
+                    const outputContent = document.createTextNode(item.output);
+
+                    div.appendChild(timestampSpan);
+                    div.appendChild(document.createElement('br')); // Thêm thẻ <br> để xuống dòng
+                    div.appendChild(inputContent);
+                    div.appendChild(arrowText);
+                    div.appendChild(outputContent);
+                    // HẾT PHẦN KHẮC PHỤC BẢO MẬT
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = ' ❌ ';
+                    deleteButton.classList.add('delete-item-btn');
+                    deleteButton.onclick = (event) => {
+                        event.stopPropagation(); // Ngăn sự kiện click lan ra gây đóng modal
+                        showConfirmDeleteOne(idx); // Hiển thị xác nhận xóa 1 mục
+                    };
+                    div.appendChild(deleteButton);
+                    box.appendChild(div);
+                });
+            }
+            document.getElementById("modalLichSu").style.display = "flex"; // Hiển thị modal
+        }
+
+        // Hàm đóng modal lịch sử
+        function closeLichSu() {
+            document.getElementById("modalLichSu").style.display = "none";
+        }
+
+        // Hiển thị hộp thoại xác nhận khi xóa một mục lịch sử
+        function showConfirmDeleteOne(index) {
+            pendingDeleteIndex = index;
+            isDeletingAll = false; // Đảm bảo đây là xóa một mục
+            document.getElementById("confirmMessage").textContent = "Bạn có chắc muốn xóa mục này khỏi lịch sử?";
+            document.getElementById("confirmModal").style.display = "flex"; // Hiện modal xác nhận
+        }
+        
+        // Hàm hiển thị hộp thoại xác nhận trước khi xóa toàn bộ lịch sử.
+        function clearAllHistory() {
+            const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+            if (lichSu.length === 0) {
+                showMessage("📜 Lịch sử đang trống.", 'info');
+                return;
+            }
+            isDeletingAll = true;
+            pendingDeleteIndex = -1; // Đảm bảo không xóa nhầm mục đơn lẻ
+            document.getElementById("confirmMessage").textContent = "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?";
+            document.getElementById("confirmModal").style.display = "flex";
+        }
+
+        // Xử lý xác nhận xóa (một mục hoặc toàn bộ)
+        function proceedConfirmation() {
+            if (isDeletingAll) {
+                localStorage.removeItem("lichSuDoraemon");
+                showMessage("🗑️ Đã xóa toàn bộ lịch sử!", "success");
+                closeLichSu(); // Đóng modal lịch sử sau khi xóa
+            } else if (pendingDeleteIndex !== -1) {
+                const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                lichSu.splice(pendingDeleteIndex, 1);
+                localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu));
+                showMessage("🗑️ Đã xóa mục khỏi lịch sử!", "success");
+                pendingDeleteIndex = -1;
+            }
+            document.getElementById("confirmModal").style.display = "none"; // Ẩn modal xác nhận
+            openLichSu(); // Cập nhật lại giao diện lịch sử
+        }
+
+        // Hủy bỏ thao tác xác nhận xóa
+        function cancelConfirmation() {
+            pendingDeleteIndex = -1;
+            isDeletingAll = false;
+            document.getElementById("confirmModal").style.display = "none"; // Ẩn modal xác nhận
+        }
+        
+        // Hàm kết thúc intro (dù bằng nút skip hay hết thời gian)
+        function endIntro() {
+            clearTimeout(splashTimer); // Xóa bộ đếm thời gian nếu có
+            const splashScreen = document.getElementById("splashScreen");
+            const mainContent = document.getElementById("mainContent");
+            const myAudio = document.getElementById("myAudio");
+            
+            splashScreen.style.display = "none"; // Ẩn hoàn toàn splash screen
+            mainContent.style.visibility = "visible";
+            mainContent.style.display = "flex";
+            mainContent.classList.add("visible");
+            
+            // Sau khi splash screen ẩn, cố gắng phát nhạc nếu chưa phát và không bị tắt tiếng
+            // Trình duyệt yêu cầu tương tác người dùng để phát media
+            if (!audioPlayedFirstTime && !myAudio.muted) {
+                 myAudio.play().catch(error => {
+                     console.log("Lỗi khi phát nhạc nền tự động (cần tương tác người dùng):", error);
+                 });
+            }
+            audioPlayedFirstTime = true; // Đánh dấu là đã cố gắng phát nhạc
+        }
+        
+        // Hàm cho nút SKIP trên splash screen
+        function skipIntro() {
+            endIntro(); // Khi nhấn nút skip, cũng gọi endIntro để ẩn splash và hiển thị nội dung chính
+            // Sau khi skip, đây được coi là một tương tác của người dùng, nên thử phát nhạc
+            const myAudio = document.getElementById("myAudio");
+            if (!audioPlayedFirstTime && !myAudio.muted) {
+                myAudio.play().catch(error => {
+                    console.log("Lỗi khi phát nhạc sau Skip (có thể do đã chạy ở endIntro hoặc chính sách trình duyệt):", error);
+                });
+                audioPlayedFirstTime = true;
+            }
+        }
+
+        // Lắng nghe sự kiện DOMContentLoaded để đảm bảo HTML đã tải xong
+        document.addEventListener("DOMContentLoaded", () => {
+            const myAudio = document.getElementById("myAudio");
+            const toggleSoundCheckbox = document.getElementById("toggleSound");
+            const comNgonAudio = document.getElementById("com-ngon"); // Lấy các phần tử audio mới
+            const giaoHuongAudio = document.getElementById("giao-huong");
+
+            document.getElementById("typeSound").volume = 0.2; // Đặt âm lượng cho âm thanh gõ
+            // Đặt âm lượng cho các bản nhạc mới (có thể điều chỉnh)
+            comNgonAudio.volume = 0.5;
+            giaoHuongAudio.volume = 0.5;
+
+            // Tải trạng thái tắt tiếng đã lưu từ LocalStorage
+            const savedMuteState = localStorage.getItem("doraemonSoundMuted");
+            if (savedMuteState === "true") {
+                toggleSoundCheckbox.checked = true;
+                myAudio.muted = true;
+                document.getElementById("typeSound").muted = true;
+                comNgonAudio.muted = true;
+                giaoHuongAudio.muted = true;
+            } else {
+                toggleSoundCheckbox.checked = false;
+                myAudio.muted = false;
+                document.getElementById("typeSound").muted = false;
+                comNgonAudio.muted = false;
+                giaoHuongAudio.muted = false;
+            }
+            
+            // Tổng thời gian của tất cả các animation splash screen là 10 giây (10000 ms)
+            // Sau khi tất cả các animation hoàn tất, gọi hàm endIntro để ẩn splash và hiện nội dung chính
+            splashTimer = setTimeout(endIntro, 10000);
+
+            // Thêm event listener cho bất kỳ tương tác nào trên tài liệu (click/tap)
+            // Sự kiện này giúp phát nhạc nền nếu trình duyệt yêu cầu tương tác người dùng
+            document.body.addEventListener('click', function firstInteractionPlay() {
+                const myAudio = document.getElementById("myAudio");
+                // Chỉ phát nếu chưa phát lần nào và không bị tắt tiếng
+                if (!audioPlayedFirstTime && !myAudio.muted) {
+                    myAudio.play().then(() => {
+                        audioPlayedFirstTime = true; // Đánh dấu đã phát thành công
+                        document.body.removeEventListener('click', firstInteractionPlay); // Gỡ bỏ listener sau khi phát
+                    }).catch(error => {
+                        console.log("Lỗi khi phát nhạc nền sau tương tác đầu tiên:", error);
+                        // Có thể thêm một nút "Bật nhạc" nhỏ nếu muốn người dùng kích hoạt thủ công
+                    });
+                }
+            }, { once: true }); // Dùng once: true để chỉ nghe sự kiện này một lần
+
+            // Gắn lại sự kiện lắng nghe click toàn bộ document, đảm bảo nó luôn hoạt động
+            document.addEventListener("click", function(e) {
+                const panel = document.getElementById("settingsPanel");
+                const toggle = document.querySelector(".settings-toggle");
+                const modalLichSu = document.getElementById("modalLichSu");
+                const confirmModal = document.getElementById("confirmModal");
+
+                // Logic đóng settings panel khi click ra ngoài, tránh đóng khi click vào các modal
+                if (panel.style.display === "flex" &&
+                    !panel.contains(e.target) &&
+                    !toggle.contains(e.target) &&
+                    !modalLichSu.contains(e.target) && // Loại trừ modal lịch sử
+                    !confirmModal.contains(e.target)) { // Loại trừ modal xác nhận
+                    panel.style.display = "none";
+                    toggle.classList.remove("rotate");
+                    toggle.classList.add("rotate-back");
+                }
+            }, { once: false });
+        });
+        // Gắn sự kiện change cho checkbox tắt/bật âm thanh
+        document.getElementById("toggleSound").addEventListener("change", toggleAudio);
     </script>
 </body>
 </html>
