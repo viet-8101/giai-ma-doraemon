@@ -7,7 +7,9 @@
     <link rel="icon" href="Doraenon_logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-<script src="https://www.google.com/recaptcha/api.js" defer></script>
+    <!-- reCAPTCHA v2 Invisible script - Tải thư viện reCAPTCHA từ Google. -->
+    <!-- 'defer' giúp tải script không chặn render HTML. -->
+    <script src="https://www.google.com/recaptcha/api.js" defer></script>
     
     <style>
         /* CSS CƠ BẢN VÀ CHUNG */
@@ -460,11 +462,8 @@
             opacity: 0; /* Ban đầu ẩn */
             /* Kế thừa nền gradient từ #splashScreen */
             background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
-            background-size: 1000% 1000%; /* Giữ animation nền */
-            /* Animation cho mỗi phần: xuất hiện, di chuyển, và mờ dần */
-            animation:
-                splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
-                finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
+            background-size: 1000% 1000%;
+            animation: gradientFlow 15s ease infinite; /* Giữ animation nền */
             z-index: 10003; /* Nằm trên cùng */
         }
 
@@ -662,6 +661,16 @@
             </div>
             <div id="output"></div>
             <div id="messageBox"></div>
+            <!-- reCAPTCHA container - Đây là nơi reCAPTCHA v2 Invisible sẽ được render. -->
+            <!-- data-sitekey phải là Site Key (Public Key) của bạn. -->
+            <!-- data-callback sẽ gọi hàm onRecaptchaSuccess sau khi xác thực thành công. -->
+            <!-- data-size="invisible" là để reCAPTCHA hoạt động ẩn. -->
+            <div id="recaptcha-container"
+                 class="g-recaptcha"
+                 data-sitekey="6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I"
+                 data-callback="onRecaptchaSuccess"
+                 data-size="invisible">
+            </div>
             <div class="mic-indicator" id="micIndicator">
                 <svg viewBox="0 0 24 24">
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z" />
@@ -862,6 +871,7 @@
 
             showMessage("Đang xác thực, vui lòng chờ...", "info");
             // Kích hoạt reCAPTCHA. Khi xác thực thành công, onRecaptchaSuccess sẽ được gọi.
+            // grecaptcha.execute() sẽ kích hoạt reCAPTCHA v2 Invisible.
             grecaptcha.execute(recaptchaWidgetId);
         }
 
@@ -873,7 +883,7 @@
                 // 'sitekey' là khóa công khai bạn nhận được từ Google.
                 // 'callback' là hàm sẽ được gọi khi reCAPTCHA xác thực thành công.
                 recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
-                    'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I', // reCAPTCHA site key của bạn
+                    'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I', // reCAPTCHA site key của bạn (đảm bảo đây là V2 Invisible key)
                     'callback': onRecaptchaSuccess,
                     'size': 'invisible' // Chế độ vô hình
                 });
@@ -888,8 +898,9 @@
 
             try {
                 // Gửi yêu cầu (gồm input và token) đến backend của chúng ta
-                // Địa chỉ này cần được thay thế bằng URL API thực tế của server bạn
-                const response = await fetch('http://localhost:3000/giai-ma', { // Địa chỉ server backend của bạn
+                // !!! RẤT QUAN TRỌNG: THAY 'URL_CUA_BACKEND_CUA_BAN' BẰNG URL THỰC TẾ CỦA SERVER BACKEND CỦA BẠN !!!
+                // Ví dụ: 'https://your-doraemon-backend.onrender.com/giai-ma'
+                const response = await fetch('URL_CUA_BACKEND_CUA_BAN/giai-ma', { // Địa chỉ server backend của bạn
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -998,6 +1009,12 @@
                 showMessage("🎙️ Đang lắng nghe...", "info");
                 document.getElementById("micIndicator").style.display = "block";
                 document.getElementById("micText").style.display = "block";
+                
+                // **KHẮC PHỤC LỖI: Đảm bảo chỉ gọi start() khi recognition chưa bắt đầu**
+                if (recognition.recognizing) {
+                    console.warn("SpeechRecognition đã bắt đầu. Dừng và khởi động lại.");
+                    recognition.stop(); // Dừng nếu đã chạy
+                }
                 recognition.start();
 
                 recognition.onresult = function(event) {
