@@ -900,7 +900,7 @@
                 // Gửi yêu cầu (gồm input và token) đến backend của chúng ta
                 // !!! RẤT QUAN TRỌNG: THAY 'URL_CUA_BACKEND_CUA_BAN' BẰNG URL THỰC TẾ CỦA SERVER BACKEND CỦA BẠN !!!
                 // Ví dụ: 'https://your-doraemon-backend.onrender.com/giai-ma'
-                const response = await fetch('URL_CUA_BACKEND_CUA_BAN/giai-ma', { // Địa chỉ server backend của bạn
+                const response = await fetch('https://doraemon-backend.onrender.com/giai-ma', { // Địa chỉ server backend của bạn
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
