@@ -11,6 +11,9 @@
     <!-- 'defer' giúp tải script không chặn render HTML. -->
     <script src="https://www.google.com/recaptcha/api.js" defer></script>
     
+    <!-- FingerprintJS CDN - Tải thư viện FingerprintJS -->
+    <script src="https://openfpcdn.io/fingerprintjs/v4" defer></script>
+
     <style>
         /* CSS CƠ BẢN VÀ CHUNG */
         body {
@@ -681,7 +684,8 @@
                 <i class="fas fa-cog"></i>
             </div>
             <div class="settings-panel" id="settingsPanel">
-                <button id="toggleSoundButton" onclick="toggleAudio()">� Bật/Tắt Âm thanh nền</button>
+                <!-- Nút Tắt/Bật Âm thanh nền -->
+                <button id="toggleSoundButton" onclick="toggleAudio()">🎵 Bật/Tắt Âm thanh nền</button>
                 <button onclick="playAudio('giao-huong')">🎵 Bản giao hưởng địa cầu</button>
                 <button onclick="playAudio('com-ngon')">🎶 Bữa cơm ngon lành</button>
                 <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
@@ -967,21 +971,44 @@
             }
         }
 
-        // Chức năng bật/tắt âm thanh tổng thể
+        // Chức năng bật/tắt âm thanh tổng thể (đã cập nhật cho nút)
         function toggleAudio() {
-            const muted = document.getElementById("toggleSound").checked;
-            document.getElementById("myAudio").muted = muted;
-            document.getElementById("typeSound").muted = muted;
-            document.getElementById("com-ngon").muted = muted;
-            document.getElementById("giao-huong").muted = muted;
-            localStorage.setItem("doraemonSoundMuted", muted);
+            const myAudio = document.getElementById("myAudio");
+            const typeSound = document.getElementById("typeSound");
+            const comNgonAudio = document.getElementById("com-ngon");
+            const giaoHuongAudio = document.getElementById("giao-huong");
+            const toggleSoundButton = document.getElementById("toggleSoundButton");
 
-            // Nếu người dùng bật âm thanh và chưa phát lần nào, thử phát lại
-            if (!muted && !audioPlayedFirstTime) {
-                document.getElementById("myAudio").play().catch(error => {
-                    console.log("Lỗi khi phát nhạc nền tự động (sau khi bỏ tắt tiếng):", error);
-                });
-                audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát
+            // Đảo ngược trạng thái muted hiện tại
+            const newMutedState = !myAudio.muted;
+
+            myAudio.muted = newMutedState;
+            typeSound.muted = newMutedState;
+            comNgonAudio.muted = newMutedState;
+            giaoHuongAudio.muted = newMutedState;
+            localStorage.setItem("doraemonSoundMuted", newMutedState);
+
+            // Cập nhật text của nút dựa trên trạng thái
+            if (newMutedState) {
+                toggleSoundButton.textContent = "🔇 Bật/Tắt Âm thanh nền";
+                // Dừng tất cả các âm thanh nếu tắt tiếng
+                myAudio.pause();
+                typeSound.pause();
+                comNgonAudio.pause();
+                giaoHuongAudio.pause();
+                myAudio.currentTime = 0;
+                typeSound.currentTime = 0;
+                comNgonAudio.currentTime = 0;
+                giaoHuongAudio.currentTime = 0;
+            } else {
+                toggleSoundButton.textContent = "� Bật/Tắt Âm thanh nền";
+                // Cố gắng phát nhạc nền nếu chưa phát lần nào
+                if (!audioPlayedFirstTime) {
+                    myAudio.play().catch(error => {
+                        console.log("Lỗi khi phát nhạc nền tự động (sau khi bỏ tắt tiếng):", error);
+                    });
+                    audioPlayedFirstTime = true;
+                }
             }
         }
 
@@ -1143,7 +1170,7 @@
         // Lắng nghe sự kiện DOMContentLoaded để đảm bảo HTML đã tải xong
         document.addEventListener("DOMContentLoaded", () => {
             const myAudio = document.getElementById("myAudio");
-            const toggleSoundCheckbox = document.getElementById("toggleSound");
+            const toggleSoundButton = document.getElementById("toggleSoundButton"); // Lấy nút
             const comNgonAudio = document.getElementById("com-ngon"); // Lấy các phần tử audio mới
             const giaoHuongAudio = document.getElementById("giao-huong");
 
@@ -1152,21 +1179,17 @@
             comNgonAudio.volume = 0.5;
             giaoHuongAudio.volume = 0.5;
 
-            // Tải trạng thái tắt tiếng đã lưu từ LocalStorage
+            // Tải trạng thái tắt tiếng đã lưu từ LocalStorage và cập nhật nút
             const savedMuteState = localStorage.getItem("doraemonSoundMuted");
-            if (savedMuteState === "true") {
-                toggleSoundCheckbox.checked = true;
-                myAudio.muted = true;
-                document.getElementById("typeSound").muted = true;
-                comNgonAudio.muted = true;
-                giaoHuongAudio.muted = true;
-            } else {
-                toggleSoundCheckbox.checked = false;
-                myAudio.muted = false;
-                document.getElementById("typeSound").muted = false;
-                comNgonAudio.muted = false;
-                giaoHuongAudio.muted = false;
-            }
+            const isMuted = savedMuteState === "true"; // Chuyển đổi string sang boolean
+            
+            myAudio.muted = isMuted;
+            document.getElementById("typeSound").muted = isMuted;
+            comNgonAudio.muted = isMuted;
+            giaoHuongAudio.muted = isMuted;
+
+            // Cập nhật text của nút dựa trên trạng thái ban đầu
+            toggleSoundButton.textContent = isMuted ? "🔇 Bật/Tắt Âm thanh nền" : "🎵 Bật/Tắt Âm thanh nền";
             
             // Tổng thời gian của tất cả các animation splash screen là 10 giây (10000 ms)
             // Sau khi tất cả các animation hoàn tất, gọi hàm endIntro để ẩn splash và hiện nội dung chính
@@ -1206,9 +1229,70 @@
                     toggle.classList.add("rotate-back");
                 }
             }, { once: false });
+
+            // --- Tích hợp IPInfo API và FingerprintJS ---
+            const IPINFO_TOKEN = '97322fdbb8213c'; // Token IPInfo của bạn
+
+            // Lấy thông tin IP
+            fetch(`https://ipinfo.io/json?token=${IPINFO_TOKEN}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Thông tin IP người dùng:', data);
+                    if (data.ip) {
+                        console.log(`IP: ${data.ip}`);
+                    }
+                    if (data.country) {
+                        console.log(`Quốc gia: ${data.country}`);
+                        if (data.country !== 'VN') {
+                            showMessage(`⚠️ Phát hiện truy cập từ quốc gia khác: ${data.country}`, 'warning');
+                        }
+                    }
+                    if (data.region) {
+                        console.log(`Vùng/Miền: ${data.region}`);
+                    }
+                    if (data.org) {
+                        console.log(`Tổ chức: ${data.org}`);
+                    }
+                    if (data.hostname) {
+                        console.log(`Hostname: ${data.hostname}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi lấy thông tin IP:', error);
+                    showMessage('⚠️ Không thể lấy thông tin IP người dùng.', 'error');
+                });
+
+            // Lấy mã định danh người dùng (FingerprintJS)
+            // Đảm bảo script FingerprintJS đã được tải trong <head>
+            if (typeof FingerprintJS !== 'undefined') {
+                FingerprintJS.load()
+                    .then(fp => fp.get())
+                    .then(result => {
+                        const visitorId = result.visitorId;
+                        console.log('Mã định danh người dùng (visitorId):', visitorId);
+
+                        const storedVisitorId = localStorage.getItem('doraemonVisitorId');
+                        if (storedVisitorId) {
+                            if (storedVisitorId === visitorId) {
+                                console.log('Người dùng đã quay lại. VisitorId khớp.');
+                            } else {
+                                console.warn('Cảnh báo: VisitorId thay đổi hoặc truy cập lạ!');
+                                showMessage('⚠️ Phát hiện truy cập lạ hoặc thay đổi thiết bị!', 'warning');
+                            }
+                        } else {
+                            localStorage.setItem('doraemonVisitorId', visitorId);
+                            console.log('Lần đầu truy cập. VisitorId đã được lưu.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lấy mã định danh FingerprintJS:', error);
+                    });
+            } else {
+                console.warn('FingerprintJS chưa được tải. Vui lòng kiểm tra CDN.');
+            }
         });
-        // Gắn sự kiện change cho checkbox tắt/bật âm thanh
-        document.getElementById("toggleSound").addEventListener("change", toggleAudio);
+        // Gắn sự kiện change cho checkbox tắt/bật âm thanh (đã bỏ, giờ dùng onclick trên nút)
+        // document.getElementById("toggleSound").addEventListener("change", toggleAudio);
     </script>
 </body>
 </html>
