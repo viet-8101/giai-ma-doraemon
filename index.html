@@ -764,13 +764,23 @@
         function giaiMa() {
             const inputElement = document.getElementById("input");
             const outputElement = document.getElementById("output");
-            const input = inputElement.value.trim().toLowerCase();
+            const input = inputElement.value.trim(); // Lấy giá trị gốc để kiểm tra script
 
             if (!input) {
                 showMessage(" ⚠️  Bạn chưa nhập gì cả!", "error");
                 lastDecodedResult = "";
-                outputElement.textContent = ""; // Xóa kết quả cũ nếu có
+                outputElement.textContent = "";
                 return;
+            }
+
+            // Regex để phát hiện các thẻ HTML hoặc script phổ biến (không phân biệt chữ hoa/thường)
+            const scriptPattern = /<script\b[^>]*>.*?<\/script>|<[^>]+>/i;
+
+            if (scriptPattern.test(input)) {
+                showMessage(" ❌  Không được nhập mã script hoặc thẻ HTML!", "error");
+                lastDecodedResult = "";
+                outputElement.textContent = "";
+                return; // Dừng xử lý nếu phát hiện script
             }
 
             showMessage("Đang xác thực, vui lòng chờ...", "info");
@@ -1001,7 +1011,7 @@
                 comNgonAudio.currentTime = 0;
                 giaoHuongAudio.currentTime = 0;
             } else {
-                toggleSoundButton.textContent = "� Bật/Tắt Âm thanh nền";
+                toggleSoundButton.textContent = "🎵 Bật/Tắt Âm thanh nền";
                 // Cố gắng phát nhạc nền nếu chưa phát lần nào
                 if (!audioPlayedFirstTime) {
                     myAudio.play().catch(error => {
@@ -1189,7 +1199,7 @@
             giaoHuongAudio.muted = isMuted;
 
             // Cập nhật text của nút dựa trên trạng thái ban đầu
-            toggleSoundButton.textContent = isMuted ? "🔇 Bật/Tắt Âm thanh nền" : "🎵 Bật/Tắt Âm thanh nền";
+            toggleSoundButton.textContent = isMuted ? "� Bật/Tắt Âm thanh nền" : "🎵 Bật/Tắt Âm thanh nền";
             
             // Tổng thời gian của tất cả các animation splash screen là 10 giây (10000 ms)
             // Sau khi tất cả các animation hoàn tất, gọi hàm endIntro để ẩn splash và hiện nội dung chính
