@@ -7,9 +7,9 @@
     <link rel="icon" href="Doraenon_logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- reCAPTCHA v2 Invisible script - Tải thư viện reCAPTCHA từ Google. -->
-    <!-- 'defer' giúp tải script không chặn render HTML. -->
     <script src="https://www.google.com/recaptcha/api.js" defer></script>
+    
+    <script src="https://openfpcdn.io/fingerprintjs/v4" async></script>
     
     <style>
         /* CSS CƠ BẢN VÀ CHUNG */
@@ -161,7 +161,6 @@
             color: white;
             transition: transform 0.5s ease-out;
             z-index: 10;
-            /* Cài đặt mới cho icon bánh răng */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -231,7 +230,6 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            /* Các thuộc tính quan trọng để căn giữa nội dung */
             justify-content: center; /* Căn giữa theo chiều ngang */
             align-items: center;     /* Căn giữa theo chiều dọc */
             animation: fadeInModal 0.3s ease-out;
@@ -303,7 +301,6 @@
         }
 
         /* Confirmation Modal Content Styles */
-        /* Đặt các style của hộp thoại xác nhận vào #confirmModalContent (phần tử con của .modal) */
         #confirmModalContent {
             text-align: center;
             background: rgba(0, 0, 0, 0.95);
@@ -353,28 +350,23 @@
             to { opacity: 1; }
         }
 
-        /* ======================================= */
-        /* CSS CHO SPLASH SCREEN MỚI - ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT */
-        /* ======================================= */
-
+        /* CSS CHO SPLASH SCREEN */
         #splashScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            overflow: hidden; /* Quan trọng để các phần tách không tạo thanh cuộn */
-            display: flex; /* Để căn giữa nội dung */
+            overflow: hidden;
+            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 10000; /* Luôn nằm trên cùng */
-            /* Nền gradient cho màn hình chính của splash screen, sẽ hiển thị sau khi blackScreenOverlay mờ đi */
+            z-index: 10000;
             background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
             background-size: 1000% 1000%;
-            animation: gradientFlow 15s ease infinite; /* Giữ animation nền */
+            animation: gradientFlow 15s ease infinite;
         }
 
-        /* Màn hình đen ban đầu */
         #blackScreenOverlay {
             position: absolute;
             top: 0;
@@ -382,55 +374,47 @@
             width: 100%;
             height: 100%;
             background-color: black;
-            z-index: 10002; /* Trên tên, dưới các phần tách */
+            z-index: 10002;
             opacity: 1;
-            animation: blackScreenFadeOut 2s linear forwards; /* Mờ dần trong 2s */
-            animation-delay: 0s; /* Bắt đầu ngay lập tức */
+            animation: blackScreenFadeOut 2s linear forwards;
+            animation-delay: 0s;
         }
 
-        /* Container cho tên và subtitle */
         #myNameContainer {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Căn giữa */
-            z-index: 10001; /* Dưới màn hình đen và các phần tách */
-            opacity: 0; /* Ban đầu ẩn */
+            transform: translate(-50%, -50%);
+            z-index: 10001;
+            opacity: 0;
             color: white;
-            font-family: 'Arial Black', sans-serif; /* Font nổi bật hơn */
-            font-size: 4.5em; /* Kích thước to hơn */
+            font-family: 'Arial Black', sans-serif;
+            font-size: 4.5em;
             font-weight: bold;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-            /* Animation: hiện ra (2-4s) và mờ đi (4-6s) */
             animation:
                 myNameFadeInScale 2s ease-out 2s forwards,
                 myNameFadeOutScale 2s ease-in 4s forwards;
-            white-space: nowrap; /* Giữ tên trên một dòng nếu có thể */
-            padding: 0 10px; /* Đảm bảo tên không bị tràn ra ngoài màn hình quá sát lề */
+            white-space: nowrap;
+            padding: 0 10px;
             box-sizing: border-box;
-            text-align: center; /* Căn giữa nội dung bên trong */
-        }
-        #myNameContainer .my-name {
-            display: inline-block; /* Để áp dụng transform và animation tốt hơn */
+            text-align: center;
         }
         
-        /* CSS SUBTITLE */
         .intro-subtitle {
             font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-            font-size: 0.3em; /* Kích thước tương đối so với tên */
+            font-size: 0.3em;
             font-weight: normal;
-            display: block; /* Hiển thị ở dòng mới */
-            margin-top: 15px; /* Khoảng cách với tên */
-            color: #f0f8ff; /* Màu trắng sáng (AliceBlue) */
+            display: block;
+            margin-top: 15px;
+            color: #f0f8ff;
             letter-spacing: 1px;
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-            /* Animation cho subtitle */
             opacity: 0;
-            animation: subtitleFadeIn 2s ease-out 2.5s forwards, /* Hiện ra sau tên một chút */
-                         subtitleFadeOut 2s ease-in 4s forwards; /* Mờ đi cùng lúc với tên */
+            animation: subtitleFadeIn 2s ease-out 2.5s forwards,
+                         subtitleFadeOut 2s ease-in 4s forwards;
         }
         
-        /* CSS CHO NÚT SKIP */
         #skipButton {
             position: absolute;
             bottom: 30px;
@@ -443,196 +427,66 @@
             border: 2px solid white;
             border-radius: 50px;
             cursor: pointer;
-            z-index: 10004; /* Nằm trên tất cả các lớp khác của splash screen */
-            opacity: 0; /* Ban đầu ẩn */
-            visibility: hidden; /* Ẩn hoàn toàn */
+            z-index: 10004;
+            opacity: 0;
+            visibility: hidden;
             transition: all 0.4s ease-in-out;
-            animation: skipButtonFadeIn 1s ease-out 2s forwards; /* Hiện ra sau 2 giây */
+            animation: skipButtonFadeIn 1s ease-out 2s forwards;
         }
         #skipButton:hover {
             background-color: rgba(255, 255, 255, 0.2);
             transform: scale(1.05);
         }
 
-        /* Các phần chia */
         .split-part {
             position: absolute;
-            width: 50vw; /* Chiếm 50% viewport width */
-            height: 50vh; /* Chiếm 50% viewport height */
-            opacity: 0; /* Ban đầu ẩn */
-            /* Kế thừa nền gradient từ #splashScreen */
+            width: 50vw;
+            height: 50vh;
+            opacity: 0;
             background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
             background-size: 1000% 1000%;
-            animation: gradientFlow 15s ease infinite; /* Giữ animation nền */
-            z-index: 10003; /* Nằm trên cùng */
+            animation: gradientFlow 15s ease infinite;
+            z-index: 10003;
         }
 
-        /* Vị trí ban đầu và animation di chuyển riêng của từng phần */
-        .split-part.top-left {
-            top: 0; left: 0;
-            animation:
-                splitAppear 0s linear 6s forwards, /* Xuất hiện tại giây 6 */
-                splitMoveTopLeft 1s ease-out 6s forwards, /* Di chuyển ra từ giây 6-7 */
-                finalFadeOut 3s linear 7s forwards; /* Mờ dần từ giây 7-10 */
-        }
-        .split-part.top-right {
-            top: 0; left: 50vw;
-            animation:
-                splitAppear 0s linear 6s forwards,
-                splitMoveTopRight 1s ease-out 6s forwards,
-                finalFadeOut 3s linear 7s forwards;
-        }
-        .split-part.bottom-left {
-            top: 50vh; left: 0;
-            animation:
-                splitAppear 0s linear 6s forwards,
-                splitMoveBottomLeft 1s ease-out 6s forwards,
-                finalFadeOut 3s linear 7s forwards;
-        }
-        .split-part.bottom-right {
-            top: 50vh; left: 50vw;
-            animation:
-                splitAppear 0s linear 6s forwards,
-                splitMoveBottomRight 1s ease-out 6s forwards,
-                finalFadeOut 3s linear 7s forwards;
-        }
+        .split-part.top-left { top: 0; left: 0; animation: splitAppear 0s linear 6s forwards, splitMoveTopLeft 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
+        .split-part.top-right { top: 0; left: 50vw; animation: splitAppear 0s linear 6s forwards, splitMoveTopRight 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
+        .split-part.bottom-left { top: 50vh; left: 0; animation: splitAppear 0s linear 6s forwards, splitMoveBottomLeft 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
+        .split-part.bottom-right { top: 50vh; left: 50vw; animation: splitAppear 0s linear 6s forwards, splitMoveBottomRight 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
 
-        /* ================== */
         /* ĐỊNH NGHĨA KEYFRAMES */
-        /* ================== */
-
-        /* Nền gradient */
-        @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Màn hình đen mờ dần (0-2s) */
-        @keyframes blackScreenFadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
-
-        /* Tên hiện ra và phóng to (2-4s) */
-        @keyframes myNameFadeInScale {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-
-        /* Tên mờ dần và thu nhỏ (4-6s) */
-        @keyframes myNameFadeOutScale {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); visibility: hidden; }
-        }
-        
-        /* KEYFRAMES cho SUBTITLE */
-        @keyframes subtitleFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes subtitleFadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        
-        /* KEYFRAME cho NÚT SKIP */
-        @keyframes skipButtonFadeIn {
-            to {
-                opacity: 1;
-                visibility: visible;
-            }
-        }
-
-        /* Các phần chia xuất hiện (tại giây 6) */
-        @keyframes splitAppear {
-            to { opacity: 1; }
-        }
-
-        /* Các phần chia di chuyển ra (6-7s) */
-        @keyframes splitMoveTopLeft {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, -100%); } /* Di chuyển lên trái */
-        }
-        @keyframes splitMoveTopRight {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100%, -100%); } /* Di chuyển lên phải */
-        }
-        @keyframes splitMoveBottomLeft {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 100%); } /* Di chuyển xuống trái */
-        }
-        @keyframes splitMoveBottomRight {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100%, 100%); } /* Di chuyển xuống phải */
-        }
-
-        /* Mờ dần cuối cùng của các phần tách (7-10s) */
-        @keyframes finalFadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
+        @keyframes blackScreenFadeOut { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+        @keyframes myNameFadeInScale { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        @keyframes myNameFadeOutScale { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); visibility: hidden; } }
+        @keyframes subtitleFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes subtitleFadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes skipButtonFadeIn { to { opacity: 1; visibility: visible; } }
+        @keyframes splitAppear { to { opacity: 1; } }
+        @keyframes splitMoveTopLeft { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, -100%); } }
+        @keyframes splitMoveTopRight { 0% { transform: translate(0, 0); } 100% { transform: translate(100%, -100%); } }
+        @keyframes splitMoveBottomLeft { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 100%); } }
+        @keyframes splitMoveBottomRight { 0% { transform: translate(0, 0); } 100% { transform: translate(100%, 100%); } }
+        @keyframes finalFadeOut { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            button {
-                padding: 10px 15px; /* Giảm padding ngang cho nút */
-                font-size: 0.95em; /* Giảm font size cho nút */
-                min-width: 150px; /* Điều chỉnh min-width để tránh tràn */
-            }
-            .overlay {
-                padding: 25px 15px; /* Giảm padding ngang của overlay */
-            }
-            #myNameContainer {
-                font-size: 3em; /* Nhỏ hơn trên di động */
-                word-wrap: break-word; /* Cho phép ngắt từ nếu tên quá dài */
-                white-space: normal; /* Cho phép xuống dòng */
-                max-width: 90vw; /* Giới hạn chiều rộng để không tràn ra ngoài */
-            }
-            .intro-subtitle {
-                font-size: 0.25em; /* Giảm size subtitle trên mobile */
-            }
-            #skipButton {
-                font-size: 0.9em;
-                padding: 8px 20px;
-                bottom: 20px;
-                right: 20px;
-            }
-            .settings-panel {
-                right: 15px; /* Điều chỉnh vị trí panel */
-                min-width: 130px;
-            }
-            .settings-panel button {
-                font-size: 0.85em;
-            }
+            h1 { font-size: 1.8em; }
+            button { padding: 10px 15px; font-size: 0.95em; min-width: 150px; }
+            .overlay { padding: 25px 15px; }
+            #myNameContainer { font-size: 3em; word-wrap: break-word; white-space: normal; max-width: 90vw; }
+            .intro-subtitle { font-size: 0.25em; }
+            #skipButton { font-size: 0.9em; padding: 8px 20px; bottom: 20px; right: 20px; }
+            .settings-panel { right: 15px; min-width: 130px; }
+            .settings-panel button { font-size: 0.85em; }
         }
         @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5em;
-            }
-            textarea {
-                height: 80px;
-            }
-            button {
-                padding: 8px 12px; /* Giảm padding nhỏ hơn nữa */
-                font-size: 0.85em; /* Giảm font size nhỏ hơn nữa */
-                min-width: 130px; /* Điều chỉnh min-width chặt chẽ hơn */
-            }
-            .overlay {
-                padding: 15px 10px; /* Giảm padding rất nhiều */
-            }
-            #myNameContainer {
-                font-size: 1.8em; /* Nhỏ hơn nữa trên di động */
-            }
-            .intro-subtitle {
-                font-size: 0.3em; /* Tăng lại một chút cho cân đối */
-            }
-            .button-group {
-                gap: 8px; /* Giảm khoảng cách giữa các nút */
-            }
+            h1 { font-size: 1.5em; }
+            textarea { height: 80px; }
+            button { padding: 8px 12px; font-size: 0.85em; min-width: 130px; }
+            .overlay { padding: 15px 10px; }
+            #myNameContainer { font-size: 1.8em; }
+            .intro-subtitle { font-size: 0.3em; }
+            .button-group { gap: 8px; }
         }
     </style>
 </head>
@@ -661,10 +515,6 @@
             </div>
             <div id="output"></div>
             <div id="messageBox"></div>
-            <!-- reCAPTCHA container - Đây là nơi reCAPTCHA v2 Invisible sẽ được render. -->
-            <!-- data-sitekey phải là Site Key (Public Key) của bạn. -->
-            <!-- data-callback sẽ gọi hàm onRecaptchaSuccess sau khi xác thực thành công. -->
-            <!-- data-size="invisible" là để reCAPTCHA hoạt động ẩn. -->
             <div id="recaptcha-container"
                  class="g-recaptcha"
                  data-sitekey="6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I"
@@ -681,7 +531,7 @@
                 <i class="fas fa-cog"></i>
             </div>
             <div class="settings-panel" id="settingsPanel">
-                <button id="toggleSoundButton" onclick="toggleAudio()">� Bật/Tắt Âm thanh nền</button>
+                <button id="toggleSoundButton" onclick="toggleAudio()">🔊 Bật/Tắt Âm thanh</button>
                 <button onclick="playAudio('giao-huong')">🎵 Bản giao hưởng địa cầu</button>
                 <button onclick="playAudio('com-ngon')">🎶 Bữa cơm ngon lành</button>
                 <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
@@ -721,229 +571,163 @@
     </audio>
 
     <script>
-        // Từ điển Doraemon đã được chuyển hoàn toàn sang SERVER.
-        // const tuDienDoraemon = { ... }; // Đã loại bỏ dòng này
-
+        // --- BIẾN TOÀN CỤC ---
         let lastDecodedResult = "";
-        let audioPlayedFirstTime = false; // Biến cờ để kiểm tra xem nhạc đã phát lần đầu chưa
-        let pendingDeleteIndex = -1; // Biến để lưu trữ chỉ số của mục sẽ xóa
-        let isDeletingAll = false; // Biến cờ để biết đang xóa toàn bộ hay xóa từng mục
-        let splashTimer = null; // Biến để quản lý setTimeout của splash screen
-        let recaptchaWidgetId; // Biến để lưu ID của widget reCAPTCHA
+        let audioPlayedFirstTime = false;
+        let pendingDeleteIndex = -1;
+        let isDeletingAll = false;
+        let splashTimer = null;
+        let recaptchaWidgetId;
+        let visitorId = null; // Biến lưu mã định danh người dùng
 
-        // Hàm hiển thị thông báo ngắn trên giao diện người dùng
+        // --- HÀM GIAO DIỆN ---
         function showMessage(msg, type = 'info') {
             const msgBox = document.getElementById('messageBox');
-            msgBox.textContent = msg; // Sử dụng textContent để chống XSS khi hiển thị thông báo
+            msgBox.textContent = msg;
             msgBox.className = 'show';
-            if (type === 'error') {
-                msgBox.style.backgroundColor = 'rgba(220, 20, 60, 0.8)';
-            } else if (type === 'success') {
-                msgBox.style.backgroundColor = 'rgba(60, 179, 113, 0.8)';
-            } else {
-                msgBox.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            }
+            if (type === 'error') msgBox.style.backgroundColor = 'rgba(220, 20, 60, 0.8)';
+            else if (type === 'success') msgBox.style.backgroundColor = 'rgba(60, 179, 113, 0.8)';
+            else msgBox.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             if (msgBox.timer) clearTimeout(msgBox.timer);
-            msgBox.timer = setTimeout(() => {
-                msgBox.className = '';
-                msgBox.textContent = '';
-            }, 3000);
+            msgBox.timer = setTimeout(() => { msgBox.className = ''; msgBox.textContent = ''; }, 3000);
         }
 
-        // Hàm escapeRegExp không còn cần thiết ở frontend vì logic giải mã đã chuyển hoàn toàn sang backend.
-        // function escapeRegExp(str) {
-        //     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        // }
-
-        // Hàm chính để giải mã nội dung nhập vào
-        // Logic giải mã và xác thực reCAPTCHA giờ đây hoàn toàn do SERVER xử lý.
-        function giaiMa() {
-            const inputElement = document.getElementById("input");
-            const outputElement = document.getElementById("output");
-            const input = inputElement.value.trim().toLowerCase();
-
-            if (!input) {
-                showMessage(" ⚠️  Bạn chưa nhập gì cả!", "error");
-                lastDecodedResult = "";
-                outputElement.textContent = ""; // Xóa kết quả cũ nếu có
-                return;
-            }
-
-            showMessage("Đang xác thực, vui lòng chờ...", "info");
-            // Kích hoạt reCAPTCHA. Khi xác thực thành công, onRecaptchaSuccess sẽ được gọi.
-            // grecaptcha.execute() sẽ kích hoạt reCAPTCHA v2 Invisible.
-            grecaptcha.execute(recaptchaWidgetId);
-        }
-
-        // Hàm được Google gọi khi reCAPTCHA API tải xong
-        window.onloadCallback = function() {
-            console.log("reCAPTCHA API đã sẵn sàng để sử dụng.");
-            if (document.getElementById('recaptcha-container')) {
-                // Khởi tạo reCAPTCHA widget vô hình.
-                // 'sitekey' là khóa công khai bạn nhận được từ Google.
-                // 'callback' là hàm sẽ được gọi khi reCAPTCHA xác thực thành công.
-                recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
-                    'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I', // reCAPTCHA site key của bạn (đảm bảo đây là V2 Invisible key)
-                    'callback': onRecaptchaSuccess,
-                    'size': 'invisible' // Chế độ vô hình
-                });
-            }
-        };
-
-        // Hàm được gọi sau khi reCAPTCHA xác thực thành công và trả về token
-        async function onRecaptchaSuccess(token) {
-            showMessage("✅ Xác thực thành công! Đang gửi đến máy chủ...", "success");
-            const userInput = document.getElementById("input").value.trim();
-            const originalInput = userInput; // Lưu lại input gốc để lưu lịch sử
-
-            try {
-                // Gửi yêu cầu (gồm input và token) đến backend của chúng ta
-                // !!! RẤT QUAN TRỌNG: ĐẢM BẢO URL NÀY TRỎ ĐẾN SERVER BACKEND CỦA BẠN !!!
-                // Ví dụ: 'https://your-doraemon-backend.onrender.com/giai-ma'
-                const response = await fetch('https://doraemon-backend.onrender.com/giai-ma', { // Địa chỉ server backend của bạn
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userInput: userInput,
-                        recaptchaToken: token
-                    }),
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    // Hiển thị lỗi nếu server trả về lỗi (ví dụ: token reCAPTCHA sai, lỗi logic backend)
-                    throw new Error(data.error || 'Lỗi không xác định từ máy chủ');
-                }
-
-                // Nếu server trả về lỗi không tìm thấy từ khóa
-                if (data.status === 'notFound') { // Giả sử server trả về status này nếu không tìm thấy
-                    goChuTungKyTu(" ❓  Không tìm thấy từ khóa phù hợp.", "output", 30);
-                    lastDecodedResult = "";
-                } else {
-                    // Hiển thị kết quả thành công từ server
-                    goChuTungKyTu(" ➡️  Kết quả: " + data.ketQua, "output", 30);
-                    lastDecodedResult = data.ketQua;
-
-                    // Lưu lịch sử vào LocalStorage (vẫn chạy ở frontend)
-                    // Đảm bảo dữ liệu lưu trữ là sạch (được lọc từ server)
-                    // hoặc không chứa HTML/script nếu bạn muốn dùng innerHTML để hiển thị sau này.
-                    // Hiện tại, dữ liệu được hiển thị bằng textContent nên không có nguy cơ XSS ở đây.
-                    const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
-                    lichSu.unshift({
-                        input: originalInput, // Input gốc
-                        output: data.ketQua, // Kết quả từ server
-                        timestamp: new Date().toLocaleString('vi-VN')
-                    });
-                    localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu.slice(0, 20))); // Giới hạn 20 mục
-                }
-
-            } catch (error) {
-                console.error('Đã có lỗi xảy ra:', error);
-                showMessage(`❌ Lỗi: ${error.message}`, "error");
-            } finally {
-                // Reset reCAPTCHA để sẵn sàng cho lần giải mã tiếp theo
-                grecaptcha.reset(recaptchaWidgetId);
-            }
-        }
-        
-        // Hàm này không cần thay đổi, chạy hoàn toàn ở client
         function goChuTungKyTu(text, elementId, speed) {
             const el = document.getElementById(elementId);
             const sound = document.getElementById("typeSound");
-            // Stop any ongoing typing animation and clear content
             if (el.typingTimer) clearTimeout(el.typingTimer);
             el.textContent = "";
-
             let index = 0;
             function type() {
                 if (index < text.length) {
                     el.textContent += text.charAt(index);
-                    // Only play sound if not muted
                     if (!sound.muted) {
-                        try {
-                            sound.pause();
-                            sound.currentTime = 0;
-                            sound.play();
-                        } catch (e) {
-                            console.error("Lỗi khi phát âm thanh:", e);
-                        }
+                        sound.currentTime = 0;
+                        sound.play().catch(e => {});
                     }
                     el.typingTimer = setTimeout(type, speed);
                     index++;
-                } else {
-                    // Ensure sound is stopped after typing is complete
-                    sound.pause();
-                    sound.currentTime = 0;
                 }
             }
             type();
         }
 
-        // Hàm sao chép kết quả đã giải mã vào clipboard
-        function saoChep() {
-            if (!lastDecodedResult) {
-                showMessage(" ⚠️  Chưa có kết quả giải mã để sao chép!", "error");
+        // --- HÀM CHỨC NĂNG CHÍNH ---
+        async function initializeSecurity() {
+            try {
+                const fp = await FingerprintJS.load();
+                const result = await fp.get();
+                visitorId = result.visitorId;
+                console.log("Visitor ID:", visitorId);
+            } catch (error) {
+                console.error("Lỗi FingerprintJS:", error);
+                visitorId = 'fp_error';
+            }
+        }
+        
+        function giaiMa() {
+            const input = document.getElementById("input").value.trim();
+            if (!input) {
+                showMessage("⚠️ Bạn chưa nhập gì cả!", "error");
                 return;
             }
-            navigator.clipboard.writeText(lastDecodedResult).then(() => {
-                showMessage(" 📋  Đã sao chép kết quả!", "success");
-            }).catch(err => {
-                console.error('Không thể sao chép văn bản: ', err);
-                showMessage('Có lỗi xảy ra khi sao chép. Vui lòng thử lại hoặc sao chép thủ công.', "error");
-            });
+            if (!visitorId) {
+                showMessage("Hệ thống an ninh chưa sẵn sàng, vui lòng chờ giây lát.", "info");
+                return;
+            }
+            showMessage("Đang xác thực, vui lòng chờ...", "info");
+            grecaptcha.execute(recaptchaWidgetId);
+        }
+        
+        window.onloadCallback = function() {
+            console.log("reCAPTCHA API đã sẵn sàng.");
+            if (document.getElementById('recaptcha-container')) {
+                recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+                    'sitekey': '6LfWt3grAAAAAMe7Q_tyRVpCUMzBLhBYzssjXn2I',
+                    'callback': onRecaptchaSuccess,
+                    'size': 'invisible'
+                });
+            }
+        };
+
+        async function onRecaptchaSuccess(token) {
+            showMessage("✅ Xác thực thành công! Đang gửi đến máy chủ...", "success");
+            const userInput = document.getElementById("input").value.trim();
+            
+            try {
+                const response = await fetch('https://doraemon-backend.onrender.com/giai-ma', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userInput: userInput,
+                        recaptchaToken: token,
+                        visitorId: visitorId 
+                    }),
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Lỗi không xác định từ máy chủ');
+                }
+                if (data.status === 'notFound') {
+                    goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp.", "output", 30);
+                    lastDecodedResult = "";
+                } else {
+                    goChuTungKyTu("➡️ Kết quả: " + data.ketQua, "output", 30);
+                    lastDecodedResult = data.ketQua;
+                    const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                    lichSu.unshift({ input: userInput, output: data.ketQua, timestamp: new Date().toLocaleString('vi-VN') });
+                    localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu.slice(0, 20)));
+                }
+            } catch (error) {
+                console.error('Đã có lỗi xảy ra:', error);
+                showMessage(`❌ Lỗi: ${error.message}`, "error");
+            } finally {
+                grecaptcha.reset(recaptchaWidgetId);
+            }
         }
 
-        // Khởi tạo nhận diện giọng nói nếu trình duyệt hỗ trợ
+        // --- CÁC HÀM TIỆN ÍCH KHÁC ---
+        function saoChep() {
+            if (!lastDecodedResult) {
+                showMessage("⚠️ Chưa có kết quả để sao chép!", "error");
+                return;
+            }
+            navigator.clipboard.writeText(lastDecodedResult)
+                .then(() => showMessage("📋 Đã sao chép kết quả!", "success"))
+                .catch(err => showMessage('Lỗi khi sao chép.', "error"));
+        }
+
         let recognition;
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'vi-VN'; // Ngôn ngữ tiếng Việt
-            recognition.interimResults = false; // Không trả về kết quả tạm thời
-            recognition.maxAlternatives = 1; // Chỉ lấy một kết quả tốt nhất
+            recognition.lang = 'vi-VN';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
 
-            function startDictation() {
-                showMessage("🎙️ Đang lắng nghe...", "info");
-                document.getElementById("micIndicator").style.display = "block";
-                document.getElementById("micText").style.display = "block";
-                
-                // **KHẮC PHỤC LỖI: Đảm bảo chỉ gọi start() khi recognition chưa bắt đầu**
-                if (recognition.recognizing) {
-                    console.warn("SpeechRecognition đã bắt đầu. Dừng và khởi động lại.");
-                    recognition.stop(); // Dừng nếu đã chạy
-                }
-                recognition.start();
-
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById("input").value = transcript;
-                    document.getElementById("micIndicator").style.display = "none";
-                    document.getElementById("micText").style.display = "none";
-                    showMessage(" ✅  Nhận diện giọng nói hoàn tất.", "success");
-                    // Sau khi nhận diện xong, tự động gọi hàm giải mã
-                    giaiMa();
-                };
-
-                recognition.onerror = function(event) {
-                    console.error("Lỗi nhận diện giọng nói:", event.error);
-                    showMessage(" ⚠️  Không nhận diện được, thử lại. Lỗi: " + event.error, "error");
-                    document.getElementById("micIndicator").style.display = "none";
-                    document.getElementById("micText").style.display = "none";
-                };
-
-                recognition.onend = function() {
-                    document.getElementById("micIndicator").style.display = "none";
-                    document.getElementById("micText").style.display = "none";
-                };
+            recognition.onresult = function(event) {
+                document.getElementById("input").value = event.results[0][0].transcript;
+                showMessage("✅ Nhận diện giọng nói hoàn tất.", "success");
+                giaiMa();
+            };
+            recognition.onerror = function(event) {
+                showMessage("⚠️ Không nhận diện được. Lỗi: " + event.error, "error");
+            };
+            recognition.onend = function() {
+                document.getElementById("micIndicator").style.display = "none";
+                document.getElementById("micText").style.display = "none";
+            };
+        }
+        function startDictation() {
+            if (!recognition) {
+                showMessage("⚠️ Trình duyệt không hỗ trợ nhận diện giọng nói.", "error");
+                return;
             }
-        } else {
-            // Hàm thay thế nếu trình duyệt không hỗ trợ nhận diện giọng nói
-            function startDictation() {
-                showMessage(" ⚠️  Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Chỉ hoạt động tốt trên Chrome).", "error");
-            }
+            showMessage("🎙️ Đang lắng nghe...", "info");
+            document.getElementById("micIndicator").style.display = "block";
+            document.getElementById("micText").style.display = "block";
+            recognition.start();
         }
 
-        // Chặn phím Enter trong textarea và thay bằng gọi hàm giải mã
         function chanEnter(e) {
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -951,7 +735,6 @@
             }
         }
 
-        // Chức năng bật/tắt bảng cài đặt (bánh răng)
         function toggleSettings() {
             const panel = document.getElementById("settingsPanel");
             const toggleButton = document.querySelector(".settings-toggle");
@@ -959,256 +742,160 @@
                 panel.style.display = "none";
                 toggleButton.classList.remove("rotate");
                 toggleButton.classList.add("rotate-back");
-            }
-            else {
+            } else {
                 panel.style.display = "flex";
                 toggleButton.classList.remove("rotate-back");
                 toggleButton.classList.add("rotate");
             }
         }
 
-        // Chức năng bật/tắt âm thanh tổng thể
         function toggleAudio() {
-            const muted = document.getElementById("toggleSound").checked;
-            document.getElementById("myAudio").muted = muted;
-            document.getElementById("typeSound").muted = muted;
-            document.getElementById("com-ngon").muted = muted;
-            document.getElementById("giao-huong").muted = muted;
-            localStorage.setItem("doraemonSoundMuted", muted);
+            const audios = [document.getElementById("myAudio"), document.getElementById("typeSound"), document.getElementById("com-ngon"), document.getElementById("giao-huong")];
+            const isMuted = !audios[0].muted;
+            audios.forEach(audio => audio.muted = isMuted);
+            localStorage.setItem("doraemonSoundMuted", isMuted);
 
-            // Nếu người dùng bật âm thanh và chưa phát lần nào, thử phát lại
-            if (!muted && !audioPlayedFirstTime) {
-                document.getElementById("myAudio").play().catch(error => {
-                    console.log("Lỗi khi phát nhạc nền tự động (sau khi bỏ tắt tiếng):", error);
-                });
-                audioPlayedFirstTime = true; // Đánh dấu đã cố gắng phát
+            if (!isMuted && !audioPlayedFirstTime) {
+                audios[0].play().catch(e => console.log("Cần tương tác của người dùng để bật âm thanh."));
+                audioPlayedFirstTime = true;
             }
         }
 
-        // Hàm phát các bản nhạc cụ thể từ cài đặt
         function playAudio(audioId) {
-            const audio = document.getElementById(audioId);
-            // Dừng và reset các audio khác đang phát
             ['myAudio', 'typeSound', 'com-ngon', 'giao-huong'].forEach(id => {
                 const otherAudio = document.getElementById(id);
-                if (otherAudio && otherAudio !== audio) {
+                if (otherAudio) {
                     otherAudio.pause();
                     otherAudio.currentTime = 0;
                 }
             });
 
+            const audio = document.getElementById(audioId);
             if (audio) {
-                audio.loop = true; // Đặt âm thanh lặp lại
-                if (audio.paused) {
-                    audio.play().catch(error => {
-                        console.error("Error playing audio:", error);
-                        showMessage("⚠️ Không thể phát âm thanh. Vui lòng tương tác trang trước.", "error");
-                    });
-                } else {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }
+                audio.loop = true;
+                audio.play().catch(error => showMessage("⚠️ Không thể phát âm thanh.", "error"));
             }
         }
 
-        // Hàm mở modal lịch sử giải mã
         function openLichSu() {
             const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
             const box = document.getElementById("lichSuNoiDung");
-
-            box.innerHTML = ''; // Xóa nội dung cũ
+            box.innerHTML = '';
             if (lichSu.length === 0) {
                 box.innerHTML = '<p style="text-align: center; color: #ccc;"><i>Chưa có lịch sử.</i></p>';
             } else {
                 lichSu.forEach((item, idx) => {
                     const div = document.createElement('div');
-                    div.classList.add('history-item');
-
-                    // KHẮC PHỤC BẢO MẬT: Chuyển sang sử dụng textContent hoặc tạo TextNode
-                    // để ngăn ngừa XSS khi hiển thị dữ liệu từ localStorage.
+                    div.className = 'history-item';
+                    div.innerHTML = `<strong>(${item.timestamp})</strong><br>${document.createTextNode(item.input).textContent} ➡️ ${document.createTextNode(item.output).textContent}`;
                     
-                    const timestampSpan = document.createElement('strong');
-                    timestampSpan.textContent = `(${item.timestamp})`;
-
-                    const inputContent = document.createTextNode(item.input);
-                    const arrowText = document.createTextNode(' ➡️ ');
-                    const outputContent = document.createTextNode(item.output);
-
-                    div.appendChild(timestampSpan);
-                    div.appendChild(document.createElement('br')); // Thêm thẻ <br> để xuống dòng
-                    div.appendChild(inputContent);
-                    div.appendChild(arrowText);
-                    div.appendChild(outputContent);
-                    // HẾT PHẦN KHẮC PHỤC BẢO MẬT
-
                     const deleteButton = document.createElement('button');
-                    deleteButton.textContent = ' ❌ ';
-                    deleteButton.classList.add('delete-item-btn');
-                    deleteButton.onclick = (event) => {
-                        event.stopPropagation(); // Ngăn sự kiện click lan ra gây đóng modal
-                        showConfirmDeleteOne(idx); // Hiển thị xác nhận xóa 1 mục
-                    };
+                    deleteButton.innerHTML = '❌';
+                    deleteButton.className = 'delete-item-btn';
+                    deleteButton.onclick = () => showConfirmDeleteOne(idx);
                     div.appendChild(deleteButton);
                     box.appendChild(div);
                 });
             }
-            document.getElementById("modalLichSu").style.display = "flex"; // Hiển thị modal
+            document.getElementById("modalLichSu").style.display = "flex";
         }
 
-        // Hàm đóng modal lịch sử
         function closeLichSu() {
             document.getElementById("modalLichSu").style.display = "none";
         }
 
-        // Hiển thị hộp thoại xác nhận khi xóa một mục lịch sử
         function showConfirmDeleteOne(index) {
             pendingDeleteIndex = index;
-            isDeletingAll = false; // Đảm bảo đây là xóa một mục
-            document.getElementById("confirmMessage").textContent = "Bạn có chắc muốn xóa mục này khỏi lịch sử?";
-            document.getElementById("confirmModal").style.display = "flex"; // Hiện modal xác nhận
+            isDeletingAll = false;
+            document.getElementById("confirmMessage").textContent = "Bạn có chắc muốn xóa mục này?";
+            document.getElementById("confirmModal").style.display = "flex";
         }
-        
-        // Hàm hiển thị hộp thoại xác nhận trước khi xóa toàn bộ lịch sử.
+
         function clearAllHistory() {
-            const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
-            if (lichSu.length === 0) {
+            if (JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]").length === 0) {
                 showMessage("📜 Lịch sử đang trống.", 'info');
                 return;
             }
             isDeletingAll = true;
-            pendingDeleteIndex = -1; // Đảm bảo không xóa nhầm mục đơn lẻ
             document.getElementById("confirmMessage").textContent = "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?";
             document.getElementById("confirmModal").style.display = "flex";
         }
 
-        // Xử lý xác nhận xóa (một mục hoặc toàn bộ)
         function proceedConfirmation() {
             if (isDeletingAll) {
                 localStorage.removeItem("lichSuDoraemon");
                 showMessage("🗑️ Đã xóa toàn bộ lịch sử!", "success");
-                closeLichSu(); // Đóng modal lịch sử sau khi xóa
+                closeLichSu();
             } else if (pendingDeleteIndex !== -1) {
                 const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
                 lichSu.splice(pendingDeleteIndex, 1);
                 localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu));
                 showMessage("🗑️ Đã xóa mục khỏi lịch sử!", "success");
-                pendingDeleteIndex = -1;
             }
-            document.getElementById("confirmModal").style.display = "none"; // Ẩn modal xác nhận
-            openLichSu(); // Cập nhật lại giao diện lịch sử
+            cancelConfirmation();
+            openLichSu();
         }
 
-        // Hủy bỏ thao tác xác nhận xóa
         function cancelConfirmation() {
             pendingDeleteIndex = -1;
             isDeletingAll = false;
-            document.getElementById("confirmModal").style.display = "none"; // Ẩn modal xác nhận
+            document.getElementById("confirmModal").style.display = "none";
         }
         
-        // Hàm kết thúc intro (dù bằng nút skip hay hết thời gian)
         function endIntro() {
-            clearTimeout(splashTimer); // Xóa bộ đếm thời gian nếu có
-            const splashScreen = document.getElementById("splashScreen");
+            clearTimeout(splashTimer);
+            document.getElementById("splashScreen").style.display = "none";
             const mainContent = document.getElementById("mainContent");
-            const myAudio = document.getElementById("myAudio");
-            
-            splashScreen.style.display = "none"; // Ẩn hoàn toàn splash screen
             mainContent.style.visibility = "visible";
             mainContent.style.display = "flex";
             mainContent.classList.add("visible");
             
-            // Sau khi splash screen ẩn, cố gắng phát nhạc nếu chưa phát và không bị tắt tiếng
-            // Trình duyệt yêu cầu tương tác người dùng để phát media
+            const myAudio = document.getElementById("myAudio");
             if (!audioPlayedFirstTime && !myAudio.muted) {
-                 myAudio.play().catch(error => {
-                     console.log("Lỗi khi phát nhạc nền tự động (cần tương tác người dùng):", error);
-                 });
+                 myAudio.play().catch(e => {});
             }
-            audioPlayedFirstTime = true; // Đánh dấu là đã cố gắng phát nhạc
+            audioPlayedFirstTime = true;
         }
         
-        // Hàm cho nút SKIP trên splash screen
         function skipIntro() {
-            endIntro(); // Khi nhấn nút skip, cũng gọi endIntro để ẩn splash và hiển thị nội dung chính
-            // Sau khi skip, đây được coi là một tương tác của người dùng, nên thử phát nhạc
-            const myAudio = document.getElementById("myAudio");
-            if (!audioPlayedFirstTime && !myAudio.muted) {
-                myAudio.play().catch(error => {
-                    console.log("Lỗi khi phát nhạc sau Skip (có thể do đã chạy ở endIntro hoặc chính sách trình duyệt):", error);
-                });
-                audioPlayedFirstTime = true;
-            }
+            endIntro();
         }
 
-        // Lắng nghe sự kiện DOMContentLoaded để đảm bảo HTML đã tải xong
+        // --- KHỞI TẠO KHI TẢI TRANG ---
         document.addEventListener("DOMContentLoaded", () => {
-            const myAudio = document.getElementById("myAudio");
-            const toggleSoundCheckbox = document.getElementById("toggleSound");
-            const comNgonAudio = document.getElementById("com-ngon"); // Lấy các phần tử audio mới
-            const giaoHuongAudio = document.getElementById("giao-huong");
+            initializeSecurity(); // Chạy hàm bảo mật
 
-            document.getElementById("typeSound").volume = 0.2; // Đặt âm lượng cho âm thanh gõ
-            // Đặt âm lượng cho các bản nhạc mới (có thể điều chỉnh)
-            comNgonAudio.volume = 0.5;
-            giaoHuongAudio.volume = 0.5;
+            // Cài đặt âm thanh ban đầu
+            document.getElementById("typeSound").volume = 0.2;
+            document.getElementById("com-ngon").volume = 0.5;
+            document.getElementById("giao-huong").volume = 0.5;
 
-            // Tải trạng thái tắt tiếng đã lưu từ LocalStorage
-            const savedMuteState = localStorage.getItem("doraemonSoundMuted");
-            if (savedMuteState === "true") {
-                toggleSoundCheckbox.checked = true;
-                myAudio.muted = true;
-                document.getElementById("typeSound").muted = true;
-                comNgonAudio.muted = true;
-                giaoHuongAudio.muted = true;
-            } else {
-                toggleSoundCheckbox.checked = false;
-                myAudio.muted = false;
-                document.getElementById("typeSound").muted = false;
-                comNgonAudio.muted = false;
-                giaoHuongAudio.muted = false;
-            }
-            
-            // Tổng thời gian của tất cả các animation splash screen là 10 giây (10000 ms)
-            // Sau khi tất cả các animation hoàn tất, gọi hàm endIntro để ẩn splash và hiện nội dung chính
+            const savedMuteState = localStorage.getItem("doraemonSoundMuted") === "true";
+            [document.getElementById("myAudio"), document.getElementById("typeSound"), document.getElementById("com-ngon"), document.getElementById("giao-huong")].forEach(audio => audio.muted = savedMuteState);
+
+            // Hẹn giờ cho splash screen
             splashTimer = setTimeout(endIntro, 10000);
 
-            // Thêm event listener cho bất kỳ tương tác nào trên tài liệu (click/tap)
-            // Sự kiện này giúp phát nhạc nền nếu trình duyệt yêu cầu tương tác người dùng
+            // Listener để bật nhạc khi người dùng tương tác lần đầu
             document.body.addEventListener('click', function firstInteractionPlay() {
                 const myAudio = document.getElementById("myAudio");
-                // Chỉ phát nếu chưa phát lần nào và không bị tắt tiếng
                 if (!audioPlayedFirstTime && !myAudio.muted) {
                     myAudio.play().then(() => {
-                        audioPlayedFirstTime = true; // Đánh dấu đã phát thành công
-                        document.body.removeEventListener('click', firstInteractionPlay); // Gỡ bỏ listener sau khi phát
-                    }).catch(error => {
-                        console.log("Lỗi khi phát nhạc nền sau tương tác đầu tiên:", error);
-                        // Có thể thêm một nút "Bật nhạc" nhỏ nếu muốn người dùng kích hoạt thủ công
-                    });
+                        audioPlayedFirstTime = true;
+                        document.body.removeEventListener('click', firstInteractionPlay);
+                    }).catch(e => {});
                 }
-            }, { once: true }); // Dùng once: true để chỉ nghe sự kiện này một lần
+            }, { once: true });
 
-            // Gắn lại sự kiện lắng nghe click toàn bộ document, đảm bảo nó luôn hoạt động
+            // Listener để đóng menu cài đặt khi click ra ngoài
             document.addEventListener("click", function(e) {
                 const panel = document.getElementById("settingsPanel");
                 const toggle = document.querySelector(".settings-toggle");
-                const modalLichSu = document.getElementById("modalLichSu");
-                const confirmModal = document.getElementById("confirmModal");
-
-                // Logic đóng settings panel khi click ra ngoài, tránh đóng khi click vào các modal
-                if (panel.style.display === "flex" &&
-                    !panel.contains(e.target) &&
-                    !toggle.contains(e.target) &&
-                    !modalLichSu.contains(e.target) && // Loại trừ modal lịch sử
-                    !confirmModal.contains(e.target)) { // Loại trừ modal xác nhận
-                    panel.style.display = "none";
-                    toggle.classList.remove("rotate");
-                    toggle.classList.add("rotate-back");
+                if (panel.style.display === "flex" && !panel.contains(e.target) && !toggle.contains(e.target)) {
+                    toggleSettings();
                 }
-            }, { once: false });
+            });
         });
-        // Gắn sự kiện change cho checkbox tắt/bật âm thanh
-        document.getElementById("toggleSound").addEventListener("change", toggleAudio);
     </script>
 </body>
 </html>
