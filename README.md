@@ -27,7 +27,7 @@ Một ứng dụng web vui nhộn cho phép bạn "giải mã" các biệt danh 
 ---
 
 ## 🖥️ Tải ứng dụng bản Windows (.zip)
-
+hiện link này không còn dùng được và đang build phiên bản mới hơn. xin thông cảm.
 👉 [Tải ứng dụng tại đây](https://drive.google.com/file/d/13SHOlF-A2pLRT5-kM-djqD9G5UJG07Cp/view?usp=sharing)
 
 > Sau khi tải về:
