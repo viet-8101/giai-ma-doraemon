@@ -179,7 +179,6 @@
         @keyframes rotate-back { from { transform: rotate(180deg); } to { transform: rotate(0deg); } }
 
         .settings-panel {
-            display: none; /* Hidden by default */
             position: absolute;
             top: 65px; /* Vị trí dưới nút cài đặt */
             right: 20px;
@@ -191,7 +190,22 @@
             gap: 10px;
             z-index: 9; /* Dưới nút toggle */
             min-width: 150px;
+            
+            /* THAY ĐỔI CSS Ở ĐÂY CHO HIỆU ỨNG TRƯỢT */
+            display: flex; /* Dùng flex để dễ căn chỉnh */
+            max-height: 0; /* Ban đầu ẩn */
+            overflow: hidden; /* Cắt nội dung bị tràn */
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            opacity: 0;
         }
+        
+        .settings-panel.open {
+            /* Giá trị max-height đủ lớn để chứa nội dung (khoảng 300px là an toàn) */
+            max-height: 300px; 
+            opacity: 1;
+            /* Đặt lại padding khi mở, nếu không có padding khi ẩn, nếu có thì giữ nguyên */
+        }
+
         .settings-panel label {
             display: flex;
             align-items: center;
@@ -735,15 +749,22 @@
             }
         }
 
+        // HÀM ĐƯỢC CHỈNH SỬA
         function toggleSettings() {
             const panel = document.getElementById("settingsPanel");
             const toggleButton = document.querySelector(".settings-toggle");
-            if (panel.style.display === "flex") {
-                panel.style.display = "none";
+            
+            // Kiểm tra xem panel có đang mở hay không (dựa trên class 'open')
+            const isOpen = panel.classList.contains('open');
+
+            if (isOpen) {
+                // Đóng: ẩn từ dưới lên
+                panel.classList.remove("open");
                 toggleButton.classList.remove("rotate");
                 toggleButton.classList.add("rotate-back");
             } else {
-                panel.style.display = "flex";
+                // Mở: hiện từ trên xuống
+                panel.classList.add("open");
                 toggleButton.classList.remove("rotate-back");
                 toggleButton.classList.add("rotate");
             }
@@ -891,7 +912,8 @@
             document.addEventListener("click", function(e) {
                 const panel = document.getElementById("settingsPanel");
                 const toggle = document.querySelector(".settings-toggle");
-                if (panel.style.display === "flex" && !panel.contains(e.target) && !toggle.contains(e.target)) {
+                // Kiểm tra panel đang mở (có class 'open') VÀ click không nằm trong panel VÀ click không nằm trên nút toggle
+                if (panel.classList.contains('open') && !panel.contains(e.target) && !toggle.contains(e.target)) {
                     toggleSettings();
                 }
             });
@@ -899,4 +921,3 @@
     </script>
 </body>
 </html>
-
