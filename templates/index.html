@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giải mã Doraemon</title>
+    
     <link rel="icon" href="{{ url_for('static', filename='Doraenon_logo.ico') }}" type="image/x-icon">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <script src="https://www.google.com/recaptcha/api.js" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback" defer></script>
     
     <script src="https://openfpcdn.io/fingerprintjs/v4" async></script>
     
@@ -16,7 +18,7 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            /* ĐÃ SỬA: Dùng url_for để gọi file tĩnh Ảnh nền */
+            /* ĐÃ SỬA: Dùng url_for cho Ảnh nền */
             background: url('{{ url_for('static', filename='doraemon-bg.jpg') }}') no-repeat center center fixed; 
             background-size: cover;
             color: white;
@@ -26,16 +28,17 @@
             min-height: 100vh;
             overflow: hidden;
         }
+        /* ... (Phần CSS giữ nguyên) ... */
 
         /* Giao diện chính của ứng dụng */
         #mainContent {
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 1s ease-in, visibility 1s ease-in;
-            flex-direction: column;
+            visibility: hidden; 
+            opacity: 0; 
+            transition: opacity 1s ease-in, visibility 1s ease-in; 
+            flex-direction: column; 
             justify-content: center;
             align-items: center;
-            width: 100%;
+            width: 100%; 
             height: 100vh;
         }
         #mainContent.visible {
@@ -61,22 +64,22 @@
             color: white;
         }
 
-        textarea {
-            width: 70%;
-            height: 70px;
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            font-size: 1em;
-            resize: none;
-        }
+    textarea {
+      width: 70%;
+      height: 70px;
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1em;
+      resize: none;
+    }
 
         .button-group {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
+            flex-wrap: wrap; 
+            gap: 12px; 
             margin-bottom: 20px;
         }
 
@@ -165,7 +168,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 40px;
+            width: 40px; 
             height: 40px;
             font-size: 2.2em;
         }
@@ -181,7 +184,7 @@
 
         .settings-panel {
             position: absolute;
-            top: 65px;
+            top: 65px; 
             right: 20px;
             background-color: rgba(0, 0, 0, 0.85);
             padding: 15px;
@@ -192,8 +195,8 @@
             z-index: 9;
             min-width: 150px;
             
-            display: flex;
-            max-height: 0;
+            display: flex; 
+            max-height: 0; 
             overflow: hidden;
             transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out;
             opacity: 0;
@@ -217,7 +220,7 @@
             accent-color: #00bfff;
         }
         .settings-panel button {
-            background: linear-gradient(270deg, #00bfff, #1e90ff);
+            background: linear-gradient(270deg, #00bfff, #1e90ff); 
             color: white;
             padding: 10px;
             font-size: 0.9em;
@@ -227,368 +230,671 @@
             min-width: unset;
             margin-top: 5px;
         }
+        .settings-panel button:hover {
+            transform: none; 
+            background: linear-gradient(270deg, #1e90ff, #00bfff); 
+        }
 
-        /* Splash Screen CSS */
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center; 
+            align-items: center;     
+            animation: fadeInModal 0.3s ease-out;
+        }
+        .modal .close-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .modal .close-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        #modalLichSu .modal-content {
+            background-color: #222;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh; 
+            overflow-y: auto; 
+            color: white;
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+        }
+        #lichSuNoiDung {
+            width: 100%;
+            text-align: left;
+        }
+        #lichSuNoiDung .history-item {
+            background-color: #333;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            word-break: break-word; 
+            border-left: 5px solid #00bfff; 
+            position: relative;
+            padding-right: 40px; 
+        }
+        #lichSuNoiDung .delete-item-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #lichSuNoiDung .delete-item-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Confirmation Modal Content Styles */
+        #confirmModalContent {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+            max-width: 350px;
+            display: flex; 
+            flex-direction: column;
+            gap: 20px;
+        }
+        #confirmModalContent p {
+            font-size: 1.1em;
+            margin: 0;
+            color: white;
+        }
+        #confirmModalContent .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        #confirmModalContent .confirm-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 100px;
+        }
+        #confirmModalContent .confirm-buttons button.cancel-btn {
+            background: #6c757d; 
+            color: white;
+        }
+        #confirmModalContent .confirm-buttons button.cancel-btn:hover {
+            background: #5a6268;
+        }
+        #confirmModalContent .confirm-buttons button.continue-btn {
+            background: #dc3545; 
+            color: white;
+        }
+        #confirmModalContent .confirm-buttons button.continue-btn:hover {
+            background: #c82333;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* CSS CHO SPLASH SCREEN */
         #splashScreen {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            transition: opacity 1s ease-out;
+            z-index: 10000;
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%;
+            animation: gradientFlow 15s ease infinite;
         }
 
-        .dora-icon {
-            width: 100px;
-            height: 100px;
-            background-color: #ff0000;
-            border-radius: 50%;
-            position: relative;
-            animation: bounce 1s infinite alternate;
+        #blackScreenOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 10002;
+            opacity: 1;
+            animation: blackScreenFadeOut 2s linear forwards;
+            animation-delay: 0s;
+        }
+
+        #myNameContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10001;
+            opacity: 0;
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 4.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            animation:
+                myNameFadeInScale 2s ease-out 2s forwards,
+                myNameFadeOutScale 2s ease-in 4s forwards;
+            white-space: nowrap;
+            padding: 0 10px;
+            box-sizing: border-box;
+            text-align: center;
         }
         
-        @keyframes bounce {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-20px); }
+        .intro-subtitle {
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            font-size: 0.3em;
+            font-weight: normal;
+            display: block;
+            margin-top: 15px;
+            color: #f0f8ff;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: subtitleFadeIn 2s ease-out 2.5s forwards,
+                         subtitleFadeOut 2s ease-in 4s forwards;
+        }
+        
+        #skipButton {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 10px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid white;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 10004;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease-in-out;
+            animation: skipButtonFadeIn 1s ease-out 2s forwards;
+        }
+        #skipButton:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
         }
 
-        #splashText {
-            margin-top: 20px;
-            font-size: 1.5em;
-            color: #00bfff;
+        .split-part {
+            position: absolute;
+            width: 50vw;
+            height: 50vh;
             opacity: 0;
-            transition: opacity 1s ease-in;
+            background: linear-gradient(270deg, #00bfff, #1e90ff, #ff69b4, #00fa9a, #00bfff);
+            background-size: 1000% 1000%;
+            animation: gradientFlow 15s ease infinite;
+            z-index: 10003;
+        }
+
+        .split-part.top-left { top: 0; left: 0; animation: splitAppear 0s linear 6s forwards, splitMoveTopLeft 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
+        .split-part.top-right { top: 0; left: 50vw; animation: splitAppear 0s linear 6s forwards, splitMoveTopRight 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
+        .split-part.bottom-left { top: 50vh; left: 0; animation: splitAppear 0s linear 6s forwards, splitMoveBottomLeft 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
+        .split-part.bottom-right { top: 50vh; left: 50vw; animation: splitAppear 0s linear 6s forwards, splitMoveBottomRight 1s ease-out 6s forwards, finalFadeOut 3s linear 7s forwards; }
+
+        /* ĐỊNH NGHĨA KEYFRAMES */
+        @keyframes blackScreenFadeOut { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+        @keyframes myNameFadeInScale { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        @keyframes myNameFadeOutScale { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); visibility: hidden; } }
+        @keyframes subtitleFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes subtitleFadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes skipButtonFadeIn { to { opacity: 1; visibility: visible; } }
+        @keyframes splitAppear { to { opacity: 1; } }
+        @keyframes splitMoveTopLeft { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, -100%); } }
+        @keyframes splitMoveTopRight { 0% { transform: translate(0, 0); } 100% { transform: translate(100%, -100%); } }
+        @keyframes splitMoveBottomLeft { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 100%); } }
+        @keyframes splitMoveBottomRight { 0% { transform: translate(0, 0); } 100% { transform: translate(100%, 100%); } }
+        @keyframes finalFadeOut { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            button { padding: 10px 15px; font-size: 0.95em; min-width: 150px; }
+            .overlay { padding: 25px 15px; }
+            #myNameContainer { font-size: 3em; word-wrap: break-word; white-space: normal; max-width: 90vw; }
+            .intro-subtitle { font-size: 0.25em; }
+            #skipButton { font-size: 0.9em; padding: 8px 20px; bottom: 20px; right: 20px; }
+            .settings-panel { right: 15px; min-width: 130px; }
+            .settings-panel button { font-size: 0.85em; }
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.5em; }
+            textarea { height: 80px; }
+            button { padding: 8px 12px; font-size: 0.85em; min-width: 130px; }
+            .overlay { padding: 15px 10px; }
+            #myNameContainer { font-size: 1.8em; }
+            .intro-subtitle { font-size: 0.3em; }
+            .button-group { gap: 8px; }
         }
     </style>
 </head>
 <body>
-
     <div id="splashScreen">
-        <div class="dora-icon"></div>
-        <div id="splashText">Đang tải Vùng Mây Bí Ẩn...</div>
+        <div id="blackScreenOverlay"></div>
+        <div id="myNameContainer">
+            <span class="my-name">NGUYỄN ĐẮC HOÀNG VIỆT</span>
+            <span class="intro-subtitle">✨ Chuẩn bị khám phá thế giới kỳ diệu của Doraemon... ✨</span>
+        </div>
+        <div class="split-part top-left"></div>
+        <div class="split-part top-right"></div>
+        <div class="split-part bottom-left"></div>
+        <div class="split-part bottom-right"></div>
+        <button id="skipButton" onclick="skipIntro()">Skip</button>
     </div>
 
-    <div id="mainContent" class="overlay">
-        <div id="settingsToggle" class="settings-toggle">
-            <i class="fas fa-cog"></i>
-        </div>
-        
-        <div id="settingsPanel" class="settings-panel">
-            <label>
-                <input type="checkbox" id="muteSoundCheckbox"> Tắt Âm thanh
-            </label>
-            <button id="clearHistoryBtn">Xóa Lịch sử</button>
-        </div>
-
-        <h1>Giải Mã Sấm Truyền Doraemon</h1>
-        
-        <textarea id="inputData" placeholder="Nhập dữ liệu cần giải mã tại đây..."></textarea>
-        
-        <div class="button-group">
-            <button id="decodeBtn"><i class="fas fa-magic"></i> Giải Mã</button>
-            <button id="copyBtn"><i class="fas fa-copy"></i> Sao Chép</button>
-            <button id="voiceInputBtn"><i class="fas fa-microphone"></i> Nhập Giọng Nói</button>
-        </div>
-
-        <div id="recaptchaContainer" class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY" data-callback="onRecaptchaSuccess" data-size="invisible" style="display: none;"></div>
-
-        <div class="mic-indicator" id="micIndicator">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="3" fill="none" opacity="0.3"/>
-                <circle id="micWave1" cx="50" cy="50" r="0" fill="#00bfff" opacity="0.6"/>
-                <circle id="micWave2" cx="50" cy="50" r="0" fill="#00bfff" opacity="0.4"/>
-            </svg>
-        </div>
-        <div id="micText">Đang nghe... nói đi!</div>
-        
-        <h2>Kết Quả:</h2>
-        <div id="output"></div>
-        
-        <div id="messageBox"></div>
-
-        <div id="historyPanel" style="margin-top: 20px; text-align: left; max-height: 200px; overflow-y: auto; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
-            <h3>Lịch sử Giải Mã:</h3>
-            <ul id="historyList"></ul>
+    <div id="mainContent">
+        <div class="overlay">
+            <h1> 🔍  Giải mã Doraemon</h1>
+            <textarea id="input" placeholder="Nhập mã troll ở đây..." onkeydown="chanEnter(event)"></textarea>
+            <div class="button-group">
+                <button onclick="giaiMa()">🧠 Giải mã Doraemon</button>
+                <button onclick="saoChep()"> 📋  Copy kết quả</button>
+                <button onclick="startDictation()"> 🎤  Nhận diện giọng nói</button>
+            </div>
+            <div id="output"></div>
+            <div id="messageBox"></div>
+            <div id="recaptcha-container"
+                 class="g-recaptcha"
+                 data-sitekey="6LdTI_4rAAAAAIDncWOVy9Sm9MSlaORo61SGR6IB"
+                 data-callback="onRecaptchaSuccess"
+                 data-size="invisible">
+            </div>
+            <div class="mic-indicator" id="micIndicator">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm5 8v3a5 5 0 0 1-10 0V9H5v3a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12V9z" />
+                </svg>
+            </div>
+            <div id="micText">🎙️ Đang lắng nghe...</div>
+            <div class="settings-toggle" onclick="toggleSettings()">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="settings-panel" id="settingsPanel">
+                <button id="toggleSoundButton" onclick="toggleAudio()">🔊 Bật/Tắt Âm thanh</button>
+                <button onclick="playAudio('giao-huong')">🎵 Bản giao hưởng địa cầu</button>
+                <button onclick="playAudio('com-ngon')">🎶 Bữa cơm ngon lành</button>
+                <button onclick="openLichSu()"> 📜  Xem lịch sử</button>
+                <button onclick="clearAllHistory()">🗑️ Xóa lịch sử</button>
+            </div>
         </div>
     </div>
 
-    <audio id="myAudio" loop src="audio/main_theme.mp3"></audio>
-    <audio id="typeSound" src="audio/typing.mp3"></audio>
-    <audio id="com-ngon" src="audio/com-ngon.mp3"></audio>
-    <audio id="giao-huong" src="audio/giao-huong.mp3"></audio>
+    <div class="modal" id="modalLichSu" tabindex="-1">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeLichSu()">Đóng</button>
+            <div id="lichSuNoiDung"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal" tabindex="-1">
+        <div id="confirmModalContent">
+            <p id="confirmMessage">Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?</p>
+            <div class="confirm-buttons">
+                <button class="cancel-btn" onclick="cancelConfirmation()">Quay lại</button>
+                <button class="continue-btn" onclick="proceedConfirmation()">Tiếp tục</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="myAudio" loop muted>
+        <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
+    </audio>
+    <audio id="typeSound" preload="auto">
+        <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_2a802b1f48.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="com-ngon" preload="auto">
+        <source src="https://media.vocaroo.com/mp3/1883Jz7Qz18d" type="audio/mpeg">
+    </audio>
+    <audio id="giao-huong" preload="auto">
+        <source src="https://media.vocaroo.com/mp3/1mrXpaxv1jUB" type="audio/mpeg">
+    </audio>
 
     <script>
-        // Các biến toàn cục
-        let fingerprint = '';
-        let micRecorder = null;
-        let isRecording = false;
+        // --- BIẾN TOÀN CỤC ---
+        let lastDecodedResult = "";
         let audioPlayedFirstTime = false;
+        let pendingDeleteIndex = -1;
+        let isDeletingAll = false;
         let splashTimer = null;
-        const HISTORY_KEY = 'doraemon_history';
+        let recaptchaWidgetId;
+        let visitorId = null; 
 
-        // Lấy các phần tử DOM
-        const inputData = document.getElementById('inputData');
-        const outputDiv = document.getElementById('output');
-        const decodeBtn = document.getElementById('decodeBtn');
-        const copyBtn = document.getElementById('copyBtn');
-        const voiceInputBtn = document.getElementById('voiceInputBtn');
-        const messageBox = document.getElementById('messageBox');
-        const historyList = document.getElementById('historyList');
-        const settingsToggle = document.getElementById('settingsToggle');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const muteSoundCheckbox = document.getElementById('muteSoundCheckbox');
-        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-        const micIndicator = document.getElementById('micIndicator');
-        const micText = document.getElementById('micText');
-        const splashScreen = document.getElementById('splashScreen');
-        const mainContent = document.getElementById('mainContent');
-
-        // Hàm hiển thị thông báo
-        function showMessage(text, isError = false) {
-            messageBox.textContent = text;
-            messageBox.style.backgroundColor = isError ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 191, 255, 0.5)';
-            messageBox.classList.add('show');
-            setTimeout(() => messageBox.classList.remove('show'), 4000);
+        // --- HÀM GIAO DIỆN ---
+        function showMessage(msg, type = 'info') {
+            const msgBox = document.getElementById('messageBox');
+            msgBox.textContent = msg;
+            msgBox.className = 'show';
+            if (type === 'error') msgBox.style.backgroundColor = 'rgba(220, 20, 60, 0.8)';
+            else if (type === 'success') msgBox.style.backgroundColor = 'rgba(60, 179, 113, 0.8)';
+            else msgBox.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            if (msgBox.timer) clearTimeout(msgBox.timer);
+            msgBox.timer = setTimeout(() => { msgBox.className = ''; msgBox.textContent = ''; }, 3000);
         }
 
-        // Lưu lịch sử
-        function saveHistory(input, output) {
-            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            history.unshift({ input, output, timestamp: new Date().toLocaleString() });
-            localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10))); // Giữ 10 mục gần nhất
-            renderHistory();
-        }
-
-        // Hiển thị lịch sử
-        function renderHistory() {
-            historyList.innerHTML = '';
-            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            if (history.length === 0) {
-                historyList.innerHTML = '<li style="color: #ccc;">Chưa có lịch sử nào.</li>';
-                return;
+        function goChuTungKyTu(text, elementId, speed) {
+            const el = document.getElementById(elementId);
+            const sound = document.getElementById("typeSound");
+            if (el.typingTimer) clearTimeout(el.typingTimer);
+            el.textContent = "";
+            let index = 0;
+            function type() {
+                if (index < text.length) {
+                    el.textContent += text.charAt(index);
+                    if (!sound.muted) {
+                        sound.currentTime = 0;
+                        sound.play().catch(e => {});
+                    }
+                    el.typingTimer = setTimeout(type, speed);
+                    index++;
+                }
             }
-            history.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>[${item.timestamp}]</strong> ${item.input.substring(0, 30)}... -> <a href="#" data-index="${index}">Xem kết quả</a>`;
-                historyList.appendChild(li);
-            });
+            type();
+        }
+
+        // --- HÀM CHỨC NĂNG CHÍNH ---
+        async function initializeSecurity() {
+            try {
+                const fp = await FingerprintJS.load();
+                const result = await fp.get();
+                visitorId = result.visitorId;
+                console.log("Visitor ID:", visitorId);
+            } catch (error) {
+                console.error("Lỗi FingerprintJS:", error);
+                visitorId = 'fp_error';
+            }
         }
         
-        // Sự kiện click vào lịch sử
-        historyList.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A') {
-                e.preventDefault();
-                const index = e.target.getAttribute('data-index');
-                const history = JSON.parse(localStorage.getItem(HISTORY_KEY));
-                if (history && history[index]) {
-                    inputData.value = history[index].input;
-                    outputDiv.textContent = history[index].output;
-                    showMessage('Đã tải lịch sử thành công.', false);
-                }
-            }
-        });
-
-        // Hàm gọi API Giải Mã - ĐÃ SỬA URL DÙNG PROXY
-        async function decodeData() {
-            const data = inputData.value.trim();
-            if (!data) {
-                showMessage("Vui lòng nhập dữ liệu để giải mã.", true);
+        function giaiMa() {
+            const input = document.getElementById("input").value.trim();
+            if (!input) {
+                showMessage("⚠️ Bạn chưa nhập gì cả!", "error");
                 return;
             }
+            if (!visitorId) {
+                showMessage("Hệ thống an ninh chưa sẵn sàng, vui lòng chờ giây lát.", "info");
+                return;
+            }
+            showMessage("Đang xác thực, vui lòng chờ...", "info");
+            grecaptcha.execute(recaptchaWidgetId);
+        }
+        
+        window.onloadCallback = function() {
+            console.log("reCAPTCHA API đã sẵn sàng.");
+            if (document.getElementById('recaptcha-container')) {
+                recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+                    'sitekey': '6LdTI_4rAAAAAIDncWOVy9Sm9MSlaORo61SGR6IB',
+                    'callback': onRecaptchaSuccess,
+                    'size': 'invisible'
+                });
+            }
+        };
 
-            // Ghi âm thanh nhập liệu (nếu không tắt)
-            document.getElementById("typeSound").play().catch(e => {});
-
-            decodeBtn.disabled = true;
-            outputDiv.textContent = "Đang kết nối với túi thần kỳ...";
-
+        async function onRecaptchaSuccess(token) {
+            showMessage("✅ Xác thực thành công! Đang gửi đến máy chủ...", "success");
+            const userInput = document.getElementById("input").value.trim();
+            
             try {
-                // Lấy reCAPTCHA token (chỉ hiển thị nếu cần thiết)
-                const recaptchaToken = await new Promise((resolve) => {
-                    // Tạm bỏ qua reCAPTCHA để đơn giản hóa ví dụ triển khai
-                    // Nếu bạn cần reCAPTCHA, bạn sẽ cần gọi: grecaptcha.execute(siteKey, {action: 'decode'}).then(resolve)
-                    resolve("TEST_TOKEN_FOR_PROXY"); 
-                });
-
-                // Dữ liệu gửi đến Proxy Server
-                const payload = {
-                    data: data,
-                    fingerprint: fingerprint,
-                    recaptcha_token: recaptchaToken
-                };
-
-                // GỌI ĐẾN URL PROXY CỤC BỘ CỦA FLASK
-                const response = await fetch('/api/giai-ma', { 
+                // ĐÃ SỬA: GỌI ĐẾN PROXY ROUTE CỤC BỘ TRÊN FLASK
+                const response = await fetch('/api/giai-ma', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userInput: userInput,
+                        recaptchaToken: token,
+                        visitorId: visitorId 
+                    }),
                 });
-
+                const data = await response.json();
                 if (!response.ok) {
-                    const errorJson = await response.json();
-                    throw new Error(errorJson.error || `Lỗi HTTP: ${response.status}`);
+                    throw new Error(data.error || 'Lỗi không xác định từ máy chủ');
                 }
-
-                const result = await response.json();
-                
-                outputDiv.textContent = result.result;
-                showMessage(result.message || "Giải mã thành công!", false);
-                saveHistory(data, result.result);
-
+                if (data.status === 'notFound') {
+                    goChuTungKyTu("❓ Không tìm thấy từ khóa phù hợp.", "output", 30);
+                    lastDecodedResult = "";
+                } else {
+                    goChuTungKyTu("➡️ Kết quả: " + data.ketQua, "output", 30);
+                    lastDecodedResult = data.ketQua;
+                    const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                    lichSu.unshift({ input: userInput, output: data.ketQua, timestamp: new Date().toLocaleString('vi-VN') });
+                    localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu.slice(0, 20)));
+                }
             } catch (error) {
-                console.error("Lỗi Giải Mã:", error);
-                outputDiv.textContent = "Lỗi Giải Mã: Không thể kết nối hoặc dữ liệu không hợp lệ.";
-                showMessage(`Lỗi: ${error.message || error}`, true);
+                console.error('Đã có lỗi xảy ra:', error);
+                showMessage(`❌ Lỗi: ${error.message}`, "error");
             } finally {
-                decodeBtn.disabled = false;
-                document.getElementById("com-ngon").play().catch(e => {});
+                grecaptcha.reset(recaptchaWidgetId);
             }
         }
+        
+        // ... (Phần còn lại của JavaScript giữ nguyên) ...
 
-        // Logic Nhập giọng nói
-        function handleVoiceInput() {
-            if (!('webkitSpeechRecognition' in window)) {
-                showMessage("Trình duyệt không hỗ trợ Nhận dạng Giọng nói.", true);
+        // --- CÁC HÀM TIỆN ÍCH KHÁC ---
+        function saoChep() {
+            if (!lastDecodedResult) {
+                showMessage("⚠️ Chưa có kết quả để sao chép!", "error");
                 return;
             }
+            navigator.clipboard.writeText(lastDecodedResult)
+                .then(() => showMessage("📋 Đã sao chép kết quả!", "success"))
+                .catch(err => showMessage('Lỗi khi sao chép.', "error"));
+        }
 
-            const recognition = new webkitSpeechRecognition();
+        let recognition;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = 'vi-VN';
-            recognition.continuous = false;
             recognition.interimResults = false;
-
-            recognition.onstart = function() {
-                isRecording = true;
-                voiceInputBtn.textContent = 'Đang Nghe...';
-                micIndicator.style.display = 'block';
-                micText.style.display = 'block';
-                document.getElementById("giao-huong").play().catch(e => {});
-            };
+            recognition.maxAlternatives = 1;
 
             recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                inputData.value = transcript;
-                showMessage(`Đã nhận: "${transcript}"`, false);
+                document.getElementById("input").value = event.results[0][0].transcript;
+                showMessage("✅ Nhận diện giọng nói hoàn tất.", "success");
+                giaiMa();
             };
-
             recognition.onerror = function(event) {
-                showMessage(`Lỗi giọng nói: ${event.error}`, true);
-                stopRecordingUI();
+                showMessage("⚠️ Không nhận diện được. Lỗi: " + event.error, "error");
             };
-
             recognition.onend = function() {
-                stopRecordingUI();
+                document.getElementById("micIndicator").style.display = "none";
+                document.getElementById("micText").style.display = "none";
             };
-            
-            // Xử lý logic bật/tắt ghi âm
-            if (isRecording) {
-                recognition.stop();
-            } else {
-                recognition.start();
+        }
+        function startDictation() {
+            if (!recognition) {
+                showMessage("⚠️ Trình duyệt không hỗ trợ nhận diện giọng nói.", "error");
+                return;
             }
+            showMessage("🎙️ Đang lắng nghe...", "info");
+            document.getElementById("micIndicator").style.display = "block";
+            document.getElementById("micText").style.display = "block";
+            recognition.start();
+        }
 
-            function stopRecordingUI() {
-                isRecording = false;
-                voiceInputBtn.textContent = 'Nhập Giọng Nói';
-                micIndicator.style.display = 'none';
-                micText.style.display = 'none';
-                document.getElementById("giao-huong").pause();
-                document.getElementById("giao-huong").currentTime = 0;
+        function chanEnter(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                giaiMa();
             }
         }
 
-        // Hàm xử lý Mute/Unmute
-        function toggleMute() {
-            const isMuted = muteSoundCheckbox.checked;
-            [document.getElementById("myAudio"), document.getElementById("typeSound"), document.getElementById("com-ngon"), document.getElementById("giao-huong")].forEach(audio => {
-                audio.muted = isMuted;
-            });
-            localStorage.setItem('muteSound', isMuted ? 'true' : 'false');
-        }
-
-        // Hàm mở/đóng Settings Panel
         function toggleSettings() {
-            const isOpen = settingsPanel.classList.toggle('open');
+            const panel = document.getElementById("settingsPanel");
+            const toggleButton = document.querySelector(".settings-toggle");
+            const isOpen = panel.classList.contains('open');
+
             if (isOpen) {
-                settingsToggle.classList.add('rotate');
-                settingsToggle.classList.remove('rotate-back');
+                panel.classList.remove("open");
+                toggleButton.classList.remove("rotate");
+                toggleButton.classList.add("rotate-back");
             } else {
-                settingsToggle.classList.add('rotate-back');
-                settingsToggle.classList.remove('rotate');
+                panel.classList.add("open");
+                toggleButton.classList.remove("rotate-back");
+                toggleButton.classList.add("rotate");
             }
-        }
-        
-        // Logic cho Splash Screen
-        function endIntro() {
-            if (splashTimer) clearTimeout(splashTimer);
-            splashScreen.style.opacity = 0;
-            setTimeout(() => {
-                splashScreen.style.display = 'none';
-                mainContent.classList.add('visible');
-                document.body.style.overflow = 'auto'; // Cho phép cuộn
-                
-                // Tự động bật nhạc nền nếu không bị mute
-                const myAudio = document.getElementById("myAudio");
-                if (!myAudio.muted && !audioPlayedFirstTime) {
-                    myAudio.play().catch(e => {
-                        console.log("Cần tương tác để bật nhạc.");
-                    });
-                    audioPlayedFirstTime = true;
-                }
-            }, 1000); 
         }
 
-        // --- EVENTS ---
-        decodeBtn.addEventListener('click', decodeData);
-        voiceInputBtn.addEventListener('click', handleVoiceInput);
-        settingsToggle.addEventListener('click', toggleSettings);
-        muteSoundCheckbox.addEventListener('change', toggleMute);
-        clearHistoryBtn.addEventListener('click', () => {
-            if(confirm("Bạn có chắc chắn muốn xóa tất cả lịch sử giải mã?")) {
-                localStorage.removeItem(HISTORY_KEY);
-                renderHistory();
-                showMessage("Đã xóa lịch sử thành công.", false);
+        function toggleAudio() {
+            const audios = [document.getElementById("myAudio"), document.getElementById("typeSound"), document.getElementById("com-ngon"), document.getElementById("giao-huong")];
+            const isMuted = !audios[0].muted;
+            audios.forEach(audio => audio.muted = isMuted);
+            localStorage.setItem("doraemonSoundMuted", isMuted);
+
+            if (!isMuted && !audioPlayedFirstTime) {
+                audios[0].play().catch(e => console.log("Cần tương tác của người dùng để bật âm thanh."));
+                audioPlayedFirstTime = true;
             }
-        });
-        copyBtn.addEventListener('click', () => {
-            const textToCopy = outputDiv.textContent;
-            if (textToCopy) {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    showMessage("Đã sao chép kết quả vào clipboard!", false);
-                }).catch(err => {
-                    showMessage("Không thể sao chép. Vui lòng thử lại.", true);
+        }
+
+        function playAudio(audioId) {
+            ['myAudio', 'typeSound', 'com-ngon', 'giao-huong'].forEach(id => {
+                const otherAudio = document.getElementById(id);
+                if (otherAudio) {
+                    otherAudio.pause();
+                    otherAudio.currentTime = 0;
+                }
+            });
+
+            const audio = document.getElementById(audioId);
+            if (audio) {
+                audio.loop = true;
+                audio.play().catch(error => showMessage("⚠️ Không thể phát âm thanh.", "error"));
+            }
+        }
+
+        function openLichSu() {
+            const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+            const box = document.getElementById("lichSuNoiDung");
+            box.innerHTML = '';
+            if (lichSu.length === 0) {
+                box.innerHTML = '<p style="text-align: center; color: #ccc;"><i>Chưa có lịch sử.</i></p>';
+            } else {
+                lichSu.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `<strong>(${item.timestamp})</strong><br>${document.createTextNode(item.input).textContent} ➡️ ${document.createTextNode(item.output).textContent}`;
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerHTML = '❌';
+                    deleteButton.className = 'delete-item-btn';
+                    deleteButton.onclick = () => showConfirmDeleteOne(idx);
+                    div.appendChild(deleteButton);
+                    box.appendChild(div);
                 });
             }
-        });
+            document.getElementById("modalLichSu").style.display = "flex";
+        }
 
-        // --- KHỞI ĐỘNG ỨNG DỤNG ---
-        document.addEventListener('DOMContentLoaded', () => {
-            renderHistory();
-            
-            // Lấy Fingerprint khi trang tải
-            FingerprintJS.load()
-              .then(fp => fp.get())
-              .then(result => {
-                fingerprint = result.visitorId;
-                console.log("Fingerprint Loaded:", fingerprint);
-              });
-            
-            // Xử lý Splash Screen
-            document.getElementById("splashText").style.opacity = 1;
-            setTimeout(endIntro, 5000); // Tự động đóng sau 5 giây
+        function closeLichSu() {
+            document.getElementById("modalLichSu").style.display = "none";
+        }
 
-            // Khôi phục trạng thái mute
-            const savedMuteState = localStorage.getItem('muteSound') === 'true';
-            muteSoundCheckbox.checked = savedMuteState;
+        function showConfirmDeleteOne(index) {
+            pendingDeleteIndex = index;
+            isDeletingAll = false;
+            document.getElementById("confirmMessage").textContent = "Bạn có chắc muốn xóa mục này?";
+            document.getElementById("confirmModal").style.display = "flex";
+        }
+
+        function clearAllHistory() {
+            if (JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]").length === 0) {
+                showMessage("📜 Lịch sử đang trống.", 'info');
+                return;
+            }
+            isDeletingAll = true;
+            document.getElementById("confirmMessage").textContent = "Bạn có chắc chắn muốn xóa toàn bộ lịch sử không?";
+            document.getElementById("confirmModal").style.display = "flex";
+        }
+
+        function proceedConfirmation() {
+            if (isDeletingAll) {
+                localStorage.removeItem("lichSuDoraemon");
+                showMessage("🗑️ Đã xóa toàn bộ lịch sử!", "success");
+                closeLichSu();
+            } else if (pendingDeleteIndex !== -1) {
+                const lichSu = JSON.parse(localStorage.getItem("lichSuDoraemon") || "[]");
+                lichSu.splice(pendingDeleteIndex, 1);
+                localStorage.setItem("lichSuDoraemon", JSON.stringify(lichSu));
+                showMessage("🗑️ Đã xóa mục khỏi lịch sử!", "success");
+            }
+            cancelConfirmation();
+            openLichSu();
+        }
+
+        function cancelConfirmation() {
+            pendingDeleteIndex = -1;
+            isDeletingAll = false;
+            document.getElementById("confirmModal").style.display = "none";
+        }
+        
+        function endIntro() {
+            clearTimeout(splashTimer);
+            document.getElementById("splashScreen").style.display = "none";
+            const mainContent = document.getElementById("mainContent");
+            mainContent.style.visibility = "visible";
+            mainContent.style.display = "flex";
+            mainContent.classList.add("visible");
+            
+            const myAudio = document.getElementById("myAudio");
+            if (!audioPlayedFirstTime && !myAudio.muted) {
+                 myAudio.play().catch(e => {});
+            }
+            audioPlayedFirstTime = true;
+        }
+        
+        function skipIntro() {
+            endIntro();
+        }
+
+        // --- KHỞI TẠO KHI TẢI TRANG ---
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeSecurity(); 
+
+            // Cài đặt âm thanh ban đầu
+            document.getElementById("typeSound").volume = 0.2;
+            document.getElementById("com-ngon").volume = 0.5;
+            document.getElementById("giao-huong").volume = 0.5;
+
+            const savedMuteState = localStorage.getItem("doraemonSoundMuted") === "true";
             [document.getElementById("myAudio"), document.getElementById("typeSound"), document.getElementById("com-ngon"), document.getElementById("giao-huong")].forEach(audio => audio.muted = savedMuteState);
+
+            // Hẹn giờ cho splash screen
+            splashTimer = setTimeout(endIntro, 10000);
 
             // Listener để bật nhạc khi người dùng tương tác lần đầu
             document.body.addEventListener('click', function firstInteractionPlay() {
