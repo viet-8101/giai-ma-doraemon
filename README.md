@@ -22,7 +22,7 @@ Một ứng dụng web vui nhộn cho phép bạn "giải mã" các biệt danh 
 ## 📸 Demo online
 
 👉 Dùng thử trực tiếp tại:  
-**[đây](https://viet-8101.github.io/giai-ma-doraemon)**
+**[Tại đây](https://viet-8101.github.io/giai-ma-doraemon)**
 
 ---
 
@@ -42,7 +42,7 @@ hiện link này không còn dùng được và đang build phiên bản mới h
 
 ## 👤 Tác giả
 
-**Nguyễn Đắc Hoàng Việt**  
+**Việt**  
 📬 Góp ý, báo lỗi tại: [https://github.com/viet-8101/giai-ma-doraemon/issues](https://github.com/viet-8101/giai-ma-doraemon/issues)
 
 ---
